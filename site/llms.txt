@@ -5,23 +5,23 @@
 Contact et devis : formulaire « Demander un devis » du site (possibilité de demander à être rappelé) ou contact@copanier.fr
 
 ## Offres
-- [Tarifs des corbeilles de fruits](https://www.copanier.fr/tarifs-corbeilles-de-fruits-entreprise/) : offre récurrente sur mesure à prix dégressifs ; livraison ponctuelle d'une corbeille type : 7 kg à 34,85 € HT (15-20 personnes), 10 kg à 48,33 € HT (25-30 personnes), 13 kg à 61 € HT (35-40 personnes). En option : jus de fruits artisanaux et mélanges de fruits secs en bocaux.
-- [Notre démarche](https://www.copanier.fr/notre-demarche/) : circuit court, agriculteurs rémunérés au juste prix, RSE et QVCT.
+- [Tarifs des corbeilles de fruits](https://copanierdefruits.copanier.fr/tarifs-corbeilles-de-fruits-entreprise/) : offre récurrente sur mesure à prix dégressifs ; livraison ponctuelle d'une corbeille type : 7 kg à 34,85 € HT (15-20 personnes), 10 kg à 48,33 € HT (25-30 personnes), 13 kg à 61 € HT (35-40 personnes). En option : jus de fruits artisanaux et mélanges de fruits secs en bocaux.
+- [Notre démarche](https://copanierdefruits.copanier.fr/notre-demarche/) : circuit court, agriculteurs rémunérés au juste prix, RSE et QVCT.
 
 ## Zones de livraison
-- [Île-de-France](https://www.copanier.fr/livraison-fruits-bureau-ile-de-france/)
-- [Paris](https://www.copanier.fr/livraison-fruits-bureau-paris/)
-- [Hauts-de-Seine, La Défense](https://www.copanier.fr/livraison-fruits-bureau-hauts-de-seine/)
-- [Seine-Saint-Denis](https://www.copanier.fr/livraison-fruits-bureau-seine-saint-denis/)
-- [Val-de-Marne](https://www.copanier.fr/livraison-fruits-bureau-val-de-marne/)
-- [Seine-et-Marne](https://www.copanier.fr/livraison-fruits-bureau-seine-et-marne/)
-- [Yvelines](https://www.copanier.fr/livraison-fruits-bureau-yvelines/)
-- [Essonne](https://www.copanier.fr/livraison-fruits-bureau-essonne/)
-- [Val-d'Oise](https://www.copanier.fr/livraison-fruits-bureau-val-d-oise/)
-- [Sud de l'Oise](https://www.copanier.fr/livraison-fruits-bureau-oise/)
+- [Île-de-France](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-ile-de-france/)
+- [Paris](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-paris/)
+- [Hauts-de-Seine, La Défense](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-hauts-de-seine/)
+- [Seine-Saint-Denis](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-seine-saint-denis/)
+- [Val-de-Marne](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-val-de-marne/)
+- [Seine-et-Marne](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-seine-et-marne/)
+- [Yvelines](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-yvelines/)
+- [Essonne](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-essonne/)
+- [Val-d'Oise](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-val-d-oise/)
+- [Sud de l'Oise](https://copanierdefruits.copanier.fr/livraison-fruits-bureau-oise/)
 
 ## Ressources
-- [FAQ](https://www.copanier.fr/faq/)
-- [Combien de fruits par salarié](https://www.copanier.fr/conseils/combien-de-fruits-par-salarie/)
-- [Bienfaits des fruits au bureau](https://www.copanier.fr/conseils/bienfaits-fruits-au-bureau/)
-- [Calendrier des fruits de saison](https://www.copanier.fr/conseils/calendrier-fruits-de-saison/)
+- [FAQ](https://copanierdefruits.copanier.fr/faq/)
+- [Combien de fruits par salarié](https://copanierdefruits.copanier.fr/conseils/combien-de-fruits-par-salarie/)
+- [Bienfaits des fruits au bureau](https://copanierdefruits.copanier.fr/conseils/bienfaits-fruits-au-bureau/)
+- [Calendrier des fruits de saison](https://copanierdefruits.copanier.fr/conseils/calendrier-fruits-de-saison/)
