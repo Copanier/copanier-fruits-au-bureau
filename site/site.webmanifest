@@ -1,0 +1,13 @@
+{
+  "name": "CoPanier de fruits au bureau",
+  "short_name": "CoPanier",
+  "lang": "fr",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#3f6653",
+  "theme_color": "#3f6653",
+  "icons": [
+    { "src": "/images/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/images/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -1,0 +1,4 @@
+# ⚠️ PROVISOIRE : site en préparation sur copanierdefruits.copanier.fr, masqué aux moteurs de recherche.
+# Le jour de la bascule sur www.copanier.fr, remplacer ce fichier par outils/robots-definitif.txt
+User-agent: *
+Disallow: /

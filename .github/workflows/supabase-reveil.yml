@@ -1,0 +1,40 @@
+# Le plan gratuit de Supabase met un projet en pause après 7 jours sans activité.
+# Ce petit robot interroge la base tous les 3 jours pour la garder active (gratuit).
+# Il crée aussi un commit vide si le dépôt n'a pas bougé depuis 50 jours, car GitHub
+# désactive les tâches planifiées des dépôts inactifs depuis 60 jours.
+# À renseigner dans GitHub → Settings → Secrets and variables → Actions → Variables :
+#   SUPABASE_URL       (ex. https://xxxxxxxx.supabase.co)
+#   SUPABASE_ANON_KEY  (clé « publishable », publique, déjà visible dans le site)
+name: Garder Supabase actif
+
+on:
+  schedule:
+    - cron: "17 6 */3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reveil:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Interroger la base Supabase
+        env:
+          URL: ${{ vars.SUPABASE_URL }}
+          CLE: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$CLE" ]; then echo "Variables SUPABASE_URL / SUPABASE_ANON_KEY non renseignées : rien à faire."; exit 0; fi
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$URL/rest/v1/devis_copanier?select=id&limit=1" -H "apikey: $CLE")
+          echo "Réponse Supabase : $code"
+          [ "$code" -lt 500 ]
+      - uses: actions/checkout@v4
+      - name: Commit vide si le dépôt est inactif depuis 50 jours
+        run: |
+          dernier=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - dernier )) -gt $(( 50 * 86400 )) ]; then
+            git config user.name "robot-copanier"
+            git config user.email "robot-copanier@users.noreply.github.com"
+            git commit --allow-empty -m "Maintien de l'activité du dépôt"
+            git push
+          fi

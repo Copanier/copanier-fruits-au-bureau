@@ -1,0 +1,9 @@
+# Copies de sécurité locales de l'outil « Modifier le site » (ne pas publier)
+sauvegardes/
+node_modules/
+Thumbs.db
+desktop.ini
+.DS_Store
+# Secrets éventuels
+.env
+supabase/.temp/
