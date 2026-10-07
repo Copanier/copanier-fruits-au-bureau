@@ -4,7 +4,7 @@ name: Publier le site
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/publier-site.yml"]
+    paths: ["site/**", ".github/workflows/**"]
   workflow_dispatch:
 
 permissions:
