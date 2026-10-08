@@ -327,6 +327,33 @@ var MAX_ADRESSES = 10;
     if (bm) { bm.classList.add("maintenant"); bm.title = "Ce mois-ci"; }
     choisir(maintenant);
   });
+  // Calendrier et fiches fruits : colonne du mois en cours
+  $$('[data-mois-col="' + (new Date().getMonth() + 1) + '"]').forEach(function (el) { el.classList.add("maintenant"); });
+
+  /* ---------- Comparateur des fruits : tri au clic sur l'en-tête ---------- */
+  $$("table[data-tri]").forEach(function (table) {
+    var corps = table.tBodies[0];
+    $$("thead th", table).forEach(function (th, col) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = th.textContent;
+      th.textContent = "";
+      th.appendChild(b);
+      b.addEventListener("click", function () {
+        var asc = th.getAttribute("aria-sort") === "descending";
+        $$("thead th", table).forEach(function (t) { t.removeAttribute("aria-sort"); });
+        th.setAttribute("aria-sort", asc ? "ascending" : "descending");
+        var lignes = Array.prototype.slice.call(corps.rows);
+        lignes.sort(function (a, z) {
+          var va = a.cells[col].getAttribute("data-valeur"), vz = z.cells[col].getAttribute("data-valeur");
+          var r = va !== null ? parseFloat(va) - parseFloat(vz) : a.cells[col].textContent.localeCompare(z.cells[col].textContent, "fr");
+          if (col > 0 && va !== null) r = -r; // chiffres : du plus grand au plus petit au premier clic
+          return asc ? -r : r;
+        });
+        lignes.forEach(function (tr) { corps.appendChild(tr); });
+      });
+    });
+  });
 
   /* ---------- Simulateur de quantité ----------
      Les formats et les prix sont lus dans le tableau des tarifs de la page :

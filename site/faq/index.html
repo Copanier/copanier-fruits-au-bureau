@@ -22,9 +22,8 @@
   <link rel="icon" href="/images/icon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="/images/icon-180.png">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Special+Elite&display=swap">
+  <link rel="preload" href="/fonts/rubik-iJWKBXyIfDnIV7nBrXw.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/fonts/polices.css">
   <link rel="stylesheet" href="/css/style.css">
   <script type="application/ld+json">
 {
@@ -344,7 +343,7 @@
         <a href="/notre-demarche/">Notre démarche</a>
         <a href="/livraison-fruits-bureau-ile-de-france/">Zones de livraison</a>
         <a href="/faq/" aria-current="page">FAQ</a>
-        <a href="/conseils/">Conseils</a>
+        <a href="/blog/">Blog</a>
         <a class="bouton bouton--petit js-devis" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20corbeilles%20de%20fruits">Demander un devis</a>
       </nav>
     </div>
@@ -394,7 +393,7 @@
         <div class="faq">
           <details>
             <summary>Combien de fruits prévoir par personne au bureau&nbsp;?</summary>
-            <div><p>Nos repères&nbsp;: une corbeille de 7 kg pour 15 à 20 personnes, 10 kg pour 25 à 30 personnes et 13 kg pour 35 à 40 personnes. Utilisez notre <a href="/tarifs-corbeilles-de-fruits-entreprise/#calculateur">calculateur</a> ou lisez notre article <a href="/conseils/combien-de-fruits-par-salarie/">combien de fruits par salarié</a>.</p></div>
+            <div><p>Nos repères&nbsp;: une corbeille de 7 kg pour 15 à 20 personnes, 10 kg pour 25 à 30 personnes et 13 kg pour 35 à 40 personnes. Utilisez notre <a href="/tarifs-corbeilles-de-fruits-entreprise/#calculateur">calculateur</a> ou lisez notre article <a href="/blog/combien-de-fruits-par-salarie/">combien de fruits par salarié</a>.</p></div>
           </details>
           <details>
             <summary>Peut-on changer de taille de corbeille&nbsp;?</summary>
@@ -418,7 +417,7 @@
           </details>
           <details>
             <summary>Quels fruits trouve-t-on dans les corbeilles&nbsp;?</summary>
-            <div><p>Les fruits de saison&nbsp;: fraises et rhubarbe au printemps, cerises, abricots, pêches et melons l'été, raisin, prunes, pommes et poires à l'automne, pommes, poires, kiwis et agrumes l'hiver. Quelques fruits comme la banane complètent la gamme toute l'année. Voir notre <a href="/conseils/calendrier-fruits-de-saison/">calendrier des fruits de saison</a>.</p></div>
+            <div><p>Les fruits de saison&nbsp;: fraises et rhubarbe au printemps, cerises, abricots, pêches et melons l'été, raisin, prunes, pommes et poires à l'automne, pommes, poires, kiwis et agrumes l'hiver. Quelques fruits comme la banane complètent la gamme toute l'année. Voir notre <a href="/calendrier-fruits-de-saison/">calendrier des fruits de saison</a>.</p></div>
           </details>
           <details>
             <summary>Peut-on choisir ou exclure certains fruits&nbsp;?</summary>
@@ -522,8 +521,11 @@
           <ul>
             <li><a href="/notre-demarche/">Notre démarche</a></li>
             <li><a href="/faq/">Questions fréquentes</a></li>
-            <li><a href="/conseils/">Conseils &amp; articles</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/blog/fruits/">Guide des fruits</a></li>
+            <li><a href="/calendrier-fruits-de-saison/">Calendrier des fruits de saison</a></li>
             <li><a href="/mentions-legales/">Mentions légales</a></li>
+            <li><a href="/politique-de-confidentialite/">Confidentialité &amp; RGPD</a></li>
           </ul>
         </div>
       </div>
@@ -589,7 +591,7 @@
         </div>
         <p class="devis__erreur" role="alert" hidden></p>
         <button type="submit" class="bouton devis__envoyer"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg> <span>Envoyer ma demande</span></button>
-        <p class="petit devis__rgpd">Vos informations servent uniquement à répondre à votre demande. Elles ne sont jamais cédées à des tiers.</p>
+        <p class="petit devis__rgpd">Vos informations servent uniquement à répondre à votre demande. Elles ne sont jamais cédées à des tiers. <a href="/politique-de-confidentialite/" target="_blank">En savoir plus</a></p>
       </div>
 
       <div class="devis__etape-merci" hidden>

@@ -45,6 +45,18 @@ L'outil a besoin de Node.js, déjà installé sur cet ordinateur. Sur un autre o
 - **Photo du fondateur** : déposez `pierre-fondateur.jpg` dans `site/images/`, puis suivez la consigne en commentaire dans `site/index.html`, section « FONDATEUR ».
 - **Fruits du mois** (accueil) : modifiez-les directement avec l'outil. En mode modification, tous les mois s'affichent les uns sous les autres.
 
+## Blog : ajouter un article
+
+Publier régulièrement un article améliore le référencement. Le blog se trouve sur **/blog/**, le guide des fruits sur **/blog/fruits/** (20 fiches avec calories et vitamines) et le calendrier sur **/calendrier-fruits-de-saison/**.
+
+Pour créer un article, ouvrez un terminal dans le dossier `site-copanier` :
+
+```
+node outils/nouvel-article.mjs "Titre de l'article" "Thème"
+```
+
+La page est créée avec un texte provisoire. Elle est ajoutée en tête de la page Blog et dans le plan du site. Rédigez ensuite le texte avec « Modifier le site.bat », puis envoyez les changements sur GitHub. Vous pouvez aussi simplement demander à Claude de rédiger et publier l'article.
+
 ## 2. La demande de devis
 
 Les boutons « Demander un devis » ouvrent un formulaire. La demande est enregistrée dans le projet **Supabase de CoPanier** (indépendant de Foncier Stratégie). Ensuite :
