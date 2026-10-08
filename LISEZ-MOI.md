@@ -47,7 +47,7 @@ L'outil a besoin de Node.js, déjà installé sur cet ordinateur. Sur un autre o
 
 ## Blog : ajouter un article
 
-Publier régulièrement un article améliore le référencement. Le blog se trouve sur **/blog/**, le guide des fruits sur **/blog/fruits/** (20 fiches avec calories et vitamines) et le calendrier sur **/calendrier-fruits-de-saison/**.
+Publier régulièrement un article améliore le référencement. Le blog se trouve sur **/blog/**, le guide des fruits sur **/blog/fruits/** (22 fiches avec calories et vitamines) et le calendrier sur **/calendrier-fruits-de-saison/**.
 
 Pour créer un article, ouvrez un terminal dans le dossier `site-copanier` :
 
