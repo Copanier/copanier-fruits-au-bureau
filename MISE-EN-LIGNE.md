@@ -42,8 +42,9 @@ Le devis est créé en **brouillon, sans envoi**, au même format que vos devis 
 
 **Ce qu'il faut faire, une seule fois :**
 1. Pennylane → **Paramètres → Connectivité → Développeurs → Générer un Token API**.
-   - Nom :    - Droits : **Clients** (lecture et écriture), **Devis** (lecture et écriture), **Produits** (lecture). Rien d'autre.
-2. Copiez le jeton, puis dans Supabase → **Edge Functions → Secrets → Add new secret** : Name , Value = le jeton → **Save**.
+   - Nom : `site-copanier-devis`
+   - Droits : **Clients** (lecture et écriture), **Devis** (lecture et écriture), **Produits** (lecture). Rien d'autre.
+2. Copiez le jeton, puis dans Supabase → **Edge Functions → Secrets → Add new secret** : Name `PENNYLANE_API_TOKEN`, Value = le jeton → **Save**.
 
 Les produits sont retrouvés par leur libellé. Ne renommez donc pas « Corbeilles de fruits (environ 7kg) », « Corbeilles de Fruits (environ 13 kg) », « Corbeilles de fruits », « Frais de livraison » et « Livraison offerte ».
 
