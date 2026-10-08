@@ -11,10 +11,8 @@
 //   RESEND_API_KEY        obligatoire — clé du compte Resend de CoPanier
 //   EXPEDITEUR            facultatif  — ex. « CoPanier de fruits au bureau <noreply@copanier.fr> » une fois
 //                                       copanier.fr vérifié dans Resend (sinon adresse de test Resend)
-//   PENNYLANE_API_TOKEN   facultatif  — jeton API Pennylane (droits : clients + devis + produits en lecture)
-//   PENNYLANE_PRODUITS    facultatif  — identifiants des produits Pennylane, ex. {"7":111,"10":222,"13":333}
-//   PENNYLANE_COMPTE_VENTE_ID  facultatif — à défaut de produits : identifiant du compte de vente (706…)
-//   PENNYLANE_MODELE_DEVIS_ID  facultatif — modèle de devis Pennylane à utiliser
+//   PENNYLANE_API_TOKEN   facultatif  — jeton API Pennylane (droits : clients et devis en lecture/écriture, produits en lecture)
+//                                       Les produits sont retrouvés par leur libellé (« Corbeilles de fruits (environ 7kg) »…).
 // =====================================================================
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -24,7 +22,7 @@ const DESTINATAIRE = "contact@copanier.fr";
 const EXPEDITEUR = Deno.env.get("EXPEDITEUR") || "CoPanier de fruits au bureau <onboarding@resend.dev>";
 const ACCUSE_CLIENT = /@copanier\.fr>?\s*$/.test(EXPEDITEUR);
 const FRAICHEUR_MAX = 30 * 60 * 1000;   // on ne traite que les demandes de moins de 30 minutes
-const SITE = "https://www.copanier.fr";
+const SITE = "https://copanierdefruits.copanier.fr";
 const PENNYLANE = "https://app.pennylane.com/api/external/v2";
 
 // Tarifs des corbeilles types (identiques au site) — servent si aucun produit Pennylane n'est configuré
@@ -117,7 +115,7 @@ async function creerClient(r) {
     ...(livraison ? { delivery_address: livraison } : {}),
     emails: emailValide(r.email) ? [String(r.email).trim()] : [],
     ...(r.telephone ? { phone: String(r.telephone) } : {}),
-    notes: `Créé automatiquement depuis le site www.copanier.fr${r.role ? " — contact : " + personne + " (" + r.role + ")" : ""}`,
+    notes: `Créé automatiquement depuis le site CoPanier de fruits au bureau${r.role ? " — contact : " + personne + " (" + r.role + ")" : ""}`,
     billing_language: "fr_FR",
   };
   if (r.entreprise) {
@@ -128,41 +126,122 @@ async function creerClient(r) {
   return c.id;
 }
 
-async function creerBrouillonDevis(r, clientId) {
-  const c = corbeilles(r.personnes);
-  const livraisons = Array.isArray(r.adresses_livraison) ? r.adresses_livraison : [];
-  const description = [
-    `Formule demandée : ${r.formule || "à préciser"}`,
-    r.personnes ? `Pour ${r.personnes} personnes` : "Nombre de personnes à confirmer",
-    livraisons.length ? `Livraison : ${livraisons.join(" ; ")}` : "",
-  ].filter(Boolean).join("\n");
+// Produits déjà créés dans Pennylane (repérés par leur libellé, comme dans vos devis habituels)
+const PRODUITS = {
+  7: "Corbeilles de fruits (environ 7kg)",
+  13: "Corbeilles de Fruits (environ 13 kg)",
+  generique: "Corbeilles de fruits",
+  frais: "Frais de livraison",
+  offerte: "Livraison offerte",
+};
+const norm = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
 
-  let produits = {};
-  try { produits = JSON.parse(Deno.env.get("PENNYLANE_PRODUITS") || "{}"); } catch (_) { produits = {}; }
-  const produitId = produits[String(c.format.kg)];
-  let ligne;
-  if (produitId) {
-    ligne = { product_id: Number(produitId), quantity: c.quantite, description };
+async function produitsPennylane() {
+  const rep = await pl("/products?limit=100");
+  const parLibelle = {};
+  for (const p of rep?.items || []) parLibelle[norm(p.label)] = p.id;
+  const id = (cle) => parLibelle[norm(PRODUITS[cle])];
+  const manquants = Object.keys(PRODUITS).filter((k) => !id(k));
+  if (manquants.length) throw new Error("produits introuvables dans Pennylane : " + manquants.map((k) => "« " + PRODUITS[k] + " »").join(", "));
+  return id;
+}
+
+// Conditions reprises de vos devis (description de la ligne « corbeilles »)
+const CONDITIONS = {
+  hebdo: [
+    "Prix correspondant à une semaine de livraison",
+    "Livraison des corbeilles chaque semaine",
+    "Nous tenons compte des dates durant lesquelles l'entreprise ne souhaite pas être livrée (exemple : période des fêtes de fin d'année)",
+    "Composition des paniers qui évolue en fonction des productions de saison",
+    "Règlement par virement mensualisé",
+    "La perte d'une corbeille est facturée 20€ HT",
+    "Prix révisable annuellement pour tenir compte de l'inflation",
+    "Pour toutes modifications de livraisons veuillez nous informer par mail au moins deux semaines à l'avance",
+  ],
+  bimensuel: [
+    "Prix correspondant à une livraison",
+    "Livraison des corbeilles tous les 15 jours",
+    "Nous tenons compte des dates durant lesquelles l'entreprise ne souhaite pas être livrée (exemple : période des fêtes de fin d'année)",
+    "Composition des paniers qui évolue en fonction des productions de saison",
+    "Règlement par virement mensualisé",
+    "La perte d'une corbeille est facturée 20€ HT",
+    "Prix révisable annuellement pour tenir compte de l'inflation",
+    "Pour toutes modifications de livraisons veuillez nous informer par mail au moins deux semaines à l'avance",
+  ],
+  autre: [
+    "Prix correspondant à une livraison",
+    "Livraison des corbeilles selon la fréquence convenue ensemble",
+    "Nous tenons compte des dates durant lesquelles l'entreprise ne souhaite pas être livrée (exemple : période des fêtes de fin d'année)",
+    "Composition des paniers qui évolue en fonction des productions de saison",
+    "Règlement par virement mensualisé",
+    "La perte d'une corbeille est facturée 20€ HT",
+    "Prix révisable annuellement pour tenir compte de l'inflation",
+    "Pour toutes modifications de livraisons veuillez nous informer par mail au moins deux semaines à l'avance",
+  ],
+};
+const puces = (l) => l.map((x) => "- " + x).join("\n");
+
+function typeFormule(f) {
+  f = norm(f);
+  if (f.includes("ponctuelle")) return "ponctuel";
+  if (f.includes("2 semaines")) return "bimensuel";
+  if (f.includes("autre")) return "autre";
+  return "hebdo"; // « chaque semaine » ou « je ne sais pas encore » : offre habituelle
+}
+
+async function creerBrouillonDevis(r, clientId) {
+  const produit = await produitsPennylane();
+  const c = corbeilles(r.personnes);
+  const type = typeFormule(r.formule);
+  const livraisons = (Array.isArray(r.adresses_livraison) ? r.adresses_livraison : []).filter(Boolean);
+  const site = livraisons[0] ? await adresseStructuree(livraisons[0]) : null;
+  const nom = [String(r.entreprise || personneDe(r) || "Client").trim(), site?.city].filter(Boolean).join(" ");
+
+  // Ligne « corbeilles » : 7 kg et 13 kg = vos produits ; 10 kg = produit générique au prix du site
+  const kg = c.format.kg;
+  const ligneCorbeille = kg === 10
+    ? { product_id: produit("generique"), label: "Corbeilles de fruits (environ 10 kg)", raw_currency_unit_price: c.format.prix, quantity: c.quantite }
+    : { product_id: produit(kg), quantity: c.quantite };
+  const taille = `${c.quantite} corbeille${c.quantite > 1 ? "s" : ""} d'environ ${kg} kg`;
+  const lignes = [];
+  let sujet;
+
+  if (type === "ponctuel") {
+    sujet = `Corbeilles de fruits frais- Livraison ponctuelle -${nom}`;
+    lignes.push({ ...ligneCorbeille, description: taille });
+    lignes.push({
+      product_id: produit("frais"),
+      quantity: 1,
+      description: [
+        "Livraison prévue le : date à convenir",
+        ...(livraisons.length ? ["Adresse : " + livraisons.join(" ; ")] : []),
+        "",
+        puces(["Règlement par virement", "La perte d'une corbeille est facturée 20€ HT"]),
+      ].join("\n"),
+    });
   } else {
-    const compte = Deno.env.get("PENNYLANE_COMPTE_VENTE_ID");
-    if (!compte) throw new Error("aucun produit Pennylane (PENNYLANE_PRODUITS) ni compte de vente (PENNYLANE_COMPTE_VENTE_ID) configuré");
-    ligne = { label: c.format.libelle, quantity: c.quantite, raw_currency_unit_price: c.format.prix, unit: "piece", vat_rate: "FR_55", ledger_account_id: Number(compte), description };
+    sujet = {
+      hebdo: `Livraison hebdomadaire de Corbeilles de fruits-${nom}`,
+      bimensuel: `Livraisons de Corbeilles de fruits bimensuelle-${nom}`,
+      autre: `Livraison de Corbeilles de fruits-${nom}`,
+    }[type];
+    lignes.push({ ...ligneCorbeille, description: (c.quantite > 1 ? taille + "\n" : "") + puces(CONDITIONS[type]) });
+    lignes.push({ product_id: produit("offerte"), quantity: 1, description: livraisons.length ? livraisons.join("\n") : null });
   }
+
   const aujourdhui = new Date();
-  const corps = {
-    customer_id: clientId,
-    date: jour(aujourdhui),
-    deadline: jour(aujourdhui.getTime() + 30 * 24 * 3600 * 1000),
-    language: "fr_FR",
-    pdf_invoice_subject: "Corbeilles de fruits frais de saison au bureau",
-    pdf_description: `Livraison de corbeilles de fruits frais de saison dans vos locaux.${r.formule && /semaine|récurrence/i.test(r.formule) ? " Tarif dégressif selon la fréquence et les volumes." : ""}`,
-    pdf_invoice_free_text: "Chaque semaine, nous allons chercher nos fruits chez nos producteurs pour une fraîcheur optimale. Sans engagement de durée.",
-    external_reference: "copanier-site-" + String(r.id).slice(0, 8),
-    invoice_lines: [ligne],
-  };
-  const modele = Deno.env.get("PENNYLANE_MODELE_DEVIS_ID");
-  if (modele) corps.quote_template_id = Number(modele);
-  return await pl("/quotes", { method: "POST", body: JSON.stringify(corps) });
+  return await pl("/quotes", {
+    method: "POST",
+    body: JSON.stringify({
+      customer_id: clientId,
+      date: jour(aujourdhui),
+      deadline: jour(aujourdhui.getTime() + 30 * 24 * 3600 * 1000),
+      language: "fr_FR",
+      pdf_invoice_subject: sujet,
+      external_reference: "copanier-site-" + String(r.id).slice(0, 8),
+      invoice_lines: lignes,
+    }),
+  });
 }
 
 async function pennylane(r) {
@@ -185,7 +264,7 @@ const cadre = (contenu, largeur = 640) => `<!DOCTYPE html><html lang="fr"><head>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:${largeur}px;background:#ffffff;border-radius:10px;overflow:hidden">
 <tr><td style="background:${VERT};padding:18px 24px"><span style="font-family:'Courier New',monospace;font-size:24px;font-weight:bold;letter-spacing:2px;color:${ORANGE}">CO</span><span style="font-family:'Courier New',monospace;font-size:24px;font-weight:bold;letter-spacing:2px;color:#ffffff">PANIER</span><br><span style="font-size:11px;letter-spacing:2px;color:#ffd2b8">FRUITS DE SAISON AU BUREAU · S'ASSOCIER POUR MIEUX MANGER</span></td></tr>
 ${contenu}
-<tr><td style="background:${CREME};padding:14px 24px;font-size:11px;color:${GRIS}">CoPanier de fruits au bureau · <a href="${SITE}" style="color:${GRIS}">www.copanier.fr</a> · <a href="mailto:${DESTINATAIRE}" style="color:${GRIS}">${DESTINATAIRE}</a></td></tr>
+<tr><td style="background:${CREME};padding:14px 24px;font-size:11px;color:${GRIS}">CoPanier de fruits au bureau · <a href="${SITE}" style="color:${GRIS}">copanierdefruits.copanier.fr</a> · <a href="mailto:${DESTINATAIRE}" style="color:${GRIS}">${DESTINATAIRE}</a></td></tr>
 </table></td></tr></table></body></html>`;
 const bloc = (titre, html) => `<tr><td style="padding:18px 24px 4px"><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${ORANGE_FONCE};font-weight:bold;border-bottom:1px solid ${LIGNE};padding-bottom:6px;margin-bottom:10px">${titre}</div>${html}</td></tr>`;
 const ligne = (lib, val) => (val ? `<tr><td width="170" style="width:170px;padding:5px 14px 5px 0;color:${GRIS};font-size:13px;vertical-align:top">${lib}</td><td style="padding:5px 0;font-size:14px;vertical-align:top">${val}</td></tr>` : "");
@@ -196,7 +275,7 @@ function blocPennylane(p) {
   if (p.statut === "ok") {
     return `<tr><td style="padding:14px 24px 0"><div style="background:#e8f0eb;border:2px solid ${VERT};border-radius:10px;padding:12px 16px;font-size:14px;line-height:1.5">
 <b>🧾 Brouillon de devis créé dans Pennylane${p.numero ? " — n° " + esc(p.numero) : ""}</b><br>Il n'a <b>pas</b> été envoyé au client : vérifiez-le, ajustez prix et quantités si besoin, puis envoyez-le depuis Pennylane.<br>
-<a href="https://app.pennylane.com/" style="color:${VERT};font-weight:bold">Ouvrir Pennylane → Ventes → Devis</a></div></td></tr>`;
+<a href="https://app.pennylane.com/companies/23266840/clients/customer_estimates" style="color:${VERT};font-weight:bold">Ouvrir les devis dans Pennylane</a></div></td></tr>`;
   }
   if (p.statut === "erreur") {
     return `<tr><td style="padding:14px 24px 0"><div style="background:#fdecea;border:2px solid #d93025;border-radius:10px;padding:12px 16px;font-size:13px;line-height:1.5">
