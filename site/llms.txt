@@ -57,5 +57,5 @@ Contact et devis : formulaire « Demander un devis » du site (possibilité de d
 - [Raisin](https://copanierdefruits.copanier.fr/blog/fruits/raisin/) : 70 kcal / 100 g, vitamine C 3 mg / 100 g, saison : de août à octobre
 
 ## Informations légales
-- [Mentions légales](https://copanierdefruits.copanier.fr/mentions-legales/) : COMPTOIR DES FERMIERS (SAS), 3 route de Forfry, 77178 Oissery, France
+- [Mentions légales](https://copanierdefruits.copanier.fr/mentions-legales/) : COMPTOIR DES FERMIERS (SASU, capital 1 000 €, RCS Meaux), 3 route de Forfry, 77178 Oissery, France
 - [Politique de confidentialité](https://copanierdefruits.copanier.fr/politique-de-confidentialite/)
