@@ -30,5 +30,6 @@ for (const f of fs.readdirSync(SITE, { recursive: true })) {
   if (apres !== avant) { fs.writeFileSync(p, apres); fichiers++; }
 }
 fs.writeFileSync(path.join(SITE, 'CNAME'), nouveau + '\n');
-fs.writeFileSync(path.join(SITE, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: https://${nouveau}/sitemap.xml\n`);
+const robots = path.join(SITE, 'robots.txt');
+fs.writeFileSync(robots, fs.readFileSync(robots, 'utf8').replace(/Sitemap: .*/, `Sitemap: https://${nouveau}/sitemap.xml`));
 console.log(`Adresse officielle : https://${nouveau} — ${fichiers} fichiers mis à jour, CNAME et robots.txt réécrits.`);
