@@ -38,27 +38,27 @@ Compte Supabase **contact@copanier.fr**, organisation **COPANIER** (Free), proje
 
 ## Étape 3 — Pennylane (brouillon de devis)
 
-Le devis est créé en **brouillon, sans envoi**. Vous le retrouvez dans Pennylane → Ventes → Devis, vous l'ajustez, puis vous l'envoyez vous-même.
+Le devis est créé en **brouillon, sans envoi**, au même format que vos devis habituels. Vous le retrouvez dans Pennylane → Ventes → Devis, vous l'ajustez, puis vous l'envoyez vous-même.
 
-1. Dans Pennylane, créez **3 produits** (Ventes → Produits) :
-   - « Corbeille de fruits frais de saison — 7 kg », 34,85 € HT, TVA 5,5 %, unité « pièce »
-   - « Corbeille de fruits frais de saison — 10 kg », 48,33 € HT, TVA 5,5 %
-   - « Corbeille de fruits frais de saison — 13 kg », 61,00 € HT, TVA 5,5 %
+**Ce qu'il faut faire, une seule fois :**
+1. Pennylane → **Paramètres → Connectivité → Développeurs → Générer un Token API**.
+   - Nom :    - Droits : **Clients** (lecture et écriture), **Devis** (lecture et écriture), **Produits** (lecture). Rien d'autre.
+2. Copiez le jeton, puis dans Supabase → **Edge Functions → Secrets → Add new secret** : Name , Value = le jeton → **Save**.
 
-   Ouvrez chaque produit : son **numéro** apparaît dans l'adresse de la page. Notez les 3 numéros.
-2. **Paramètres → Connectivité → Développeurs → Générer un jeton API**. Droits : **clients (lecture et écriture)**, **devis (lecture et écriture)**, produits (lecture). Copiez le jeton.
-3. Dans Supabase → **Edge Functions → Secrets**, ajoutez :
-   - `PENNYLANE_API_TOKEN` = le jeton
-   - `PENNYLANE_PRODUITS` = `{"7":111,"10":222,"13":333}`, en remplaçant 111, 222 et 333 par les numéros des produits 7, 10 et 13 kg
-   - *facultatif* `PENNYLANE_MODELE_DEVIS_ID` = le numéro d'un modèle de devis à vos couleurs
+Les produits sont retrouvés par leur libellé. Ne renommez donc pas « Corbeilles de fruits (environ 7kg) », « Corbeilles de Fruits (environ 13 kg) », « Corbeilles de fruits », « Frais de livraison » et « Livraison offerte ».
 
-**Ce que fait l'automatisme** :
+**Ce que fait l'automatisme :**
 - Il cherche le client dans Pennylane, par son e-mail puis par le nom de l'entreprise. S'il ne le trouve pas, il le crée avec l'adresse de l'entreprise, reconnue grâce à la Base Adresse Nationale.
-- Il ajoute la corbeille conseillée selon le nombre de personnes. Au-delà de 40 personnes, il met plusieurs corbeilles de 13 kg.
-- Il recopie dans la ligne du devis la formule, le nombre de personnes et les adresses de livraison.
+- Il choisit la corbeille selon le nombre de personnes : jusqu'à 22 personnes, 7 kg à 34,85 € ; jusqu'à 32, 10 kg à 48,33 € ; jusqu'à 42, 13 kg à 61 €. Au-delà, il met plusieurs corbeilles de 13 kg.
+- **Formule chaque semaine, toutes les 2 semaines ou autre récurrence :**
+  - objet du devis : « Livraison hebdomadaire de Corbeilles de fruits-Entreprise Ville » ;
+  - description de la corbeille : vos conditions habituelles (prix par livraison, dates non livrées, virement mensualisé, corbeille perdue 20 € HT, révision annuelle, préavis de deux semaines) ;
+  - ligne « Livraison offerte » avec l'adresse.
+- **Formule ponctuelle :**
+  - objet du devis : « Corbeilles de fruits frais- Livraison ponctuelle -Entreprise Ville » ;
+  - ligne « Frais de livraison » avec « Livraison prévue le : date à convenir », virement et corbeille perdue.
+- Échéance du devis : 30 jours.
 - **Il n'envoie jamais le devis.** Si quelque chose bloque (adresse illisible, jeton absent…), l'e-mail que vous recevez l'indique en rouge, et vous créez le devis à la main.
-
-Tant que Pennylane n'est pas configuré, tout fonctionne quand même : vous recevez l'e-mail, sans brouillon.
 
 ## Étape 4 — GitHub (le site)
 
