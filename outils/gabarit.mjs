@@ -90,6 +90,8 @@ export function ecrirePage(p) {
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/images/icon-192.png" sizes="192x192" type="image/png">
   <link rel="icon" href="/images/icon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="/images/icon-180.png">
   <link rel="manifest" href="/site.webmanifest">
