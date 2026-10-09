@@ -195,7 +195,7 @@ async function creerBrouillonDevis(r, clientId) {
   const type = typeFormule(r.formule);
   const livraisons = (Array.isArray(r.adresses_livraison) ? r.adresses_livraison : []).filter(Boolean);
   const site = livraisons[0] ? await adresseStructuree(livraisons[0]) : null;
-  const nom = [String(r.entreprise || personneDe(r) || "Client").trim(), site?.city].filter(Boolean).join(" ");
+  const nom = [String(r.entreprise || personneDe(r) || "Client").trim(), site?.city?.replace(/ Arrondissement$/, "")].filter(Boolean).join(" ");
 
   // Ligne « corbeilles » : 7 kg et 13 kg = vos produits ; 10 kg = produit générique au prix du site
   const kg = c.format.kg;
