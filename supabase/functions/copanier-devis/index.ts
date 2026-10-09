@@ -244,10 +244,35 @@ async function creerBrouillonDevis(r, clientId) {
   });
 }
 
+// Contact du client (utilisé par Pennylane dans la fenêtre d'envoi des devis)
+async function ajouterContact(r, clientId) {
+  const email = String(r.email || "").trim();
+  if (!emailValide(email)) return;
+  try {
+    const existants = await pl(`/customers/${clientId}/contacts?limit=100`);
+    if ((existants?.items || []).some((c) => norm(c.email) === norm(email))) return;
+  } catch (e) { console.error("liste contacts", e.message); }
+  const tel = String(r.telephone || "").replace(/[\s.-]/g, "");
+  const mobile = /^(\+33|0033|0)[67]\d{8}$/.test(tel);
+  const nomDeFamille = String(r.nom || "").trim();
+  const prenom = String(r.prenom || "").trim();
+  await pl(`/customers/${clientId}/contacts`, {
+    method: "POST",
+    body: JSON.stringify({
+      first_name: prenom || "Contact",
+      last_name: nomDeFamille || String(r.entreprise || "").trim() || email.split("@")[0],
+      email,
+      ...(r.role ? { role: String(r.role).trim() } : {}),
+      ...(tel ? (mobile ? { mobile_number: String(r.telephone).trim() } : { telephone_number: String(r.telephone).trim() }) : {}),
+    }),
+  });
+}
+
 async function pennylane(r) {
   if (!Deno.env.get("PENNYLANE_API_TOKEN")) return { statut: "non configuré" };
   try {
     const clientId = (await trouverClient(r)) || (await creerClient(r));
+    try { await ajouterContact(r, clientId); } catch (e) { console.error("contact Pennylane", e.message); }
     const devis = await creerBrouillonDevis(r, clientId);
     return { statut: "ok", clientId, devisId: devis.id, numero: devis.quote_number || devis.label || "" };
   } catch (e) {
