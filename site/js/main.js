@@ -31,6 +31,29 @@ var MAX_ADRESSES = 10;
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
+  /* ---------- Mesure d'audience anonyme : page vue + provenance, sans cookie ni identifiant ---------- */
+  try {
+    if (SUPABASE_URL && /^https:$/.test(location.protocol) && !navigator.webdriver && !/bot|crawl|spider|preview/i.test(navigator.userAgent)) {
+      var ref = "";
+      try { ref = document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, "") : ""; } catch (e) {}
+      var source = !ref ? "direct"
+        : ref === location.hostname.replace(/^www\./, "") ? "interne"
+        : /(^|\.)google\./.test(ref) ? "google"
+        : /(^|\.)bing\.com$/.test(ref) ? "bing"
+        : /chatgpt\.com|openai\.com/.test(ref) ? "chatgpt"
+        : /perplexity\.ai/.test(ref) ? "perplexity"
+        : /linkedin\.com|lnkd\.in/.test(ref) ? "linkedin"
+        : /qwant|duckduckgo|ecosia|yahoo|brave/.test(ref) ? "autres moteurs"
+        : /copanier\.fr$/.test(ref) ? "ancien site copanier.fr"
+        : ref.slice(0, 40);
+      fetch(SUPABASE_URL + "/rest/v1/visites", {
+        method: "POST", keepalive: true,
+        headers: { apikey: SUPABASE_CLE, "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({ chemin: location.pathname.slice(0, 200) || "/", source: source })
+      }).catch(function () {});
+    }
+  } catch (e) {}
+
   /* ---------- Notification ---------- */
   var toast = $(".toast"), toastMinuteur;
   function notifier(texte) {

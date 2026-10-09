@@ -418,10 +418,171 @@ async function traiter(id) {
   return "envoyée";
 }
 
+/* ═════════════ Devis signés (vérification toutes les 15 min par une tâche planifiée) ═════════════ */
+
+const LIEN_DEVIS = "https://app.pennylane.com/companies/23266840/clients/customer_estimates";
+const euros = (v) => (v == null || v === "" ? "" : Number(v).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }));
+
+async function clientPennylane(id) {
+  try { return await pl(`/customers/${id}`); } catch (_) { return null; }
+}
+
+function mailSigne(d) {
+  return cadre(`<tr><td style="padding:22px 24px 6px"><div style="background:#e8f0eb;border:2px solid ${VERT};border-radius:10px;padding:14px 18px;font-size:16px;line-height:1.5">
+<b>✅ Devis signé par ${esc(d.client)}</b><br>Devis n° <b>${esc(d.numero)}</b> — ${esc(d.montant_ht)} HT</div></td></tr>
+${bloc("Et maintenant ?", `<p style="font-size:14px;line-height:1.6;margin:0 0 12px">Le client a signé son devis. Pensez à planifier la première livraison et à préparer la facturation.</p>${bouton(LIEN_DEVIS, "Voir le devis dans Pennylane", VERT)}`)}`);
+}
+
+function mailRemerciement(d) {
+  return cadre(`<tr><td style="padding:22px 24px">
+<p style="font-size:15px;line-height:1.6;margin:0 0 12px">Bonjour,</p>
+<p style="font-size:15px;line-height:1.6;margin:0 0 12px">Merci pour votre confiance ! Nous avons bien reçu votre devis <b>n° ${esc(d.numero)}</b> signé.</p>
+<p style="font-size:15px;line-height:1.6;margin:0 0 12px">Vous le trouverez en pièce jointe. Nous revenons vers vous très vite pour organiser la première livraison de vos corbeilles de fruits frais.</p>
+<p style="font-size:15px;line-height:1.6;margin:0">À très bientôt,<br><b>L'équipe CoPanier de fruits au bureau</b></p></td></tr>`);
+}
+
+async function verifierSignatures() {
+  if (!Deno.env.get("PENNYLANE_API_TOKEN")) return "Pennylane non configuré";
+  const filtre = encodeURIComponent(JSON.stringify([{ field: "status", operator: "in", value: ["accepted", "invoiced"] }]));
+  const devis = (await pl(`/quotes?limit=100&filter=${filtre}`))?.items || [];
+  const deja = await (await sb("pennylane_suivi?select=devis_id")).json();
+  const connus = new Set((deja || []).map((x) => String(x.devis_id)));
+
+  // Première exécution : les devis déjà signés auparavant sont simplement mémorisés, sans alerte
+  if (!connus.size) {
+    if (devis.length) {
+      await sb("pennylane_suivi", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+        body: JSON.stringify(devis.map((q) => ({ devis_id: q.id, numero: q.quote_number || q.label, statut: q.status, alerte_envoyee: true, client_remercie: true }))) });
+    }
+    return `initialisation : ${devis.length} devis déjà signés mémorisés`;
+  }
+
+  let n = 0;
+  for (const q of devis.filter((q) => !connus.has(String(q.id)))) {
+    const c = q.customer?.id ? await clientPennylane(q.customer.id) : null;
+    const d = { devis_id: q.id, numero: q.quote_number || q.label || String(q.id), client: c?.name || [c?.first_name, c?.last_name].filter(Boolean).join(" ") || "Client", montant_ht: euros(q.currency_amount_before_tax), statut: q.status };
+    // on réserve la ligne d'abord : une seule alerte même si deux vérifications se croisent
+    const r = await sb("pennylane_suivi", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=representation" }, body: JSON.stringify(d) });
+    if (!r.ok || !(await r.json()).length) continue;
+    const ok = await envoyerMail({ to: [DESTINATAIRE], subject: `✅ Devis signé — ${d.client} — ${d.numero} (${d.montant_ht} HT)`, html: mailSigne(d) });
+    await sb(`pennylane_suivi?devis_id=eq.${q.id}`, { method: "PATCH", body: JSON.stringify({ alerte_envoyee: ok }) });
+    n++;
+
+    // Remerciement au client avec le devis signé en pièce jointe (seulement avec un expéditeur @copanier.fr vérifié)
+    const emails = (c?.emails || []).filter(emailValide);
+    if (ACCUSE_CLIENT && emails.length) {
+      try {
+        const frais = await pl(`/quotes/${q.id}`);
+        const pieces = [];
+        if (frais?.public_file_url) {
+          const pdf = new Uint8Array(await (await fetch(frais.public_file_url)).arrayBuffer());
+          let bin = ""; for (let i = 0; i < pdf.length; i += 0x8000) bin += String.fromCharCode(...pdf.subarray(i, i + 0x8000));
+          pieces.push({ filename: `Devis-signe-${d.numero}.pdf`, content: btoa(bin) });
+        }
+        const env = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + Deno.env.get("RESEND_API_KEY"), "Content-Type": "application/json" },
+          body: JSON.stringify({ from: EXPEDITEUR, to: emails, reply_to: DESTINATAIRE, subject: `Merci ! Votre devis ${d.numero} est bien signé — CoPanier`, html: mailRemerciement(d), attachments: pieces }),
+        });
+        if (env.ok) await sb(`pennylane_suivi?devis_id=eq.${q.id}`, { method: "PATCH", body: JSON.stringify({ client_remercie: true }) });
+        else console.error("remerciement", env.status, await env.text());
+      } catch (e) { console.error("remerciement", e.message); }
+    }
+  }
+  return `${n} nouveau(x) devis signé(s)`;
+}
+
+/* ═════════════ Rapport du vendredi 10 h 30 ═════════════ */
+
+const STATUTS = { pending: "En attente", accepted: "✅ Signé", denied: "❌ Refusé", invoiced: "✅ Facturé", expired: "⌛ Expiré" };
+
+function heureParis() {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", weekday: "short", hour: "2-digit", hour12: false }).formatToParts(new Date()).map((x) => [x.type, x.value]));
+  return { jour: p.weekday, heure: Number(p.hour) };
+}
+
+function statsVisites(lignes) {
+  const pages = lignes.length;
+  const entrees = lignes.filter((v) => v.source !== "interne");
+  const parSource = {}; for (const v of entrees) parSource[v.source] = (parSource[v.source] || 0) + 1;
+  const parPage = {}; for (const v of lignes) parPage[v.chemin] = (parPage[v.chemin] || 0) + 1;
+  const tri = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]);
+  return { pages, visites: entrees.length, sources: tri(parSource), top: tri(parPage).slice(0, 8) };
+}
+const evolution = (a, b) => (!b ? (a ? "nouveau" : "—") : `${a >= b ? "▲" : "▼"} ${Math.round(Math.abs(a - b) / b * 100)} %`);
+
+async function rapportHebdo(force) {
+  const { jour: jourSemaine, heure } = heureParis();
+  if (force) {
+    // essai manuel possible uniquement avant le tout premier rapport réel
+    const deja = await (await sb("rapports_hebdo?select=semaine&limit=1")).json();
+    if ((deja || []).length) return "essai refusé : les rapports sont déjà en service";
+  } else if (!(jourSemaine.startsWith("ven") && heure === 10)) return "pas l'heure du rapport";
+  const lundi = new Date(); lundi.setUTCDate(lundi.getUTCDate() - ((lundi.getUTCDay() + 6) % 7));
+  const semaine = jour(lundi);
+  if (!force) {
+    const r = await sb("rapports_hebdo", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=representation" }, body: JSON.stringify({ semaine }) });
+    if (!r.ok || !(await r.json()).length) return "rapport déjà envoyé cette semaine";
+  }
+  const maintenant = Date.now(), J7 = 7 * 24 * 3600 * 1000;
+  const depuis = new Date(maintenant - J7).toISOString(), avant = new Date(maintenant - 2 * J7).toISOString();
+
+  // Demandes de devis des 7 derniers jours (hors essais)
+  const demandes = (await (await sb(`devis_copanier?created_at=gte.${depuis}&order=created_at.asc&select=created_at,entreprise,prenom,nom,personnes,formule,rappel,pennylane_devis_id,pennylane_devis_numero,pennylane_erreur`)).json() || [])
+    .filter((d) => !/^TEST CoPanier/i.test(d.entreprise || ""));
+  for (const d of demandes) {
+    d.etat = d.pennylane_devis_id ? "En attente" : "⚠️ Pas de brouillon";
+    if (d.pennylane_devis_id && Deno.env.get("PENNYLANE_API_TOKEN")) {
+      try { const q = await pl(`/quotes/${d.pennylane_devis_id}`); d.etat = STATUTS[q.status] || q.status; } catch (_) { /* devis supprimé ? */ d.etat = "Devis introuvable"; }
+    }
+  }
+  const aTraiter = demandes.filter((d) => /attente|Pas de brouillon|introuvable/i.test(d.etat)).length;
+  const signes = await (await sb(`pennylane_suivi?signe_le=gte.${depuis}&alerte_envoyee=eq.true&order=signe_le.asc&select=numero,client,montant_ht`)).json() || [];
+
+  // Fréquentation (mesure anonyme du site)
+  const v1 = statsVisites(await (await sb(`visites?created_at=gte.${depuis}&select=chemin,source&limit=100000`)).json() || []);
+  const v0 = statsVisites(await (await sb(`visites?created_at=gte.${avant}&created_at=lt.${depuis}&select=chemin,source&limit=100000`)).json() || []);
+
+  const cellule = (t, style = "") => `<td style="padding:7px 8px;border-bottom:1px solid ${LIGNE};font-size:13px;vertical-align:top;${style}">${t}</td>`;
+  const entete = (cols) => `<tr>${cols.map((c) => `<th align="left" style="padding:7px 8px;border-bottom:2px solid ${VERT};font-size:12px;color:${GRIS};text-transform:uppercase;letter-spacing:1px">${c}</th>`).join("")}</tr>`;
+  const table = (cols, lignes) => `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">${entete(cols)}${lignes.join("")}</table>`;
+  const dateCourte = (iso) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Paris" });
+
+  const blocDemandes = demandes.length
+    ? table(["Reçue", "Entreprise", "Pers.", "Formule", "Devis", "État"], demandes.map((d) => `<tr>${cellule(dateCourte(d.created_at))}${cellule(esc(d.entreprise || [d.prenom, d.nom].filter(Boolean).join(" ") || "—") + (d.rappel ? " 📞" : ""))}${cellule(esc(d.personnes || "—"))}${cellule(esc(d.formule || "—"))}${cellule(esc(d.pennylane_devis_numero || "—"))}${cellule(esc(d.etat), /attente|Pas de|introuvable/i.test(d.etat) ? `color:${ORANGE_FONCE};font-weight:bold` : `color:${VERT};font-weight:bold`)}</tr>`))
+    : `<p style="font-size:14px;margin:0">Aucune demande de devis cette semaine.</p>`;
+  const blocSignes = signes.length
+    ? `<ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.7">${signes.map((s) => `<li><b>${esc(s.client)}</b> — ${esc(s.numero)} — ${esc(s.montant_ht)} HT</li>`).join("")}</ul>`
+    : `<p style="font-size:14px;margin:0">Aucun devis signé cette semaine.</p>`;
+  const blocVisites = `${tableau([
+    ligne("Visites (arrivées sur le site)", `<b>${v1.visites}</b> &nbsp; <span style="color:${GRIS}">${evolution(v1.visites, v0.visites)} vs semaine précédente (${v0.visites})</span>`),
+    ligne("Pages vues", `<b>${v1.pages}</b> &nbsp; <span style="color:${GRIS}">${evolution(v1.pages, v0.pages)} (${v0.pages})</span>`),
+    ligne("D'où viennent les visiteurs", v1.sources.length ? v1.sources.map(([s, n]) => `${esc(s)} : <b>${n}</b>`).join(" · ") : "—"),
+    ligne("Pages les plus vues", v1.top.length ? v1.top.map(([p, n]) => `${esc(p)} (${n})`).join("<br>") : "—"),
+  ])}<p style="font-size:12px;color:${GRIS};margin:10px 0 0">Mesure anonyme, sans cookie. Positions et recherches Google : <a href="https://search.google.com/search-console/performance/search-analytics?resource_id=https%3A%2F%2Fcopanierdefruits.copanier.fr%2F" style="color:${VERT}">Search Console</a>.</p>`;
+
+  const resume = `<tr><td style="padding:20px 24px 4px"><div style="font-size:18px;font-weight:bold;color:${NUIT}">Rapport de la semaine</div>
+<div style="font-size:14px;color:${GRIS};margin-top:4px">${demandes.length} demande${demandes.length > 1 ? "s" : ""} de devis · ${signes.length} devis signé${signes.length > 1 ? "s" : ""} · ${v1.visites} visites</div>
+${aTraiter ? `<div style="margin-top:12px;background:#fff1e8;border-left:4px solid ${ORANGE};padding:10px 14px;font-size:14px"><b>${aTraiter} demande${aTraiter > 1 ? "s" : ""} encore en attente</b> : devis à envoyer ou à relancer.</div>` : ""}</td></tr>`;
+  const html = cadre(resume + bloc("Demandes de devis (7 derniers jours)", blocDemandes + `<p style="margin:12px 0 0">${bouton(LIEN_DEVIS, "Ouvrir les devis dans Pennylane", VERT)}</p>`) + bloc("Devis signés", blocSignes) + bloc("Fréquentation du site", blocVisites), 720);
+  const ok = await envoyerMail({ to: [DESTINATAIRE], subject: `📊 Rapport CoPanier — ${demandes.length} demande(s), ${signes.length} signé(s), ${v1.visites} visites`, html });
+  return ok ? "rapport envoyé" : "échec de l'envoi du rapport";
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   let corps;
   try { corps = await req.json(); } catch (_) { return new Response("requête invalide", { status: 400, headers: CORS }); }
+  // Tâches planifiées (pg_cron) : sans effet si on les appelle hors de leur créneau ou deux fois
+  if (corps.action === "signatures" || corps.action === "rapport") {
+    try {
+      const resultat = corps.action === "signatures" ? await verifierSignatures() : await rapportHebdo(corps.essai === true);
+      return new Response(JSON.stringify({ resultat }), { headers: { ...CORS, "Content-Type": "application/json" } });
+    } catch (e) {
+      console.error(corps.action, e);
+      return new Response(JSON.stringify({ resultat: "erreur" }), { status: 500, headers: { ...CORS, "Content-Type": "application/json" } });
+    }
+  }
   // Appel du site ({ id }) ou d'un webhook de base de données ({ record: { id } })
   const id = corps.id || (corps.record && corps.record.id);
   try {
