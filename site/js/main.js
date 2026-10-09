@@ -311,7 +311,7 @@ var MAX_ADRESSES = 10;
 
   /* ---------- Bande clients qui défile (on double la liste pour une boucle continue) ---------- */
   $$(".defilement .clients").forEach(function (ul) {
-    $$("li", ul).forEach(function (li) { var c = li.cloneNode(true); c.setAttribute("aria-hidden", "true"); ul.appendChild(c); });
+    $$("li", ul).forEach(function (li) { var c = li.cloneNode(true); c.setAttribute("aria-hidden", "true"); 1025("a", c).forEach(function (a) { a.tabIndex = -1; }); ul.appendChild(c); });
   });
 
   /* ---------- Fruits de saison ---------- */
