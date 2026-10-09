@@ -338,6 +338,8 @@ var MAX_ADRESSES = 10;
   });
 
   /* ---------- Fruits de saison ---------- */
+  var moisActuel = new Date().getMonth() + 1;
+  var saisonActuelle = moisActuel >= 3 && moisActuel <= 5 ? "printemps" : moisActuel >= 6 && moisActuel <= 8 ? "ete" : moisActuel >= 9 && moisActuel <= 11 ? "automne" : "hiver";
   $$("[data-saisons]").forEach(function (bloc) {
     var boutons = $$("[data-mois]", bloc), panneaux = $$("[data-panneau]", bloc);
     function choisir(m) {
@@ -345,13 +347,13 @@ var MAX_ADRESSES = 10;
       panneaux.forEach(function (p) { p.hidden = p.getAttribute("data-panneau") !== String(m); });
     }
     boutons.forEach(function (b) { b.addEventListener("click", function () { choisir(b.getAttribute("data-mois")); }); });
-    var maintenant = new Date().getMonth() + 1;
+    var maintenant = $('[data-mois="' + saisonActuelle + '"]', bloc) ? saisonActuelle : String(new Date().getMonth() + 1);
     var bm = $('[data-mois="' + maintenant + '"]', bloc);
-    if (bm) { bm.classList.add("maintenant"); bm.title = "Ce mois-ci"; }
+    if (bm) { bm.classList.add("maintenant"); bm.title = /^\d+$/.test(maintenant) ? "Ce mois-ci" : "Saison actuelle"; }
     choisir(maintenant);
   });
-  // Calendrier et fiches fruits : colonne du mois en cours
-  $$('[data-mois-col="' + (new Date().getMonth() + 1) + '"]').forEach(function (el) { el.classList.add("maintenant"); });
+  // Calendrier et fiches fruits : colonne de la saison (ou du mois) en cours
+  $$('[data-saison-col="' + saisonActuelle + '"], [data-mois-col="' + (new Date().getMonth() + 1) + '"]').forEach(function (el) { el.classList.add("maintenant"); });
 
   /* ---------- Comparateur des fruits : tri au clic sur l'en-tête ---------- */
   $$("table[data-tri]").forEach(function (table) {

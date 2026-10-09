@@ -63,25 +63,25 @@ Contact et devis : formulaire « Demander un devis » du site (possibilité de d
 - [5 fruits et légumes par jour](https://copanierdefruits.copanier.fr/blog/5-fruits-et-legumes-par-jour-au-bureau/)
 
 ## Fiches fruits
-- [Abricot](https://copanierdefruits.copanier.fr/blog/fruits/abricot/) : 45 kcal / 100 g, vitamine C 10 mg / 100 g, saison : de juin à août
+- [Abricot](https://copanierdefruits.copanier.fr/blog/fruits/abricot/) : 45 kcal / 100 g, vitamine C 10 mg / 100 g, saison : en été
 - [Banane](https://copanierdefruits.copanier.fr/blog/fruits/banane/) : 90 kcal / 100 g, vitamine C 9 mg / 100 g, saison : toute l'année
-- [Cerise](https://copanierdefruits.copanier.fr/blog/fruits/cerise/) : 60 kcal / 100 g, vitamine C 7 mg / 100 g, saison : de mai à juillet
-- [Clémentine](https://copanierdefruits.copanier.fr/blog/fruits/clementine/) : 45 kcal / 100 g, vitamine C 45 mg / 100 g, saison : de novembre à février
-- [Figue](https://copanierdefruits.copanier.fr/blog/fruits/figue/) : 74 kcal / 100 g, vitamine C 2 mg / 100 g, saison : de août à octobre
-- [Fraise](https://copanierdefruits.copanier.fr/blog/fruits/fraise/) : 32 kcal / 100 g, vitamine C 60 mg / 100 g, saison : de avril à juillet
-- [Kaki](https://copanierdefruits.copanier.fr/blog/fruits/kaki/) : 70 kcal / 100 g, vitamine C 7,5 mg / 100 g, saison : de octobre à décembre
-- [Kiwi](https://copanierdefruits.copanier.fr/blog/fruits/kiwi/) : 58 kcal / 100 g, vitamine C 85 mg / 100 g, saison : de novembre à avril
-- [Nectarine](https://copanierdefruits.copanier.fr/blog/fruits/nectarine/) : 44 kcal / 100 g, vitamine C 5 mg / 100 g, saison : de juin à septembre
-- [Nectarine plate](https://copanierdefruits.copanier.fr/blog/fruits/nectarine-plate/) : 44 kcal / 100 g, vitamine C 5 mg / 100 g, saison : de juillet à août
-- [Orange](https://copanierdefruits.copanier.fr/blog/fruits/orange/) : 45 kcal / 100 g, vitamine C 53 mg / 100 g, saison : de novembre à mai
-- [Pêche](https://copanierdefruits.copanier.fr/blog/fruits/peche/) : 40 kcal / 100 g, vitamine C 7 mg / 100 g, saison : de juin à septembre
-- [Pêche plate](https://copanierdefruits.copanier.fr/blog/fruits/peche-plate/) : 40 kcal / 100 g, vitamine C 6 mg / 100 g, saison : de juillet à août
-- [Poire](https://copanierdefruits.copanier.fr/blog/fruits/poire/) : 55 kcal / 100 g, vitamine C 4 mg / 100 g, saison : de septembre à avril
-- [Pomme](https://copanierdefruits.copanier.fr/blog/fruits/pomme/) : 53 kcal / 100 g, vitamine C 4 mg / 100 g, saison : de septembre à mai
-- [Prune](https://copanierdefruits.copanier.fr/blog/fruits/prune/) : 46 kcal / 100 g, vitamine C 9 mg / 100 g, saison : de juillet à septembre
-- [Quetsche](https://copanierdefruits.copanier.fr/blog/fruits/quetsche/) : 48 kcal / 100 g, vitamine C 5 mg / 100 g, saison : de août à septembre
-- [Raisin](https://copanierdefruits.copanier.fr/blog/fruits/raisin/) : 70 kcal / 100 g, vitamine C 3 mg / 100 g, saison : de août à octobre
-- [Reine-claude](https://copanierdefruits.copanier.fr/blog/fruits/reine-claude/) : 55 kcal / 100 g, vitamine C 5 mg / 100 g, saison : de juillet à septembre
+- [Cerise](https://copanierdefruits.copanier.fr/blog/fruits/cerise/) : 60 kcal / 100 g, vitamine C 7 mg / 100 g, saison : au printemps et en été
+- [Clémentine](https://copanierdefruits.copanier.fr/blog/fruits/clementine/) : 45 kcal / 100 g, vitamine C 45 mg / 100 g, saison : au printemps, en automne et en hiver
+- [Figue](https://copanierdefruits.copanier.fr/blog/fruits/figue/) : 74 kcal / 100 g, vitamine C 2 mg / 100 g, saison : en automne
+- [Fraise](https://copanierdefruits.copanier.fr/blog/fruits/fraise/) : 32 kcal / 100 g, vitamine C 60 mg / 100 g, saison : au printemps et en été
+- [Kaki](https://copanierdefruits.copanier.fr/blog/fruits/kaki/) : 70 kcal / 100 g, vitamine C 7,5 mg / 100 g, saison : en automne et en hiver
+- [Kiwi](https://copanierdefruits.copanier.fr/blog/fruits/kiwi/) : 58 kcal / 100 g, vitamine C 85 mg / 100 g, saison : au printemps et en hiver
+- [Nectarine](https://copanierdefruits.copanier.fr/blog/fruits/nectarine/) : 44 kcal / 100 g, vitamine C 5 mg / 100 g, saison : en été
+- [Nectarine plate](https://copanierdefruits.copanier.fr/blog/fruits/nectarine-plate/) : 44 kcal / 100 g, vitamine C 5 mg / 100 g, saison : en été
+- [Orange](https://copanierdefruits.copanier.fr/blog/fruits/orange/) : 45 kcal / 100 g, vitamine C 53 mg / 100 g, saison : au printemps, en automne et en hiver
+- [Pêche](https://copanierdefruits.copanier.fr/blog/fruits/peche/) : 40 kcal / 100 g, vitamine C 7 mg / 100 g, saison : au printemps et en été
+- [Pêche plate](https://copanierdefruits.copanier.fr/blog/fruits/peche-plate/) : 40 kcal / 100 g, vitamine C 6 mg / 100 g, saison : en été
+- [Poire](https://copanierdefruits.copanier.fr/blog/fruits/poire/) : 55 kcal / 100 g, vitamine C 4 mg / 100 g, saison : toute l'année
+- [Pomme](https://copanierdefruits.copanier.fr/blog/fruits/pomme/) : 53 kcal / 100 g, vitamine C 4 mg / 100 g, saison : toute l'année
+- [Prune](https://copanierdefruits.copanier.fr/blog/fruits/prune/) : 46 kcal / 100 g, vitamine C 9 mg / 100 g, saison : en été et en automne
+- [Quetsche](https://copanierdefruits.copanier.fr/blog/fruits/quetsche/) : 48 kcal / 100 g, vitamine C 5 mg / 100 g, saison : en été et en automne
+- [Raisin](https://copanierdefruits.copanier.fr/blog/fruits/raisin/) : 70 kcal / 100 g, vitamine C 3 mg / 100 g, saison : en automne
+- [Reine-claude](https://copanierdefruits.copanier.fr/blog/fruits/reine-claude/) : 55 kcal / 100 g, vitamine C 5 mg / 100 g, saison : en été et en automne
 
 ## Informations légales
 - [Mentions légales](https://copanierdefruits.copanier.fr/mentions-legales/) : COMPTOIR DES FERMIERS (SASU, capital 1 000 €, RCS Meaux), 3 route de Forfry, 77178 Oissery, France
