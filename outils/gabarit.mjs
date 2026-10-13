@@ -115,6 +115,7 @@ ${p.contenu}
   let final = menuActif(html, p.menu);
   // Le coin détente ne propose pas la page sur laquelle on se trouve déjà
   if (p.chemin === '/quiz-fruits/') final = final.replace(/\s*<a class="coin-detente__carte" data-promo="quiz"[\s\S]*?<\/a>/, '');
+  if (p.chemin === '/jeux-fruits/') final = final.replace(/\s*<a class="coin-detente__carte" data-promo="jeux"[\s\S]*?<\/a>/, '');
   if (p.chemin === '/expressions-fruits/') final = final.replace(/\s*<a class="coin-detente__carte" data-promo="expressions"[\s\S]*?<\/a>/, '');
   const fichier = path.join(SITE, ...p.chemin.split('/').filter(Boolean), 'index.html');
   fs.mkdirSync(path.dirname(fichier), { recursive: true });
