@@ -533,7 +533,7 @@ table.comparateur th button::after { content: " ⇅"; opacity: .45; font-size: .
 table.comparateur th[aria-sort] button::after { opacity: 1; content: " ↓"; }
 table.comparateur th[aria-sort="ascending"] button::after { content: " ↑"; }
 table.comparateur td a { color: var(--vert); font-weight: 500; text-decoration: none; white-space: nowrap; }
-.blog-raccourcis { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 40px; }
+.blog-raccourcis { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 40px; }
 .carte-raccourci { display: flex; gap: 16px; align-items: center; text-decoration: none; color: inherit; }
 .carte-raccourci > span:first-child { font-size: 2.4rem; line-height: 1; }
 .carte-raccourci strong { display: block; color: var(--vert); font-size: 1.15rem; }
@@ -552,3 +552,39 @@ table.comparateur td a { color: var(--vert); font-weight: 500; text-decoration: 
 table.calendrier--saisons { min-width: 480px; }
 table.calendrier--saisons td { min-width: 70px; }
 table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
+
+/* ===== Quiz ===== */
+.quiz { max-width: 760px; margin: 0 auto; }
+.quiz__carte { background: #fff; border: 1px solid var(--bord); border-radius: 28px; padding: clamp(22px, 4vw, 40px); box-shadow: var(--ombre); }
+.quiz__accueil, .quiz__resultat { text-align: center; }
+.quiz__fruits { font-size: 2.6rem; letter-spacing: 6px; margin-bottom: 8px; }
+.quiz__entete { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: .9rem; margin-bottom: 10px; }
+.quiz__theme { background: var(--orange-clair); color: var(--orange-fonce); font-weight: 600; padding: 4px 12px; border-radius: 999px; }
+.quiz__compteur { color: var(--texte-doux); font-weight: 500; }
+.quiz__progression { height: 8px; background: var(--creme); border-radius: 999px; overflow: hidden; margin-bottom: 22px; }
+.quiz__progression span { display: block; height: 100%; background: var(--vert); border-radius: 999px; transition: width .4s ease; }
+.quiz__question { font-size: clamp(1.25rem, 2.6vw, 1.6rem); margin: 0 0 20px; }
+.quiz__choix { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .quiz__choix { grid-template-columns: 1fr; } }
+.quiz__reponse { font: inherit; font-weight: 500; text-align: left; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--bord); background: var(--creme); color: var(--texte); cursor: pointer; transition: all .2s; }
+.quiz__reponse:hover:not(:disabled) { border-color: var(--orange); transform: translateY(-2px); }
+.quiz__reponse:disabled { cursor: default; opacity: .75; }
+.quiz__reponse.est-juste { border-color: var(--vert); background: var(--vert-clair); opacity: 1; font-weight: 700; }
+.quiz__reponse.est-faux { border-color: #c0392b; background: #fdecea; opacity: 1; }
+.quiz__retour { margin-top: 18px; }
+.quiz__verdict { font-weight: 600; font-size: 1.05rem; margin: 0 0 6px; }
+.quiz__verdict.ok { color: var(--vert); }
+.quiz__verdict.ko { color: #c0392b; }
+.quiz__explication { color: var(--texte-doux); margin: 0 0 16px; }
+.quiz__titre-note { text-transform: uppercase; letter-spacing: .14em; font-size: .85rem; font-weight: 600; color: var(--texte-doux); margin: 0; }
+.quiz__note { font-family: var(--titre); color: var(--orange); line-height: 1; margin: 8px 0 14px; }
+.quiz__chiffre { font-size: clamp(5rem, 14vw, 8rem); }
+.quiz__sur { font-size: 2rem; color: var(--vert); margin-left: 6px; }
+.quiz__note.pop { animation: quiz-pop .6s var(--ressort); }
+@keyframes quiz-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.quiz__message { font-size: 1.15rem; font-weight: 500; margin: 0 0 20px; }
+.quiz__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 12px; }
+.quiz__pluie { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9999; }
+.quiz__pluie span { position: absolute; top: -50px; animation: quiz-chute linear forwards; }
+@keyframes quiz-chute { to { transform: translateY(110vh) rotate(360deg); } }
+.quiz__accueil p, .quiz__resultat p { text-align: center; } .quiz__retour p { text-align: left; }
