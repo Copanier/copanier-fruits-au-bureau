@@ -588,3 +588,15 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .quiz__pluie span { position: absolute; top: -50px; animation: quiz-chute linear forwards; }
 @keyframes quiz-chute { to { transform: translateY(110vh) rotate(360deg); } }
 .quiz__accueil p, .quiz__resultat p { text-align: center; } .quiz__retour p { text-align: left; }
+/* ===== Expressions avec des fruits ===== */
+.expr-sommaire { margin-bottom: 18px; }
+.expr-titre { margin-top: 2.2rem; scroll-margin-top: 100px; }
+.expr-grille { margin-top: 14px; }
+.expr-carte { display: flex; flex-direction: column; gap: 6px; }
+.expr-carte h3 { color: var(--vert); margin: 0 0 4px; font-size: 1.2rem; }
+.expr-carte p { margin: 0; text-align: left; }
+.expr-sens { color: var(--texte); }
+.expr-badge { align-self: flex-start; margin-top: auto; font-size: .78rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+.expr-badge--ok { background: var(--vert-clair); color: var(--vert); }
+.expr-badge--moyen { background: var(--orange-clair); color: var(--orange-fonce); }
+.expr-badge--legende { background: #f1ecf7; color: #6b4a8f; }

@@ -51,6 +51,7 @@ Contact et devis : formulaire « Demander un devis » du site (possibilité de d
 - [FAQ](https://copanierdefruits.copanier.fr/faq/)
 - [Calendrier des fruits de saison](https://copanierdefruits.copanier.fr/calendrier-fruits-de-saison/)
 - [Quiz des fruits (variétés, saisons, nutrition, producteurs)](https://copanierdefruits.copanier.fr/quiz-fruits/)
+- [Expressions françaises avec des fruits : sens et origine](https://copanierdefruits.copanier.fr/expressions-fruits/)
 - [Guide des fruits : calories, vitamines, saisons](https://copanierdefruits.copanier.fr/blog/fruits/)
 - [Blog](https://copanierdefruits.copanier.fr/blog/)
 - [Combien de fruits par salarié](https://copanierdefruits.copanier.fr/blog/combien-de-fruits-par-salarie/)
