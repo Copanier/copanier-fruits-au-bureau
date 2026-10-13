@@ -5,12 +5,26 @@
   var FRUITS = ["🍎", "🍐", "🍊", "🍓", "🍒", "🍇", "🍑", "🥝", "🍌", "🍋"];
   // Logo CoPanier dessiné dans les jeux (filigrane, banderole, panneaux, bonus)
   var LOGO = new Image(); LOGO.src = "/images/logo-copanier.webp";
+  var LOGO_VERT = null; // version du logo dont les parties blanches sont passées en vert (lisible sur fond clair)
+  LOGO.addEventListener("load", function () {
+    try {
+      var cv = document.createElement("canvas"); cv.width = LOGO.naturalWidth; cv.height = LOGO.naturalHeight;
+      var cx = cv.getContext("2d"); cx.drawImage(LOGO, 0, 0);
+      var img = cx.getImageData(0, 0, cv.width, cv.height), d = img.data;
+      for (var i = 0; i < d.length; i += 4) {
+        var mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]);
+        if (d[i + 3] > 0 && mn > 170 && mx - mn < 40) { d[i] = 63; d[i + 1] = 102; d[i + 2] = 83; } // blanc → vert #3f6653
+      }
+      cx.putImageData(img, 0, 0);
+      LOGO_VERT = cv;
+    } catch (e) { LOGO_VERT = null; }
+  });
   function logoPret() { return LOGO.complete && LOGO.naturalWidth > 0; }
   function dessinerLogo(c, x, y, largeur, alpha) {
     if (!logoPret()) return;
     var h = largeur * LOGO.naturalHeight / LOGO.naturalWidth;
     c.save(); if (alpha !== undefined) c.globalAlpha = alpha;
-    c.drawImage(LOGO, x - largeur / 2, y - h / 2, largeur, h);
+    c.drawImage(LOGO_VERT || LOGO, x - largeur / 2, y - h / 2, largeur, h);
     c.restore();
   }
   // Petit cartouche blanc arrondi qui porte le logo
@@ -131,7 +145,7 @@
       for (var k = 0; k < 3; k++) c.fillRect(x, y + 4 * s + k * 10 * s, l, 4 * s);
       c.fillStyle = "#8a5a2b"; c.fillRect(x, y, 6 * s, h); c.fillRect(x + l - 6 * s, y, 6 * s, h);
       // Marque imprimée sur la cagette
-      c.fillStyle = "#ffffff"; c.font = "700 " + 12 * s + "px Rubik, sans-serif"; c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillStyle = "#2f4e3f"; c.font = "700 " + 12 * s + "px Rubik, sans-serif"; c.textAlign = "center"; c.textBaseline = "middle";
       c.fillText("COPANIER", panier.x, y + h / 2 + 1 * s);
       // Score et vies
       c.textAlign = "left"; c.fillStyle = "#3f6653"; c.font = "600 " + 22 * s + "px Rubik, sans-serif";
