@@ -600,3 +600,27 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .expr-badge--ok { background: var(--vert-clair); color: var(--vert); }
 .expr-badge--moyen { background: var(--orange-clair); color: var(--orange-fonce); }
 .expr-badge--legende { background: #f1ecf7; color: #6b4a8f; }
+/* Quiz : réponses et partage aux couleurs du site */
+.quiz__reponse { font-family: var(--corps); font-size: 1.05rem; font-weight: 500; line-height: 1.35; color: var(--vert); background: var(--creme); border: 2px solid var(--bord); border-radius: 18px; padding: 15px 20px; text-align: left; box-shadow: var(--ombre-douce); }
+.quiz__reponse:hover:not(:disabled), .quiz__reponse:focus-visible { border-color: var(--orange); color: var(--orange-fonce); background: #fff; transform: translateY(-2px); }
+.quiz__reponse.est-juste { background: var(--vert); border-color: var(--vert); color: #fff; }
+.quiz__reponse.est-faux { background: var(--orange-clair); border-color: var(--orange); color: var(--orange-fonce); }
+.quiz__theme { font-family: var(--corps); }
+.quiz__question { font-family: var(--titre); font-weight: 400; color: var(--orange); }
+.quiz__partage { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--bord); }
+.quiz__partage-titre { font-family: var(--titre); color: var(--orange); font-size: 1.5rem; margin: 0 0 4px; }
+.quiz__partage-boutons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 12px; }
+.quiz__btn-partage { font-family: var(--corps); font-size: .95rem; font-weight: 600; color: var(--vert) !important; background: #fff; border: 2px solid var(--vert); border-radius: 999px; padding: 9px 18px; cursor: pointer; text-decoration: none; transition: all .2s; }
+.quiz__btn-partage:hover { background: var(--vert); color: #fff !important; }
+.quiz__btn-partage[data-partager] { background: var(--orange); border-color: var(--orange); color: #fff !important; }
+/* ===== Coin détente (quiz + expressions) ===== */
+.coin-detente { background: var(--creme); padding: clamp(34px, 5vw, 56px) 0; border-top: 1px solid var(--bord); }
+.coin-detente__titre { font-family: var(--titre); color: var(--orange); font-size: clamp(1.5rem, 3vw, 2rem); text-align: center !important; margin: 0 0 20px; }
+.coin-detente__cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; max-width: 980px; margin: 0 auto; }
+.coin-detente__carte { display: flex; align-items: center; gap: 16px; background: #fff; border: 1px solid var(--bord); border-radius: var(--rayon); padding: 20px 22px; text-decoration: none; color: var(--texte); box-shadow: var(--ombre-douce); transition: transform .25s var(--ressort), box-shadow .25s; }
+.coin-detente__carte:hover { transform: translateY(-4px); box-shadow: var(--ombre); color: var(--texte); }
+.coin-detente__emoji { font-size: 2.4rem; line-height: 1; }
+.coin-detente__texte { flex: 1; font-size: .95rem; line-height: 1.4; }
+.coin-detente__texte strong { display: block; color: var(--vert); font-size: 1.1rem; margin-bottom: 2px; }
+.coin-detente__fleche { font-weight: 600; color: var(--orange-fonce); white-space: nowrap; }
+@media (max-width: 480px) { .coin-detente__fleche { display: none; } }
