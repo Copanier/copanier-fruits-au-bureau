@@ -7,3 +7,6 @@ desktop.ini
 # Secrets éventuels
 .env
 supabase/.temp/
+
+# Documents de stratégie internes (ne pas publier sur GitHub)
+ANALYSE-*.md
