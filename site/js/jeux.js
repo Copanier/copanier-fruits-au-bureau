@@ -3,6 +3,25 @@
    ========================================================= */
 (function () {
   var FRUITS = ["🍎", "🍐", "🍊", "🍓", "🍒", "🍇", "🍑", "🥝", "🍌", "🍋"];
+  // Logo CoPanier dessiné dans les jeux (filigrane, banderole, panneaux, bonus)
+  var LOGO = new Image(); LOGO.src = "/images/logo-copanier.webp";
+  function logoPret() { return LOGO.complete && LOGO.naturalWidth > 0; }
+  function dessinerLogo(c, x, y, largeur, alpha) {
+    if (!logoPret()) return;
+    var h = largeur * LOGO.naturalHeight / LOGO.naturalWidth;
+    c.save(); if (alpha !== undefined) c.globalAlpha = alpha;
+    c.drawImage(LOGO, x - largeur / 2, y - h / 2, largeur, h);
+    c.restore();
+  }
+  // Petit cartouche blanc arrondi qui porte le logo
+  function cartouche(c, x, y, largeur, s) {
+    var h = largeur * 0.42;
+    c.save(); c.fillStyle = "#ffffff"; c.strokeStyle = "#f4661c"; c.lineWidth = 2 * s;
+    c.beginPath();
+    if (c.roundRect) c.roundRect(x - largeur / 2, y - h / 2, largeur, h, 10 * s); else c.rect(x - largeur / 2, y - h / 2, largeur, h);
+    c.fill(); c.stroke(); c.restore();
+    dessinerLogo(c, x, y, largeur * 0.86);
+  }
   var URL_JEUX = "https://copanierdefruits.copanier.fr/jeux-fruits/";
   function hasard(t) { return t[Math.floor(Math.random() * t.length)]; }
   function record(cle, val) {
@@ -37,13 +56,14 @@
   /* ================= Attrape les fruits ================= */
   function attrape(conteneur) {
     var canvas = conteneur.querySelector("canvas");
-    var g, panier, objets, vies, score, vitesse, prochain, dernier, enCours = false, anim;
+    var g, panier, objets, vies, score, vitesse, prochain, dernier, enCours = false, anim, banderole, prochaineBanderole;
     var cleRecord = "copanier-record-attrape";
 
     function nouvelle() {
       g = preparer(canvas, window.innerWidth < 600 ? 1.2 : 0.75);
       panier = { x: g.W / 2, l: 90 * g.s };
       objets = []; vies = 3; score = 0; vitesse = 2.2 * g.s; prochain = 0; dernier = performance.now();
+      banderole = null; prochaineBanderole = 90;
       enCours = true;
       conteneur.querySelector(".jeu__ecran").hidden = true;
       anim = requestAnimationFrame(boucle);
@@ -56,9 +76,14 @@
       prochain -= dt;
       if (prochain <= 0) {
         var ver = score > 4 && Math.random() < 0.18;
-        objets.push({ x: 30 * g.s + Math.random() * (g.W - 60 * g.s), y: -30 * g.s, v: vitesse * (0.8 + Math.random() * 0.5), e: ver ? "🐛" : hasard(FRUITS), ver: ver });
+        var logo = !ver && score > 2 && Math.random() < 0.07;
+        objets.push({ x: 40 * g.s + Math.random() * (g.W - 80 * g.s), y: -30 * g.s, v: vitesse * (0.8 + Math.random() * 0.5), e: ver ? "🐛" : hasard(FRUITS), ver: ver, logo: logo });
         prochain = Math.max(22, 70 - score * 1.4);
       }
+      // Une banderole CoPanier traverse le ciel de temps en temps
+      prochaineBanderole -= dt;
+      if (!banderole && prochaineBanderole <= 0) { banderole = { x: g.W + 40 * g.s }; prochaineBanderole = 650 + Math.random() * 400; }
+      if (banderole) { banderole.x -= 2.2 * g.s * dt; if (banderole.x < -220 * g.s) banderole = null; }
       vitesse = (2.2 + score * 0.07) * g.s;
       var hautPanier = g.H - 46 * g.s;
       for (var i = objets.length - 1; i >= 0; i--) {
@@ -67,7 +92,7 @@
         var attrape = o.y >= hautPanier - 10 * g.s && o.y <= hautPanier + 20 * g.s && Math.abs(o.x - panier.x) < panier.l / 2 + 8 * g.s;
         if (attrape) {
           objets.splice(i, 1);
-          if (o.ver) { vies--; secousse(); } else score++;
+          if (o.ver) { vies--; secousse(); } else score += o.logo ? 3 : 1;
         } else if (o.y > g.H + 20 * g.s) {
           objets.splice(i, 1);
           if (!o.ver) { vies--; secousse(); }
@@ -84,15 +109,30 @@
       fond.addColorStop(0, "#e8f0eb"); fond.addColorStop(1, "#fbf8f2");
       c.fillStyle = fond; c.fillRect(0, 0, W, H);
       c.fillStyle = "#3f6653"; c.fillRect(0, H - 8 * s, W, 8 * s);
+      // Filigrane du logo au centre du décor
+      dessinerLogo(c, W / 2, H * 0.45, Math.min(320 * s, W * 0.6), 0.1);
+      // Banderole tirée par un avion
+      if (banderole) {
+        c.font = 30 * s + "px serif"; c.textAlign = "center"; c.textBaseline = "middle";
+        c.fillText("✈️", banderole.x - 30 * s, 62 * s);
+        c.strokeStyle = "#52695d"; c.lineWidth = 1.5 * s; c.beginPath(); c.moveTo(banderole.x - 14 * s, 62 * s); c.lineTo(banderole.x + 10 * s, 62 * s); c.stroke();
+        cartouche(c, banderole.x + 80 * s, 62 * s, 140 * s, s);
+      }
       c.textAlign = "center"; c.textBaseline = "middle";
       c.font = 40 * s + "px serif";
-      objets.forEach(function (o) { c.fillText(o.e, o.x, o.y); });
+      objets.forEach(function (o) {
+        if (o.logo) cartouche(c, o.x, o.y, 74 * s, s);
+        else c.fillText(o.e, o.x, o.y);
+      });
       // Cagette en bois
       var l = panier.l, h = 34 * s, x = panier.x - l / 2, y = hautPanier;
       c.fillStyle = "#c8915a"; c.fillRect(x, y, l, h);
       c.fillStyle = "#a8743f";
       for (var k = 0; k < 3; k++) c.fillRect(x, y + 4 * s + k * 10 * s, l, 4 * s);
       c.fillStyle = "#8a5a2b"; c.fillRect(x, y, 6 * s, h); c.fillRect(x + l - 6 * s, y, 6 * s, h);
+      // Marque imprimée sur la cagette
+      c.fillStyle = "#ffffff"; c.font = "700 " + 12 * s + "px Rubik, sans-serif"; c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillText("COPANIER", panier.x, y + h / 2 + 1 * s);
       // Score et vies
       c.textAlign = "left"; c.fillStyle = "#3f6653"; c.font = "600 " + 22 * s + "px Rubik, sans-serif";
       c.fillText("Score : " + score, 14 * s, 24 * s);
@@ -127,13 +167,14 @@
 
     g = preparer(canvas, window.innerWidth < 600 ? 1.2 : 0.75); panier = { x: g.W / 2, l: 90 * g.s }; objets = []; vies = 3; score = 0;
     dessiner(g.H - 46 * g.s);
+    LOGO.addEventListener("load", function () { if (!enCours) dessiner(g.H - 46 * g.s); });
     ecran(conteneur, "Attrape les fruits", "Déplacez la cagette avec le doigt, la souris ou les flèches. Ne laissez aucun fruit toucher le sol… et évitez les vers 🐛&nbsp;!" + (record(cleRecord) ? "<br>Votre record&nbsp;: <strong>" + record(cleRecord) + "</strong>" : ""), "Jouer").addEventListener("click", nouvelle);
   }
 
   /* ================= Le saut de la pomme ================= */
   function saut(conteneur) {
     var canvas = conteneur.querySelector("canvas");
-    var g, joueur, obstacles, bonus, sol, vitesse, distance, prochain, dernier, enCours = false, nuages;
+    var g, joueur, obstacles, bonus, sol, vitesse, distance, prochain, dernier, enCours = false, nuages, panneaux, prochainPanneau;
     var cleRecord = "copanier-record-saut";
     var OBSTACLES = ["🪨", "🐛", "🌵", "🪵"];
 
@@ -143,6 +184,8 @@
       joueur = { x: 70 * g.s, y: sol, vy: 0, taille: 40 * g.s };
       obstacles = []; bonus = []; vitesse = 5 * g.s; distance = 0; prochain = 60;
       nuages = [0, 1, 2].map(function (i) { return { x: i * g.W / 3 + 40 * g.s, y: (20 + i * 12) * g.s }; });
+      // Panneaux CoPanier qui défilent en arrière-plan
+      panneaux = [{ x: g.W * 0.62 }]; prochainPanneau = 420;
     }
 
     function nouvelle() {
@@ -177,6 +220,10 @@
       bonus.forEach(function (b) { b.x -= vitesse * dt; });
       obstacles = obstacles.filter(function (o) { return o.x > -40 * g.s; });
       nuages.forEach(function (n) { n.x -= vitesse * dt * 0.2; if (n.x < -60 * g.s) n.x = g.W + 40 * g.s; });
+      prochainPanneau -= dt;
+      if (prochainPanneau <= 0) { panneaux.push({ x: g.W + 90 * g.s }); prochainPanneau = 380 + Math.random() * 360; }
+      panneaux.forEach(function (p) { p.x -= vitesse * dt * 0.55; });
+      panneaux = panneaux.filter(function (p) { return p.x > -120 * g.s; });
       // Collisions (boîtes réduites pour être tolérant)
       var r = joueur.taille * 0.32;
       for (var i = 0; i < obstacles.length; i++) {
@@ -197,6 +244,11 @@
       c.fillStyle = "#e8f0eb"; c.fillRect(0, 0, W, H);
       c.font = 34 * s + "px serif"; c.textAlign = "center"; c.textBaseline = "middle";
       nuages.forEach(function (n) { c.globalAlpha = 0.5; c.fillText("☁️", n.x, n.y); c.globalAlpha = 1; });
+      // Panneaux publicitaires CoPanier (poteaux + cartouche)
+      panneaux.forEach(function (p) {
+        c.fillStyle = "#8a5a2b"; c.fillRect(p.x - 40 * s, sol - 58 * s, 5 * s, 62 * s); c.fillRect(p.x + 35 * s, sol - 58 * s, 5 * s, 62 * s);
+        cartouche(c, p.x, sol - 66 * s, 120 * s, s);
+      });
       c.fillStyle = "#3f6653"; c.fillRect(0, sol + 4 * s, W, H - sol);
       c.fillStyle = "#5a8a72";
       for (var x = -(distance * 6 * s) % (40 * s); x < W; x += 40 * s) c.fillRect(x, sol + 10 * s, 18 * s, 3 * s);
@@ -233,6 +285,7 @@
     canvas.addEventListener("pointerdown", function (e) { e.preventDefault(); sauter(); });
 
     initialiser(); dessiner();
+    LOGO.addEventListener("load", function () { if (!enCours) dessiner(); });
     ecran(conteneur, "Le saut de la pomme", "Appuyez sur la barre espace, la flèche du haut ou touchez l'écran pour sauter par-dessus les obstacles. Attrapez les fruits en l'air pour gagner des mètres&nbsp;!" + (record(cleRecord) ? "<br>Votre record&nbsp;: <strong>" + record(cleRecord) + " m</strong>" : ""), "Jouer").addEventListener("click", nouvelle);
   }
 

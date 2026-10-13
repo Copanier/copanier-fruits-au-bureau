@@ -28,7 +28,7 @@ Contact et devis : formulaire « Demander un devis » du site (possibilité de d
 ## Questions fréquentes
 - Qui livre des corbeilles de fruits au bureau à Paris et en Île-de-France ? CoPanier de fruits au bureau livre chaque semaine des corbeilles de fruits frais et de saison aux entreprises de Paris, de toute l'Île-de-France et du sud de l'Oise. Devis : https://copanierdefruits.copanier.fr/
 - Combien coûte une corbeille de fruits pour le bureau ? À partir de 34,85 € HT la corbeille de 7 kg (15 à 20 personnes) en livraison ponctuelle ; dégressif en abonnement. Détails : https://copanierdefruits.copanier.fr/tarifs-corbeilles-de-fruits-entreprise/
-- Quelle quantité de fruits prévoir par salarié ? CoPanier conseille la quantité adaptée selon l'effectif présent. Repères : https://copanierdefruits.copanier.fr/blog/combien-de-fruits-par-salarie/
+- Quelle quantité de fruits prévoir par collaborateur ? CoPanier conseille la quantité adaptée selon l'effectif présent. Repères : https://copanierdefruits.copanier.fr/blog/combien-de-fruits-par-salarie/
 - Faut-il s'engager ? Non, le service est sans engagement et modifiable à tout moment.
 
 ## Offres
@@ -55,9 +55,9 @@ Contact et devis : formulaire « Demander un devis » du site (possibilité de d
 - [Jeux de fruits gratuits (attrape les fruits, saut de la pomme)](https://copanierdefruits.copanier.fr/jeux-fruits/)
 - [Guide des fruits : calories, vitamines, saisons](https://copanierdefruits.copanier.fr/blog/fruits/)
 - [Blog](https://copanierdefruits.copanier.fr/blog/)
-- [Combien de fruits par salarié](https://copanierdefruits.copanier.fr/blog/combien-de-fruits-par-salarie/)
+- [Combien de fruits par collaborateur](https://copanierdefruits.copanier.fr/blog/combien-de-fruits-par-salarie/)
 - [Bienfaits des fruits au bureau](https://copanierdefruits.copanier.fr/blog/bienfaits-fruits-au-bureau/)
-- [Motiver ses salariés avec des fruits](https://copanierdefruits.copanier.fr/blog/motiver-ses-salaries-corbeille-de-fruits/)
+- [Motiver ses collaborateurs avec des fruits](https://copanierdefruits.copanier.fr/blog/motiver-ses-salaries-corbeille-de-fruits/)
 - [Sécheresse 2026 et producteurs de fruits](https://copanierdefruits.copanier.fr/blog/secheresse-2026-producteurs-fruits/)
 - [Fruits au bureau et QVCT](https://copanierdefruits.copanier.fr/blog/fruits-au-bureau-qvct/)
 - [Fruits ou distributeur de snacks ?](https://copanierdefruits.copanier.fr/blog/corbeille-de-fruits-ou-distributeur-snacks/)

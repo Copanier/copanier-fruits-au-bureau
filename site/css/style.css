@@ -639,3 +639,7 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .jeu__partage .quiz__btn-partage { background: transparent; color: #fff !important; border-color: #fff; }
 .secoue { animation: secoue .35s; }
 @keyframes secoue { 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+/* Jeux : chaque jeu dans son propre bloc, bien séparés */
+.jeu { margin-bottom: 24px; }
+.jeu__nom { margin-top: 0; padding-top: 3.5rem; }
+.jeu + .jeu__nom, [data-jeu="attrape"] ~ .jeu__nom { margin-top: 4.5rem; border-top: 2px dashed var(--bord); padding-top: 4rem; }
