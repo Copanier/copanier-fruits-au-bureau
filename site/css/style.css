@@ -730,3 +730,9 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .options-saison li strong { color: var(--vert); font-size: 1.05rem; }
 .options-saison li span:last-child { color: var(--texte-doux); font-size: .92rem; line-height: 1.45; }
 .options-saison__mention { margin: 14px 0 0; font-size: .85rem; color: var(--texte-doux); text-align: center !important; }
+.fraise__joueurs li.tirage { border-color: var(--orange); background: var(--orange); color: #fff; transform: scale(1.12); }
+.fraise__joueurs li.elimine { opacity: .5; text-decoration: line-through; background: #fdecec; border-color: #f2b8b8; }
+.fraise__joueurs li.elimine::before { content: "🍓 "; }
+.fraise__note-elim { margin: 0; max-width: 520px; font-size: .92rem; color: var(--texte-doux); text-align: center !important; }
+.fraise__note-elim[hidden], .fraise__regle[hidden] { display: none; }
+.fraise__historique-manche { list-style: none; margin: 8px 0 2px -18px; font-weight: 700; color: var(--orange-fonce); }

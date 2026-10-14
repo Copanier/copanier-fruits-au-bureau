@@ -77,21 +77,38 @@
       "</svg>";
   }
 
+  var CHAMBRE_ELIMINE = [ // mode élimination : celui qui trouve la fraise
+    "Retour à la machine à café.",
+    "Vous pouvez aller presser les jus de fruits des finalistes.",
+    "La fraise ne pardonne pas.",
+    "Fin de l'aventure, mais avec le sourire… enfin, presque.",
+    "Vous ferez mieux la prochaine fois. Statistiquement, en tout cas.",
+    "Ça, c'est ce qu'on appelle tomber dans les pommes… enfin, dans les fraises.",
+  ];
+
   var etat = null;
+  function nomDe(i) { return echapper(etat.joueurs[i]); }
+  function liste(noms) { return noms.length > 1 ? noms.slice(0, -1).join(", ") + " et " + noms[noms.length - 1] : noms[0] || ""; }
 
   /* ───────── Écran de réglage ───────── */
   function reglages(precedents) {
     var n = precedents ? precedents.joueurs.length : 4;
     var mode = precedents ? precedents.mode : "gagne";
+    var elim = precedents ? precedents.elim : false;
     racine.innerHTML =
       '<form class="fraise__reglages">' +
-        '<p class="fraise__intro">Une seule main cache la fraise 🍓. Chacun à son tour ouvre une main… Qui va tomber dessus&nbsp;?</p>' +
+        '<p class="fraise__intro">Une seule main cache la fraise 🍓. Un tirage au sort désigne qui commence, puis chacun à son tour ouvre une main… Qui va tomber dessus&nbsp;?</p>' +
         '<div class="fraise__ligne"><label for="fraise-nb">Nombre de joueurs</label>' +
           '<select id="fraise-nb">' + Array.from({ length: 11 }, function (_, i) { var v = i + 2; return '<option value="' + v + '"' + (v === n ? " selected" : "") + ">" + v + "</option>"; }).join("") + "</select></div>" +
-        '<fieldset class="fraise__modes"><legend>Règle du jeu</legend>' +
+        '<fieldset class="fraise__modes"><legend>Déroulement</legend>' +
+          '<label><input type="radio" name="fraise-elim" value="non"' + (elim ? "" : " checked") + "> 🎯 Une seule manche</label>" +
+          '<label><input type="radio" name="fraise-elim" value="oui"' + (elim ? " checked" : "") + "> 🔥 Élimination&nbsp;: un joueur en moins à chaque manche</label>" +
+        "</fieldset>" +
+        '<fieldset class="fraise__modes fraise__regle"><legend>Règle du jeu</legend>' +
           '<label><input type="radio" name="fraise-mode" value="gagne"' + (mode === "gagne" ? " checked" : "") + "> 🏆 Celui qui trouve la fraise <strong>gagne</strong></label>" +
           '<label><input type="radio" name="fraise-mode" value="perd"' + (mode === "perd" ? " checked" : "") + "> 😬 Celui qui trouve la fraise <strong>perd</strong></label>" +
         "</fieldset>" +
+        '<p class="fraise__note-elim" hidden>À chaque manche, celui qui trouve la fraise est éliminé et on redistribue une main de moins. Le dernier joueur en lice remporte la partie&nbsp;!</p>' +
         '<div class="fraise__noms"></div>' +
         '<button type="submit" class="bouton">Distribuer les mains</button>' +
       "</form>";
@@ -105,24 +122,45 @@
       }
       zoneNoms.innerHTML = html;
     }
-    champs();
+    function majElim() {
+      var oui = racine.querySelector('input[name="fraise-elim"]:checked').value === "oui";
+      racine.querySelector(".fraise__regle").hidden = oui;
+      racine.querySelector(".fraise__note-elim").hidden = !oui;
+    }
+    champs(); majElim();
     select.addEventListener("change", champs);
+    racine.querySelectorAll('input[name="fraise-elim"]').forEach(function (r) { r.addEventListener("change", majElim); });
     racine.querySelector("form").addEventListener("submit", function (ev) {
       ev.preventDefault();
       var joueurs = Array.from(zoneNoms.querySelectorAll("input")).map(function (inp, i) { return inp.value.trim() || "Joueur " + (i + 1); });
-      partie(joueurs, racine.querySelector('input[name="fraise-mode"]:checked').value);
+      partie(joueurs, racine.querySelector('input[name="fraise-mode"]:checked').value, racine.querySelector('input[name="fraise-elim"]:checked').value === "oui");
     });
   }
 
-  /* ───────── Partie ───────── */
-  function partie(joueurs, mode) {
-    var n = joueurs.length;
-    etat = {
-      joueurs: joueurs, mode: mode, tour: 0, fini: false, verrou: false,
-      fraise: Math.floor(Math.random() * n),
-      ouvertes: [], historique: [],
-      peaux: joueurs.map(function () { return hasard(PEAUX); }),
-    };
+  /* ───────── Partie (une ou plusieurs manches) ───────── */
+  function partie(joueurs, mode, elim) {
+    etat = { joueurs: joueurs, mode: mode, elim: elim, enJeu: joueurs.map(function (_, i) { return i; }), elimines: [], manche: 0 };
+    racine.innerHTML =
+      '<div class="fraise__plateau"></div>' +
+      '<p class="fraise__message" role="status"></p>' +
+      '<ol class="fraise__joueurs">' + joueurs.map(function (j, i) { return '<li data-joueur="' + i + '">' + echapper(j) + "</li>"; }).join("") + "</ol>" +
+      '<details class="fraise__historique"><summary>Historique des tirages et probabilités</summary><ol></ol></details>' +
+      '<div class="fraise__actions">' +
+        '<button type="button" class="bouton bouton--petit fraise__btn-suite" hidden>➡️ Manche suivante</button>' +
+        '<button type="button" class="bouton bouton--petit fraise__btn-rejouer" hidden>🔁 Rejouer</button>' +
+        '<button type="button" class="bouton bouton--petit fraise__btn-reglages">⚙️ Changer les joueurs</button></div>';
+    racine.querySelector(".fraise__btn-suite").addEventListener("click", nouvelleManche);
+    racine.querySelector(".fraise__btn-rejouer").addEventListener("click", function () { partie(etat.joueurs, etat.mode, etat.elim); });
+    racine.querySelector(".fraise__btn-reglages").addEventListener("click", function () { reglages(etat); });
+    nouvelleManche();
+  }
+
+  function nouvelleManche() {
+    var n = etat.enJeu.length;
+    etat.manche++;
+    etat.fraise = Math.floor(Math.random() * n);
+    etat.ouvertes = []; etat.tirages = 0; etat.fini = false; etat.verrou = true;
+    racine.querySelector(".fraise__btn-suite").hidden = true;
     var taille = Math.min(19, 150 / n + 4); // largeur d'une main, en % du plateau
     var mains = "";
     for (var i = 0; i < n; i++) {
@@ -131,86 +169,117 @@
       var x = 50 + 37 * Math.cos(rad), y = 50 + 37 * Math.sin(rad);
       mains += '<button type="button" class="fraise-main" data-main="' + i + '" aria-label="Main ' + (i + 1) + ', fermée" ' +
         'style="left:' + x + "%;top:" + y + "%;width:" + taille + "%;--rot:" + (angle - 90) + 'deg">' +
-        '<span class="fraise-main__corps">' + svgMain(etat.peaux[i], i === etat.fraise) + "</span></button>";
+        '<span class="fraise-main__corps">' + svgMain(hasard(PEAUX), i === etat.fraise) + "</span></button>";
     }
-    racine.innerHTML =
-      '<div class="fraise__plateau">' + mains +
-        '<div class="fraise__centre" aria-live="polite"></div>' +
-      "</div>" +
-      '<p class="fraise__message" role="status"></p>' +
-      '<ol class="fraise__joueurs">' + joueurs.map(function (j, i) { return '<li data-joueur="' + i + '">' + echapper(j) + "</li>"; }).join("") + "</ol>" +
-      '<details class="fraise__historique"><summary>Historique des tirages et probabilités</summary><ol></ol></details>' +
-      '<div class="fraise__actions"><button type="button" class="bouton bouton--petit fraise__btn-rejouer" hidden>🔁 Rejouer</button>' +
-      '<button type="button" class="bouton bouton--petit fraise__btn-reglages">⚙️ Changer les joueurs</button></div>';
-    racine.querySelectorAll(".fraise-main").forEach(function (b) { b.addEventListener("click", function () { ouvrir(Number(b.dataset.main)); }); });
-    racine.querySelector(".fraise__btn-rejouer").addEventListener("click", function () { partie(etat.joueurs, etat.mode); });
-    racine.querySelector(".fraise__btn-reglages").addEventListener("click", function () { reglages(etat); });
-    afficherTour();
+    var plateau = racine.querySelector(".fraise__plateau");
+    plateau.innerHTML = mains + '<div class="fraise__centre" aria-live="polite"></div>';
+    plateau.querySelectorAll(".fraise-main").forEach(function (b) { b.addEventListener("click", function () { ouvrir(Number(b.dataset.main)); }); });
+    racine.querySelectorAll(".fraise__joueurs li").forEach(function (li) { li.classList.remove("sauve", "rate", "actif"); });
+    if (etat.elim) racine.querySelector(".fraise__historique ol").insertAdjacentHTML("beforeend", '<li class="fraise__historique-manche">Manche ' + etat.manche + " — " + n + " joueurs en lice</li>");
+    racine.querySelector(".fraise__message").innerHTML = etat.elim ? "Manche " + etat.manche + "&nbsp;: " + n + " joueurs en lice, " + n + " mains." : "";
+    tirageAuSort();
   }
 
-  function restantes() { return etat.joueurs.length - etat.ouvertes.length; }
+  // Tirage au sort de celui qui commence : la surbrillance tourne entre les joueurs puis ralentit
+  function tirageAuSort() {
+    var n = etat.enJeu.length, choisi = Math.floor(Math.random() * n), total = 2 * n + choisi + 1, pas = 0;
+    var puces = etat.enJeu.map(function (j) { return racine.querySelector('[data-joueur="' + j + '"]'); });
+    racine.querySelector(".fraise__centre").innerHTML = '<span class="fraise__a-qui">🎲 Tirage au sort…</span><span class="fraise__proba-legende">Qui va commencer&nbsp;?</span>';
+    (function suivant() {
+      puces.forEach(function (p, k) { p.classList.toggle("tirage", k === pas % n); });
+      pas++;
+      if (pas < total) return setTimeout(suivant, 60 + 260 * Math.pow(pas / total, 2));
+      setTimeout(function () {
+        puces.forEach(function (p) { p.classList.remove("tirage"); });
+        etat.ordre = etat.enJeu.slice(choisi).concat(etat.enJeu.slice(0, choisi));
+        etat.tourPos = 0;
+        racine.querySelector(".fraise__message").innerHTML = (etat.elim ? "Manche " + etat.manche + "&nbsp;: " : "") + "🎲 Tirage au sort&nbsp;: <strong>" + nomDe(etat.ordre[0]) + "</strong> commence&nbsp;!";
+        etat.verrou = false;
+        afficherTour();
+      }, 350);
+    })();
+  }
+
+  function joueurCourant() { return etat.ordre[etat.tourPos % etat.ordre.length]; }
+  function restantes() { return etat.enJeu.length - etat.ouvertes.length; }
 
   function afficherTour() {
-    var k = restantes(), j = etat.joueurs[etat.tour];
-    var mot = etat.mode === "gagne" ? "Chance de trouver la fraise" : "Risque de tomber sur la fraise";
+    var k = restantes(), j = joueurCourant();
+    var mot = etat.elim ? "Risque d'être éliminé" : etat.mode === "gagne" ? "Chance de trouver la fraise" : "Risque de tomber sur la fraise";
     racine.querySelector(".fraise__centre").innerHTML =
-      '<span class="fraise__a-qui">À <strong>' + echapper(j) + "</strong> de choisir</span>" +
+      '<span class="fraise__a-qui">À <strong>' + nomDe(j) + "</strong> de choisir</span>" +
       '<span class="fraise__proba">1 sur ' + k + " <small>(" + pourcent(k) + ")</small></span>" +
       '<span class="fraise__proba-legende">' + mot + "</span>";
-    racine.querySelectorAll(".fraise__joueurs li").forEach(function (li) { li.classList.toggle("actif", Number(li.dataset.joueur) === etat.tour); });
+    racine.querySelectorAll(".fraise__joueurs li").forEach(function (li) { li.classList.toggle("actif", Number(li.dataset.joueur) === j); });
   }
 
   function ouvrir(i) {
     if (etat.fini || etat.verrou || etat.ouvertes.indexOf(i) >= 0) return;
     etat.verrou = true;
-    var k = restantes(), joueur = etat.tour, nom = etat.joueurs[joueur];
+    var k = restantes(), joueur = joueurCourant(), nom = nomDe(joueur);
     var b = racine.querySelector('[data-main="' + i + '"]');
     b.classList.add("suspense");
     setTimeout(function () {
       b.classList.remove("suspense");
       b.classList.add("ouverte");
-      etat.ouvertes.push(i);
+      etat.ouvertes.push(i); etat.tirages++;
       var trouve = i === etat.fraise;
       b.setAttribute("aria-label", "Main " + (i + 1) + (trouve ? ", contenait la fraise" : ", vide"));
-      etat.historique.push({ nom: nom, k: k, trouve: trouve });
       racine.querySelector(".fraise__historique ol").insertAdjacentHTML("beforeend",
-        "<li><strong>" + echapper(nom) + "</strong> ouvre une main parmi " + k + "&nbsp;: 1 chance sur " + k + " (" + pourcent(k) + ") → " + (trouve ? "🍓 la fraise&nbsp;!" : "vide") + "</li>");
-      var li = racine.querySelector('[data-joueur="' + joueur + '"]');
-      var message = racine.querySelector(".fraise__message");
-      if (trouve) return fin(joueur, b);
-      li.classList.add(etat.mode === "gagne" ? "rate" : "sauve");
-      message.innerHTML = "<strong>" + echapper(nom) + "</strong>&nbsp;: " + hasard(etat.mode === "gagne" ? CHAMBRE_RATE : OUF);
-      etat.tour = (etat.tour + 1) % etat.joueurs.length;
+        "<li><strong>" + nom + "</strong> ouvre une main parmi " + k + "&nbsp;: 1 chance sur " + k + " (" + pourcent(k) + ") → " + (trouve ? "🍓 la fraise&nbsp;!" : "vide") + "</li>");
+      if (trouve) return finManche(joueur, b);
+      var gagne = !etat.elim && etat.mode === "gagne";
+      racine.querySelector('[data-joueur="' + joueur + '"]').classList.add(gagne ? "rate" : "sauve");
+      racine.querySelector(".fraise__message").innerHTML = "<strong>" + nom + "</strong>&nbsp;: " + hasard(gagne ? CHAMBRE_RATE : OUF);
+      etat.tourPos++;
       etat.verrou = false;
       afficherTour();
     }, 650);
   }
 
-  function fin(joueur, main) {
+  function finManche(joueur, main) {
     etat.fini = true;
-    var nom = echapper(etat.joueurs[joueur]);
-    var autres = etat.joueurs.filter(function (_, i) { return i !== joueur; }).map(echapper);
-    var listeAutres = autres.length > 1 ? autres.slice(0, -1).join(", ") + " et " + autres[autres.length - 1] : autres[0];
-    var li = racine.querySelector('[data-joueur="' + joueur + '"]');
-    li.classList.add(etat.mode === "gagne" ? "gagnant" : "perdant");
+    var n = etat.enJeu.length, nom = nomDe(joueur);
+    var autres = etat.enJeu.filter(function (j) { return j !== joueur; }).map(nomDe);
     racine.querySelectorAll(".fraise__joueurs li").forEach(function (l) { l.classList.remove("actif"); });
-    var n = etat.joueurs.length, tirage = etat.historique.length;
-    var centre, message;
-    if (etat.mode === "gagne") {
-      centre = '<span class="fraise__a-qui">🏆 <strong>' + nom + "</strong> a trouvé la fraise&nbsp;!</span>";
-      message = "Bravo <strong>" + nom + "</strong>&nbsp;! " + listeAutres + " " + hasard(CHAMBRE_AUTRES);
+    var li = racine.querySelector('[data-joueur="' + joueur + '"]');
+    var centre, message, astuce = "";
+    var trouvee = '<span class="fraise__proba-legende">Trouvée au ' + (etat.tirages === 1 ? "1er" : etat.tirages + "e") + " tirage sur " + n + " mains</span>";
+
+    if (etat.elim) {
+      etat.enJeu = etat.enJeu.filter(function (j) { return j !== joueur; });
+      etat.elimines.push(joueur);
+      li.classList.add("elimine");
+      if (etat.enJeu.length === 1) {
+        var champion = etat.enJeu[0];
+        racine.querySelector('[data-joueur="' + champion + '"]').classList.add("gagnant");
+        centre = '<span class="fraise__a-qui">🏆 <strong>' + nomDe(champion) + "</strong> remporte la partie&nbsp;!</span>" + trouvee;
+        message = "🍓 <strong>" + nom + "</strong> tombe sur la fraise en finale&nbsp;: " + hasard(CHAMBRE_ELIMINE) +
+          " Bravo <strong>" + nomDe(champion) + "</strong>, le meilleur… ou le plus chanceux&nbsp;?";
+        astuce = "Ordre des éliminations&nbsp;: " + etat.elimines.map(nomDe).join(" → ") + ". Le saviez-vous&nbsp;? Au départ, chacun des " + etat.joueurs.length +
+          " joueurs avait exactement 1 chance sur " + etat.joueurs.length + " (" + pourcent(etat.joueurs.length) + ") de gagner.";
+        racine.querySelector(".fraise__btn-rejouer").hidden = false;
+      } else {
+        centre = '<span class="fraise__a-qui">🍓 <strong>' + nom + "</strong> sort du jeu&nbsp;!</span>" + trouvee;
+        message = "<strong>" + nom + "</strong>&nbsp;: " + hasard(CHAMBRE_ELIMINE) + " Encore " + etat.enJeu.length + " joueurs en lice" + (etat.enJeu.length === 2 ? "&nbsp;: c'est la finale&nbsp;!" : ".");
+        racine.querySelector(".fraise__btn-suite").hidden = false;
+      }
     } else {
-      centre = '<span class="fraise__a-qui">😬 <strong>' + nom + "</strong> a perdu&nbsp;!</span>";
-      message = "<strong>" + nom + "</strong>&nbsp;: " + hasard(CHAMBRE_PERDANT) + " " + listeAutres + " peu" + (autres.length > 1 ? "vent" : "t") + " rigoler.";
+      li.classList.add(etat.mode === "gagne" ? "gagnant" : "perdant");
+      if (etat.mode === "gagne") {
+        centre = '<span class="fraise__a-qui">🏆 <strong>' + nom + "</strong> a trouvé la fraise&nbsp;!</span>" + trouvee;
+        message = "Bravo <strong>" + nom + "</strong>&nbsp;! " + liste(autres) + " " + hasard(CHAMBRE_AUTRES);
+      } else {
+        centre = '<span class="fraise__a-qui">😬 <strong>' + nom + "</strong> a perdu&nbsp;!</span>" + trouvee;
+        message = "<strong>" + nom + "</strong>&nbsp;: " + hasard(CHAMBRE_PERDANT) + " " + liste(autres) + " peu" + (autres.length > 1 ? "vent" : "t") + " rigoler.";
+      }
+      astuce = "Le saviez-vous&nbsp;? Au départ, chaque joueur avait exactement 1 chance sur " + n + " (" + pourcent(n) + "), qu'il joue en premier ou en dernier.";
+      racine.querySelector(".fraise__btn-rejouer").hidden = false;
     }
-    centre += '<span class="fraise__proba-legende">Trouvée au ' + (tirage === 1 ? "1er" : tirage + "e") + " tirage sur " + n + " mains</span>";
     racine.querySelector(".fraise__centre").innerHTML = centre;
-    racine.querySelector(".fraise__message").innerHTML = message +
-      '<span class="fraise__astuce">Le saviez-vous&nbsp;? Au départ, chaque joueur avait exactement 1 chance sur ' + n + " (" + pourcent(n) + "), qu'il joue en premier ou en dernier.</span>";
-    racine.querySelector(".fraise__btn-rejouer").hidden = false;
+    racine.querySelector(".fraise__message").innerHTML = message + (astuce ? '<span class="fraise__astuce">' + astuce + "</span>" : "");
     // les autres mains s'ouvrent : toutes vides
-    var reste = Array.from(racine.querySelectorAll(".fraise-main:not(.ouverte)"));
-    reste.forEach(function (b, k) { setTimeout(function () { b.classList.add("ouverte", "revelee"); }, 500 + k * 120); });
+    Array.from(racine.querySelectorAll(".fraise-main:not(.ouverte)")).forEach(function (b, k) { setTimeout(function () { b.classList.add("ouverte", "revelee"); }, 500 + k * 120); });
     main.classList.add("gagnante");
   }
 
