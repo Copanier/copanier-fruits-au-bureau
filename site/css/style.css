@@ -645,16 +645,20 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .jeu + .jeu__nom, [data-jeu="attrape"] ~ .jeu__nom { margin-top: 4.5rem; border-top: 2px dashed var(--bord); padding-top: 4rem; }
 /* ===== Classement des jeux ===== */
 .jeu__ecran { overflow-y: auto; }
-.jeu__classement { max-width: 760px; margin: 0 auto 10px; background: #fff; border: 1px solid var(--bord); border-radius: 20px; padding: 18px 22px; box-shadow: var(--ombre-douce); }
-.jeu__classement-titre { font-family: var(--titre); color: var(--orange); font-size: 1.4rem; margin: 0 0 8px; text-align: center !important; }
-.jeu__classement-vide { text-align: center !important; color: var(--texte-doux); margin: 0; }
-.jeu__top { list-style: none; padding: 0 !important; margin: 0; columns: 2; column-gap: 28px; }
-@media (max-width: 560px) { .jeu__top { columns: 1; } }
-.jeu__top li { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 10px; break-inside: avoid; margin: 0; }
+.jeu__classement { max-width: 460px; margin: 0 auto 10px; background: #fff; border: 1px solid var(--bord); border-radius: 16px; padding: 12px 16px; box-shadow: var(--ombre-douce); }
+.jeu__classement-titre { font-family: var(--titre); color: var(--orange); font-size: 1.15rem; margin: 0 0 4px; text-align: center !important; }
+.jeu__classement-vide { text-align: center !important; color: var(--texte-doux); margin: 0; font-size: .95rem; }
+.jeu__top { list-style: none; padding: 0 !important; margin: 0; }
+.jeu__top li { display: flex; align-items: center; gap: 10px; padding: 3px 8px; border-radius: 8px; margin: 0; font-size: .95rem; }
 .jeu__top li.moi { background: var(--orange-clair); font-weight: 700; }
 .jeu__top-rang { width: 28px; text-align: center; font-weight: 700; color: var(--vert); }
 .jeu__top-nom { flex: 1; color: var(--vert); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jeu__top-score { color: var(--orange-fonce); font-weight: 600; white-space: nowrap; }
+.jeu__suite { margin-top: 4px; border-top: 1px solid var(--bord); padding-top: 4px; }
+.jeu__suite summary { cursor: pointer; text-align: center; font-size: .85rem; font-weight: 600; color: var(--vert); padding: 4px; list-style-position: inside; }
+.jeu__suite summary:hover { color: var(--orange-fonce); }
+.jeu__top--suite { max-height: 168px; overflow-y: auto; overscroll-behavior: contain; margin-top: 2px; }
+.jeu__top--suite li { font-size: .88rem; padding: 2px 8px; }
 .jeu__inscription { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin: 4px 0; }
 .jeu__inscription label { color: #fff; font-size: .95rem; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; }
 .jeu__inscription input { font: inherit; padding: 8px 12px; border-radius: 999px; border: 2px solid #fff; min-width: 180px; color: var(--texte); }

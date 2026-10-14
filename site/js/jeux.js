@@ -59,18 +59,32 @@
   function echapper(t) { return String(t).replace(/[&<>"]/g, function (x) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[x]; }); }
   function unite(jeu, n) { return jeu === "saut" ? n + " m" : n + " fruit" + (n > 1 ? "s" : ""); }
   function rangTexte(n) { return n === 1 ? "1er" : n + "e"; }
+  // Podium (3 premiers) toujours visible ; le reste du classement se déroule dans une petite zone défilante
   function listeTop(jeu, top, surligner) {
     if (!top || !top.length) return '<p class="jeu__classement-vide">Aucun score pour l\'instant : soyez le premier&nbsp;!</p>';
-    var medailles = ["🥇", "🥈", "🥉"];
-    return "<ol class=\"jeu__top\">" + top.map(function (l, i) {
-      var moi = surligner && l.prenom === surligner.prenom && l.score === surligner.score;
+    var medailles = ["🥇", "🥈", "🥉"], monRang = -1;
+    var lignes = top.map(function (l, i) {
+      var moi = surligner && monRang < 0 && l.prenom === surligner.prenom && l.score === surligner.score;
+      if (moi) monRang = i;
       return '<li' + (moi ? ' class="moi"' : "") + '><span class="jeu__top-rang">' + (medailles[i] || i + 1) + '</span><span class="jeu__top-nom">' + echapper(l.prenom) + '</span><span class="jeu__top-score">' + unite(jeu, l.score) + "</span></li>";
-    }).join("") + "</ol>";
+    });
+    var html = '<ol class="jeu__top">' + lignes.slice(0, 3).join("") + "</ol>";
+    if (lignes.length > 3) {
+      html += '<details class="jeu__suite"' + (monRang >= 3 ? " open" : "") + '><summary>Voir tout le classement (' + lignes.length + " joueurs)</summary>" +
+        '<ol class="jeu__top jeu__top--suite" start="4">' + lignes.slice(3).join("") + "</ol></details>";
+    }
+    return html;
   }
   function afficherClassement(jeu, surligner) {
     var zone = document.querySelector('[data-classement="' + jeu + '"] .jeu__classement-liste');
     if (!zone) return;
-    rpc("top_scores", { p_jeu: jeu }).then(function (top) { zone.innerHTML = listeTop(jeu, top, surligner); })
+    rpc("classement_complet", { p_jeu: jeu })
+      .catch(function () { return rpc("top_scores", { p_jeu: jeu }); })
+      .then(function (top) {
+        zone.innerHTML = listeTop(jeu, top, surligner);
+        var moi = zone.querySelector(".jeu__top--suite .moi");
+        if (moi) moi.parentNode.scrollTop = moi.offsetTop - moi.parentNode.offsetTop - 40;
+      })
       .catch(function () { zone.innerHTML = '<p class="jeu__classement-vide">Classement momentanément indisponible.</p>'; });
   }
   function prenomMemorise(val) {
