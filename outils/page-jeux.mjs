@@ -27,7 +27,14 @@ const contenu = `    <section class="section">
     <section class="section section--creme">
       <article class="conteneur article">
         <h2>Deux mini-jeux pour la pause</h2>
-        <p><strong>Attrape les fruits</strong>&nbsp;: les fruits tombent de plus en plus vite. Déplacez la cagette avec le doigt, la souris ou les flèches du clavier pour les attraper avant qu'ils touchent le sol. Attention aux vers&nbsp;! Trois fruits manqués et la partie s'arrête.</p>
+        <p><strong>Attrape les fruits</strong>&nbsp;: les fruits tombent de plus en plus vite. Déplacez la corbeille avec le doigt, la souris ou les flèches du clavier pour les attraper. Les règles&nbsp;:</p>
+        <ul>
+          <li>🍎 chaque fruit attrapé rapporte <strong>1 point</strong>&nbsp;;</li>
+          <li>le <strong>logo CoPanier</strong> qui tombe parfois est un bonus de <strong>3 points</strong>&nbsp;;</li>
+          <li>🐛 attention aux <strong>vers</strong>&nbsp;: en attraper un vous fait perdre une vie&nbsp;;</li>
+          <li>chaque fruit qui touche le sol sans être ramassé vous fait aussi perdre une vie&nbsp;;</li>
+          <li>vous avez <strong>3 vies</strong> (les cœurs en haut à droite)&nbsp;: quand elles sont épuisées, la partie s'arrête.</li>
+        </ul>
         <p><strong>Le saut de la pomme</strong>&nbsp;: comme le petit dinosaure de votre navigateur, votre pomme roule sans s'arrêter. Appuyez sur la barre espace (ou touchez l'écran) pour sauter par-dessus les cailloux, les vers et les bûches, et attrapez les fruits en l'air pour gagner des mètres.</p>
         <p>À la fin de chaque partie, inscrivez votre prénom (ou un pseudo) au <strong>classement</strong> pour découvrir votre rang parmi tous les joueurs. Seuls le prénom saisi et le score sont enregistrés et affichés&nbsp;; ils sont conservés 12 mois. N'indiquez pas votre nom complet. Lancez le défi à vos collègues&nbsp;! Vous préférez réfléchir&nbsp;? Essayez notre <a href="/quiz-fruits/">quiz des fruits</a> ou découvrez l'origine des <a href="/expressions-fruits/">expressions avec des fruits</a>.</p>
         <div class="encart">

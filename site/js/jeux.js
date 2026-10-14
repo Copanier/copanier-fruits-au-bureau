@@ -253,7 +253,7 @@
     g = preparer(canvas, window.innerWidth < 600 ? 1.2 : 0.75); panier = { x: g.W / 2, l: 90 * g.s }; objets = []; vies = 3; score = 0;
     dessiner(g.H - 46 * g.s);
     LOGO.addEventListener("load", function () { if (!enCours) dessiner(g.H - 46 * g.s); });
-    ecran(conteneur, "Attrape les fruits", "Déplacez la cagette avec le doigt, la souris ou les flèches. Ne laissez aucun fruit toucher le sol… et évitez les vers 🐛&nbsp;!" + (record(cleRecord) ? "<br>Votre record&nbsp;: <strong>" + record(cleRecord) + "</strong>" : ""), "Jouer").addEventListener("click", nouvelle);
+    ecran(conteneur, "Attrape les fruits", "Déplacez la corbeille avec le doigt, la souris ou les flèches.<br>🍎 Fruit attrapé&nbsp;: <strong>+1</strong> · Logo CoPanier&nbsp;: <strong>+3</strong><br>🐛 Ver attrapé ou fruit tombé au sol&nbsp;: <strong>une vie en moins</strong><br>Vous avez ❤️ 3 vies." + (record(cleRecord) ? "<br>Votre record&nbsp;: <strong>" + record(cleRecord) + "</strong>" : ""), "Jouer").addEventListener("click", nouvelle);
   }
 
   /* ================= Le saut de la pomme ================= */
