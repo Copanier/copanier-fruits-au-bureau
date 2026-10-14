@@ -44,6 +44,77 @@
       localStorage.setItem(cle, String(val));
     } catch (e) { return 0; }
   }
+  /* ---------- Classement partagé (Supabase, fonctions contrôlées) ---------- */
+  var SB_URL = "https://eykdcoqdhllbigxujgsl.supabase.co";
+  var SB_CLE = "sb_publishable_BHTeFJEowRdZC278ZO9RDQ_q08_-91A";
+  function rpc(nom, corps) {
+    return fetch(SB_URL + "/rest/v1/rpc/" + nom, {
+      method: "POST",
+      headers: { apikey: SB_CLE, "Content-Type": "application/json" },
+      body: JSON.stringify(corps),
+    }).then(function (r) {
+      return r.json().then(function (j) { if (!r.ok) throw new Error((j && j.message) || "erreur"); return j; });
+    });
+  }
+  function echapper(t) { return String(t).replace(/[&<>"]/g, function (x) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[x]; }); }
+  function unite(jeu, n) { return jeu === "saut" ? n + " m" : n + " fruit" + (n > 1 ? "s" : ""); }
+  function rangTexte(n) { return n === 1 ? "1er" : n + "e"; }
+  function listeTop(jeu, top, surligner) {
+    if (!top || !top.length) return '<p class="jeu__classement-vide">Aucun score pour l\'instant : soyez le premier&nbsp;!</p>';
+    var medailles = ["🥇", "🥈", "🥉"];
+    return "<ol class=\"jeu__top\">" + top.map(function (l, i) {
+      var moi = surligner && l.prenom === surligner.prenom && l.score === surligner.score;
+      return '<li' + (moi ? ' class="moi"' : "") + '><span class="jeu__top-rang">' + (medailles[i] || i + 1) + '</span><span class="jeu__top-nom">' + echapper(l.prenom) + '</span><span class="jeu__top-score">' + unite(jeu, l.score) + "</span></li>";
+    }).join("") + "</ol>";
+  }
+  function afficherClassement(jeu, surligner) {
+    var zone = document.querySelector('[data-classement="' + jeu + '"] .jeu__classement-liste');
+    if (!zone) return;
+    rpc("top_scores", { p_jeu: jeu }).then(function (top) { zone.innerHTML = listeTop(jeu, top, surligner); })
+      .catch(function () { zone.innerHTML = '<p class="jeu__classement-vide">Classement momentanément indisponible.</p>'; });
+  }
+  function prenomMemorise(val) {
+    try { if (val === undefined) return localStorage.getItem("copanier-prenom-jeux") || ""; localStorage.setItem("copanier-prenom-jeux", val); } catch (e) { return ""; }
+  }
+  // Formulaire d'inscription au classement, ajouté à l'écran de fin de partie
+  function formulaireClassement(conteneur, jeu, score) {
+    if (!score) return;
+    var e = conteneur.querySelector(".jeu__ecran");
+    var f = document.createElement("form");
+    f.className = "jeu__inscription";
+    f.innerHTML = '<label>Inscrivez-vous au classement&nbsp;: <input name="prenom" maxlength="20" autocomplete="given-name" placeholder="Votre prénom ou pseudo" required></label>' +
+      '<button type="submit" class="bouton bouton--petit">🏆 Enregistrer mon score</button><p class="jeu__inscription-msg" role="status"></p>';
+    var bouton = e.querySelector("[data-jouer]");
+    e.insertBefore(f, bouton);
+    var champ = f.querySelector("input"), msg = f.querySelector(".jeu__inscription-msg");
+    champ.value = prenomMemorise();
+    f.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var prenom = champ.value.trim();
+      if (prenom.length < 2) { msg.textContent = "Indiquez au moins 2 lettres."; return; }
+      f.querySelector("button").disabled = true;
+      msg.textContent = "Enregistrement…";
+      rpc("enregistrer_score", { p_jeu: jeu, p_prenom: prenom, p_score: score }).then(function (r) {
+        prenomMemorise(r.prenom);
+        f.innerHTML = '<p class="jeu__rang">' + (r.rang <= 3 ? "🎉 " : "") + "Bravo " + echapper(r.prenom) + "&nbsp;! Vous êtes <strong>" + rangTexte(r.rang) + "</strong> sur " + r.total + " joueur" + (r.total > 1 ? "s" : "") + ".</p>";
+        afficherClassement(jeu, { prenom: r.prenom, score: score });
+      }).catch(function (err) {
+        f.querySelector("button").disabled = false;
+        msg.textContent = /prénom/.test(err.message) ? "Ce prénom n'est pas accepté : lettres uniquement, 2 à 20 caractères." : "L'enregistrement n'a pas abouti, réessayez dans un instant.";
+      });
+    });
+  }
+
+  // Cœur dessiné (les émojis ❤️ ne s'affichent pas sur tous les téléphones)
+  function coeur(c, x, y, t, plein) {
+    c.save(); c.translate(x, y); c.scale(t / 20, t / 20);
+    c.beginPath(); c.moveTo(0, 6);
+    c.bezierCurveTo(-10, -2, -8, -10, 0, -5); c.bezierCurveTo(8, -10, 10, -2, 0, 6);
+    c.closePath();
+    c.fillStyle = plein ? "#e8432e" : "rgba(63,102,83,.18)"; c.fill();
+    c.restore();
+  }
+
   function visible(el) { var r = el.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight; }
 
   // Prépare un canvas net sur écran haute définition, à la largeur de son conteneur
@@ -150,8 +221,7 @@
       // Score et vies
       c.textAlign = "left"; c.fillStyle = "#3f6653"; c.font = "600 " + 22 * s + "px Rubik, sans-serif";
       c.fillText("Score : " + score, 14 * s, 24 * s);
-      c.textAlign = "right"; c.font = 22 * s + "px serif";
-      c.fillText("❤️".repeat(Math.max(0, vies)), W - 14 * s, 24 * s);
+      for (var v = 0; v < 3; v++) coeur(c, W - (22 + v * 28) * s, 24 * s, 24 * s, v < vies);
     }
 
     function secousse() { canvas.classList.remove("secoue"); void canvas.offsetWidth; canvas.classList.add("secoue"); }
@@ -164,6 +234,7 @@
       ecran(conteneur, nouveau && score > 0 ? "🏆 Nouveau record&nbsp;!" : "Partie terminée",
         "Vous avez attrapé <strong>" + score + "</strong> fruit" + (score > 1 ? "s" : "") + ". Record&nbsp;: <strong>" + Math.max(score, meilleur) + "</strong>",
         "Rejouer", "J'ai attrapé " + score + " fruits au jeu de CoPanier 🍎 Tu fais mieux ? " + URL_JEUX).addEventListener("click", nouvelle);
+      formulaireClassement(conteneur, "attrape", score);
     }
 
     function deplacer(clientX) {
@@ -287,6 +358,7 @@
       ecran(conteneur, nouveau ? "🏆 Nouveau record&nbsp;!" : "Aïe, un obstacle&nbsp;!",
         "Votre pomme a parcouru <strong>" + points + " m</strong>. Record&nbsp;: <strong>" + Math.max(points, meilleur) + " m</strong>",
         "Rejouer", "Ma pomme a parcouru " + points + " m au jeu de CoPanier 🍎 Tu fais mieux ? " + URL_JEUX).addEventListener("click", nouvelle);
+      formulaireClassement(conteneur, "saut", points);
     }
 
     document.addEventListener("keydown", function (e) {
@@ -304,5 +376,6 @@
   }
 
   var a = document.querySelector('[data-jeu="attrape"]'); if (a) attrape(a);
+  afficherClassement("attrape"); afficherClassement("saut");
   var b = document.querySelector('[data-jeu="saut"]'); if (b) saut(b);
 })();
