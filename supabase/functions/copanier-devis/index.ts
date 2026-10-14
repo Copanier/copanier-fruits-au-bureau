@@ -380,13 +380,13 @@ async function verrouiller(id) {
 async function marquer(id, champs) {
   await sb(`devis_copanier?id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(champs) });
 }
-async function envoyerMail({ to, subject, html, reply_to }) {
+async function envoyerMail({ to, subject, html, reply_to, attachments }) {
   const cle = Deno.env.get("RESEND_API_KEY");
   if (!cle) { console.error("Secret RESEND_API_KEY manquant"); return false; }
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: "Bearer " + cle, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: EXPEDITEUR, to, subject, html, reply_to }),
+    body: JSON.stringify({ from: EXPEDITEUR, to, subject, html, reply_to, ...(attachments?.length ? { attachments } : {}) }),
   });
   if (!r.ok) console.error("Resend", r.status, await r.text());
   return r.ok;
@@ -464,6 +464,7 @@ async function verifierSignatures() {
     // on réserve la ligne d'abord : une seule alerte même si deux vérifications se croisent
     const r = await sb("pennylane_suivi", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=representation" }, body: JSON.stringify(d) });
     if (!r.ok || !(await r.json()).length) continue;
+    await sb(`devis_copanier?pennylane_devis_id=eq.${q.id}&statut=neq.signe`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ statut: "signe" }) });
     const ok = await envoyerMail({ to: [DESTINATAIRE], subject: `✅ Devis signé — ${d.client} — ${d.numero} (${d.montant_ht} HT)`, html: mailSigne(d) });
     await sb(`pennylane_suivi?devis_id=eq.${q.id}`, { method: "PATCH", body: JSON.stringify({ alerte_envoyee: ok }) });
     n++;
@@ -490,6 +491,108 @@ async function verifierSignatures() {
     }
   }
   return `${n} nouveau(x) devis signé(s)`;
+}
+
+/* ═════════════ CRM : statuts, sauvegarde (CSV pour Excel + JSON pour la plateforme de livraisons) ═════════════ */
+
+const STATUTS_CRM = { nouveau: "Nouveau", contacte: "Contacté", devis_envoye: "Devis envoyé", signe: "Signé", perdu: "Perdu" };
+// Statut d'un devis Pennylane → statut commercial (« contacté » et « devis envoyé » restent à poser à la main)
+const STATUT_DEPUIS_PENNYLANE = { accepted: "signe", invoiced: "signe", denied: "perdu", expired: "perdu" };
+
+async function toutesLesDemandes() {
+  const r = await sb("devis_copanier?select=*&order=created_at.desc&limit=100000");
+  return r.ok ? (await r.json()) || [] : [];
+}
+
+// Met à jour le statut des demandes encore ouvertes d'après leur devis Pennylane (jamais en arrière, jamais un statut posé à la main « perdu »)
+async function synchroniserStatuts(demandes) {
+  if (!Deno.env.get("PENNYLANE_API_TOKEN")) return 0;
+  const rang = { nouveau: 0, contacte: 1, devis_envoye: 2, signe: 3, perdu: 3 };
+  let n = 0;
+  for (const d of demandes.filter((x) => x.pennylane_devis_id && x.statut !== "signe" && x.statut !== "perdu")) {
+    try {
+      const q = await pl(`/quotes/${d.pennylane_devis_id}`);
+      const cible = STATUT_DEPUIS_PENNYLANE[q?.status];
+      if (cible && rang[cible] > rang[d.statut]) {
+        await sb(`devis_copanier?id=eq.${d.id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ statut: cible }) });
+        d.statut = cible; n++;
+      }
+    } catch (_) { /* devis supprimé dans Pennylane : on laisse le statut tel quel */ }
+  }
+  return n;
+}
+
+const csvCellule = (v) => { const s = v == null ? "" : String(v); return /[;"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+const dateFr = (iso) => (iso ? new Date(iso).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "short", timeStyle: "short" }) : "");
+const enBase64 = (texte) => { const o = new TextEncoder().encode(texte); let b = ""; for (let i = 0; i < o.length; i += 0x8000) b += String.fromCharCode(...o.subarray(i, i + 0x8000)); return btoa(b); };
+
+// Fichier à ouvrir dans Excel (séparateur « ; », accents conservés)
+function csvDemandes(demandes) {
+  const cols = ["Reçue le", "Statut", "Relance le", "Entreprise", "Prénom", "Nom", "Fonction", "E-mail", "Téléphone", "Rappel demandé", "Créneau",
+    "Personnes", "Corbeille conseillée", "Formule", "Adresse de l'entreprise", "Adresses de livraison", "Message", "Devis Pennylane", "Problème Pennylane", "Notes", "Page du site", "Identifiant"];
+  const lignes = demandes.map((d) => [dateFr(d.created_at), STATUTS_CRM[d.statut] || d.statut, d.relance_le || "", d.entreprise, d.prenom, d.nom, d.role, d.email, d.telephone,
+    d.rappel ? "Oui" : "Non", d.creneau, d.personnes, corbeilleTexte(d.personnes), d.formule, d.adresse_entreprise,
+    (Array.isArray(d.adresses_livraison) ? d.adresses_livraison : []).join(" | "), d.message, d.pennylane_devis_numero, d.pennylane_erreur, d.notes, d.page, d.id]);
+  return "﻿" + [cols, ...lignes].map((l) => l.map(csvCellule).join(";")).join("\r\n") + "\r\n";
+}
+
+// Format d'échange avec la future plateforme de livraisons (CRM) — champs alignés sur sa fiche client
+function jsonDemandes(demandes) {
+  return JSON.stringify({
+    format: "copanier-demandes-devis/1",
+    genere_le: new Date().toISOString(),
+    source: SITE,
+    nombre: demandes.length,
+    demandes: demandes.map((d) => ({
+      id: d.id,
+      recue_le: d.created_at,
+      statut: d.statut,
+      statut_maj_le: d.statut_maj_le,
+      relance_le: d.relance_le,
+      notes: d.notes,
+      crm_client_id: d.crm_client_id,
+      client: {
+        name: d.entreprise || personneDe(d) || null,
+        contact_name: personneDe(d) || null,
+        email: d.email || null,
+        phone: d.telephone || null,
+        address: d.adresse_entreprise || null,
+        delivery_addresses: Array.isArray(d.adresses_livraison) ? d.adresses_livraison : [],
+        contact_sales: { name: personneDe(d) || null, role: d.role || null, email: d.email || null, phone: d.telephone || null },
+        pennylane_customer_id: d.pennylane_client_id ? String(d.pennylane_client_id) : null,
+      },
+      besoin: { personnes: d.personnes, corbeille_conseillee: corbeilleTexte(d.personnes) || null, formule: d.formule, message: d.message, rappel: d.rappel, creneau: d.creneau },
+      pennylane: { customer_id: d.pennylane_client_id, quote_id: d.pennylane_devis_id, quote_number: d.pennylane_devis_numero, erreur: d.pennylane_erreur },
+      page: d.page,
+    })),
+  }, null, 2);
+}
+
+function piecesSauvegarde(demandes) {
+  const date = jour(new Date());
+  return [
+    { filename: `copanier-demandes-devis-${date}.csv`, content: enBase64(csvDemandes(demandes)) },
+    { filename: `copanier-demandes-devis-${date}.json`, content: enBase64(jsonDemandes(demandes)) },
+  ];
+}
+
+function resumePipeline(demandes) {
+  const c = {}; for (const d of demandes) c[d.statut] = (c[d.statut] || 0) + 1;
+  return Object.keys(STATUTS_CRM).map((k) => `${STATUTS_CRM[k]} : <b>${c[k] || 0}</b>`).join(" · ");
+}
+
+// Sauvegarde envoyée à la demande sur contact@copanier.fr (une par heure au plus)
+async function sauvegardeCrm() {
+  const recente = await (await sb(`sauvegardes_crm?envoyee_le=gte.${new Date(Date.now() - 3600 * 1000).toISOString()}&select=id&limit=1`)).json();
+  if ((recente || []).length) return "une sauvegarde a déjà été envoyée il y a moins d'une heure";
+  const demandes = await toutesLesDemandes();
+  await sb("sauvegardes_crm", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ motif: "demande", nb_demandes: demandes.length }) });
+  await synchroniserStatuts(demandes);
+  const html = cadre(`<tr><td style="padding:20px 24px 4px"><div style="font-size:18px;font-weight:bold;color:${NUIT}">Sauvegarde des demandes de devis</div>
+<div style="font-size:14px;color:${GRIS};margin-top:6px">${demandes.length} demande${demandes.length > 1 ? "s" : ""} au total — ${resumePipeline(demandes)}</div></td></tr>
+${bloc("Pièces jointes", `<p style="font-size:14px;line-height:1.6;margin:0">• <b>.csv</b> : à ouvrir dans Excel (une ligne par demande, avec statut, notes et relance).<br>• <b>.json</b> : copie complète, au format prévu pour la plateforme de gestion des livraisons.</p>`)}`);
+  const ok = await envoyerMail({ to: [DESTINATAIRE], subject: `💾 Sauvegarde CoPanier — ${demandes.length} demande(s) de devis`, html, attachments: piecesSauvegarde(demandes) });
+  return ok ? `sauvegarde envoyée (${demandes.length} demandes)` : "échec de l'envoi de la sauvegarde";
 }
 
 /* ═════════════ Rapport du vendredi 10 h 30 ═════════════ */
@@ -564,8 +667,20 @@ async function rapportHebdo(force) {
   const resume = `<tr><td style="padding:20px 24px 4px"><div style="font-size:18px;font-weight:bold;color:${NUIT}">Rapport de la semaine</div>
 <div style="font-size:14px;color:${GRIS};margin-top:4px">${demandes.length} demande${demandes.length > 1 ? "s" : ""} de devis · ${signes.length} devis signé${signes.length > 1 ? "s" : ""} · ${v1.visites} visites</div>
 ${aTraiter ? `<div style="margin-top:12px;background:#fff1e8;border-left:4px solid ${ORANGE};padding:10px 14px;font-size:14px"><b>${aTraiter} demande${aTraiter > 1 ? "s" : ""} encore en attente</b> : devis à envoyer ou à relancer.</div>` : ""}</td></tr>`;
-  const html = cadre(resume + bloc("Demandes de devis (7 derniers jours)", blocDemandes + `<p style="margin:12px 0 0">${bouton(LIEN_DEVIS, "Ouvrir les devis dans Pennylane", VERT)}</p>`) + bloc("Devis signés", blocSignes) + bloc("Fréquentation du site", blocVisites), 720);
-  const ok = await envoyerMail({ to: [DESTINATAIRE], subject: `📊 Rapport CoPanier — ${demandes.length} demande(s), ${signes.length} signé(s), ${v1.visites} visites`, html });
+  // CRM : toutes les demandes (statuts à jour d'après Pennylane), relances de la semaine, sauvegarde jointe
+  const toutes = await toutesLesDemandes();
+  await synchroniserStatuts(toutes);
+  const limite = jour(maintenant + J7);
+  const relances = toutes.filter((d) => d.relance_le && d.relance_le <= limite && d.statut !== "signe" && d.statut !== "perdu")
+    .sort((a, b) => a.relance_le.localeCompare(b.relance_le));
+  const blocCrm = `<p style="font-size:14px;margin:0 0 10px">${resumePipeline(toutes)}</p>`
+    + (relances.length
+      ? table(["Relance", "Entreprise", "Contact", "Statut", "Notes"], relances.map((d) => `<tr>${cellule(esc(new Date(d.relance_le + "T12:00:00Z").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })), d.relance_le < jour(maintenant) ? `color:${ORANGE_FONCE};font-weight:bold` : "")}${cellule(esc(d.entreprise || "—"))}${cellule(esc(personneDe(d) || "—") + (d.telephone ? "<br>" + esc(d.telephone) : ""))}${cellule(esc(STATUTS_CRM[d.statut] || d.statut))}${cellule(esc((d.notes || "").slice(0, 120)))}</tr>`))
+      : `<p style="font-size:14px;margin:0">Aucune relance prévue dans les 7 prochains jours.</p>`)
+    + `<p style="font-size:12px;color:${GRIS};margin:10px 0 0">💾 Sauvegarde complète jointe : <b>.csv</b> pour Excel, <b>.json</b> pour la plateforme de gestion des livraisons.</p>`;
+  const html = cadre(resume + bloc("Demandes de devis (7 derniers jours)", blocDemandes + `<p style="margin:12px 0 0">${bouton(LIEN_DEVIS, "Ouvrir les devis dans Pennylane", VERT)}</p>`) + bloc("Suivi commercial et relances", blocCrm) + bloc("Devis signés", blocSignes) + bloc("Fréquentation du site", blocVisites), 720);
+  const ok = await envoyerMail({ to: [DESTINATAIRE], subject: `📊 Rapport CoPanier — ${demandes.length} demande(s), ${signes.length} signé(s), ${v1.visites} visites`, html, attachments: piecesSauvegarde(toutes) });
+  if (ok) await sb("sauvegardes_crm", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ motif: "hebdo", nb_demandes: toutes.length }) });
   return ok ? "rapport envoyé" : "échec de l'envoi du rapport";
 }
 
@@ -574,9 +689,11 @@ serve(async (req) => {
   let corps;
   try { corps = await req.json(); } catch (_) { return new Response("requête invalide", { status: 400, headers: CORS }); }
   // Tâches planifiées (pg_cron) : sans effet si on les appelle hors de leur créneau ou deux fois
-  if (corps.action === "signatures" || corps.action === "rapport") {
+  if (corps.action === "signatures" || corps.action === "rapport" || corps.action === "sauvegarde") {
     try {
-      const resultat = corps.action === "signatures" ? await verifierSignatures() : await rapportHebdo(corps.essai === true);
+      const resultat = corps.action === "signatures" ? await verifierSignatures()
+        : corps.action === "sauvegarde" ? await sauvegardeCrm()
+        : await rapportHebdo(corps.essai === true);
       return new Response(JSON.stringify({ resultat }), { headers: { ...CORS, "Content-Type": "application/json" } });
     } catch (e) {
       console.error(corps.action, e);
