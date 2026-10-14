@@ -189,7 +189,21 @@ function typeFormule(f) {
   return "hebdo"; // « chaque semaine » ou « je ne sais pas encore » : offre habituelle
 }
 
+// Produits cochés par le client : le site les écrit en première ligne du message (« Produits souhaités : … »)
+const CORBEILLES = "Corbeilles de fruits";
+// Produits en option : ligne libre à chiffrer dans le brouillon (TVA indicative, à vérifier avant envoi)
+const OPTIONS = {
+  "Jus de fruits": "FR_55", "Fruits secs": "FR_55", "Citrouilles": "FR_55",
+  "Sapins de Noël": "FR_100", "Champagne": "FR_200", "Vins": "FR_200",
+};
+function produitsDemandes(r) {
+  const m = String(r.message || "").match(/^Produits souhaités : (.+)$/m);
+  return m ? m[1].split(",").map((x) => x.trim()).filter(Boolean) : [CORBEILLES]; // anciennes demandes : corbeilles
+}
+
 async function creerBrouillonDevis(r, clientId) {
+  const choisis = produitsDemandes(r);
+  if (!choisis.includes(CORBEILLES)) return await creerBrouillonProduits(r, clientId, choisis);
   const produit = await produitsPennylane();
   const c = corbeilles(r.personnes);
   const type = typeFormule(r.formule);
@@ -228,6 +242,7 @@ async function creerBrouillonDevis(r, clientId) {
     lignes.push({ ...ligneCorbeille, description: (c.quantite > 1 ? taille + "\n" : "") + puces(CONDITIONS[type]) });
     lignes.push({ product_id: produit("offerte"), quantity: 1, description: livraisons.length ? livraisons.join("\n") : null });
   }
+  lignes.push(...lignesOptions(choisis));
 
   const aujourdhui = new Date();
   return await pl("/quotes", {
@@ -238,6 +253,40 @@ async function creerBrouillonDevis(r, clientId) {
       deadline: jour(aujourdhui.getTime() + 30 * 24 * 3600 * 1000),
       language: "fr_FR",
       pdf_invoice_subject: sujet,
+      external_reference: "copanier-site-" + String(r.id).slice(0, 8),
+      invoice_lines: lignes,
+    }),
+  });
+}
+
+// Une ligne par produit en option, à 0 € : quantité et prix à compléter dans Pennylane avant l'envoi
+function lignesOptions(choisis) {
+  return choisis.filter((p) => OPTIONS[p]).map((p) => ({
+    label: p, quantity: 1, unit: "piece", raw_currency_unit_price: "0", vat_rate: OPTIONS[p],
+    description: "Quantité et prix à préciser",
+  }));
+}
+
+// Demande sans corbeilles : uniquement des produits en option (+ frais de livraison)
+async function creerBrouillonProduits(r, clientId, choisis) {
+  const produit = await produitsPennylane();
+  const livraisons = (Array.isArray(r.adresses_livraison) ? r.adresses_livraison : []).filter(Boolean);
+  const site = livraisons[0] ? await adresseStructuree(livraisons[0]) : null;
+  const nom = [String(r.entreprise || personneDe(r) || "Client").trim(), site?.city?.replace(/ Arrondissement$/, "")].filter(Boolean).join(" ");
+  const lignes = lignesOptions(choisis);
+  lignes.push({
+    product_id: produit("frais"), quantity: 1,
+    description: ["Livraison prévue le : date à convenir", ...(livraisons.length ? ["Adresse : " + livraisons.join(" ; ")] : []), "", puces(["Règlement par virement"])].join("\n"),
+  });
+  const aujourdhui = new Date();
+  return await pl("/quotes", {
+    method: "POST",
+    body: JSON.stringify({
+      customer_id: clientId,
+      date: jour(aujourdhui),
+      deadline: jour(aujourdhui.getTime() + 30 * 24 * 3600 * 1000),
+      language: "fr_FR",
+      pdf_invoice_subject: `${choisis.join(", ")} - ${nom}`,
       external_reference: "copanier-site-" + String(r.id).slice(0, 8),
       invoice_lines: lignes,
     }),
@@ -335,6 +384,7 @@ ${bloc("Contact", tableau([
     ligne("Téléphone", tel),
   ]))}
 ${bloc("Besoin", tableau([
+    ligne("Produits souhaités", `<b>${esc(produitsDemandes(r).join(", "))}</b>`),
     ligne("Formule", esc(r.formule)),
     ligne("Nombre de personnes", r.personnes ? `<b>${esc(r.personnes)}</b>` : ""),
     ligne("Corbeille conseillée", esc(corbeilleTexte(r.personnes))),
@@ -529,9 +579,9 @@ const enBase64 = (texte) => { const o = new TextEncoder().encode(texte); let b =
 // Fichier à ouvrir dans Excel (séparateur « ; », accents conservés)
 function csvDemandes(demandes) {
   const cols = ["Reçue le", "Statut", "Relance le", "Entreprise", "Prénom", "Nom", "Fonction", "E-mail", "Téléphone", "Rappel demandé", "Créneau",
-    "Personnes", "Corbeille conseillée", "Formule", "Adresse de l'entreprise", "Adresses de livraison", "Message", "Devis Pennylane", "Problème Pennylane", "Notes", "Page du site", "Identifiant"];
+    "Produits", "Personnes", "Corbeille conseillée", "Formule", "Adresse de l'entreprise", "Adresses de livraison", "Message", "Devis Pennylane", "Problème Pennylane", "Notes", "Page du site", "Identifiant"];
   const lignes = demandes.map((d) => [dateFr(d.created_at), STATUTS_CRM[d.statut] || d.statut, d.relance_le || "", d.entreprise, d.prenom, d.nom, d.role, d.email, d.telephone,
-    d.rappel ? "Oui" : "Non", d.creneau, d.personnes, corbeilleTexte(d.personnes), d.formule, d.adresse_entreprise,
+    d.rappel ? "Oui" : "Non", d.creneau, produitsDemandes(d).join(", "), d.personnes, corbeilleTexte(d.personnes), d.formule, d.adresse_entreprise,
     (Array.isArray(d.adresses_livraison) ? d.adresses_livraison : []).join(" | "), d.message, d.pennylane_devis_numero, d.pennylane_erreur, d.notes, d.page, d.id]);
   return "﻿" + [cols, ...lignes].map((l) => l.map(csvCellule).join(";")).join("\r\n") + "\r\n";
 }
@@ -561,7 +611,7 @@ function jsonDemandes(demandes) {
         contact_sales: { name: personneDe(d) || null, role: d.role || null, email: d.email || null, phone: d.telephone || null },
         pennylane_customer_id: d.pennylane_client_id ? String(d.pennylane_client_id) : null,
       },
-      besoin: { personnes: d.personnes, corbeille_conseillee: corbeilleTexte(d.personnes) || null, formule: d.formule, message: d.message, rappel: d.rappel, creneau: d.creneau },
+      besoin: { produits: produitsDemandes(d), personnes: d.personnes, corbeille_conseillee: corbeilleTexte(d.personnes) || null, formule: d.formule, message: d.message, rappel: d.rappel, creneau: d.creneau },
       pennylane: { customer_id: d.pennylane_client_id, quote_id: d.pennylane_devis_id, quote_number: d.pennylane_devis_numero, erreur: d.pennylane_erreur },
       page: d.page,
     })),

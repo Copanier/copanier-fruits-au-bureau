@@ -523,13 +523,18 @@
         <p class="surtitre">En option</p>
         <h2>Jus, fruits secs et produits de saison en option</h2>
         <p class="intro">Complétez vos corbeilles avec des jus de fruits artisanaux et des mélanges de fruits secs en bocaux, et pensez aux produits de saison pour vos fêtes et événements.</p>
-        <img class="apparition" src="/images/options-jus-fruits-secs.webp" alt="Options&nbsp;: jus de pomme, jus de fruits rouges et mélange de fruits secs en bocal" width="660" height="204" loading="lazy">
+        <div class="options-photo"><img src="/images/options-jus-fruits-secs.webp" alt="Options&nbsp;: jus de pomme, jus de fruits rouges et mélange de fruits secs en bocal" width="660" height="204" loading="lazy">
+          <a class="js-devis options-photo__zone" style="left:0" data-produit="Jus de fruits" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20Jus%20de%20fruits"><span>Jus de fruits</span></a>
+          <a class="js-devis options-photo__zone" style="left:33.4%" data-produit="Fruits secs" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20Fruits%20secs"><span>Fruits secs</span></a>
+          <a class="js-devis options-photo__zone" style="left:66.7%" data-produit="Jus de fruits" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20Jus%20de%20fruits"><span>Jus de fruits</span></a>
+        </div>
+        <p class="options-photo__aide">Cliquez sur un produit pour demander votre devis.</p>
         <p class="options-saison__titre">Et selon la saison</p>
         <ul class="options-saison">
-          <li><span class="options-saison__emoji" aria-hidden="true">🎃</span><strong>Citrouilles</strong><span>Pour décorer vos bureaux à l'automne et fêter Halloween.</span></li>
-          <li><span class="options-saison__emoji" aria-hidden="true">🎄</span><strong>Sapins de Noël</strong><span>Livrés en décembre pour habiller l'accueil et les espaces communs.</span></li>
-          <li><span class="options-saison__emoji" aria-hidden="true">🥂</span><strong>Champagne</strong><span>Pour vos pots de fin d'année, départs et événements d'entreprise.</span></li>
-          <li><span class="options-saison__emoji" aria-hidden="true">🍷</span><strong>Vins</strong><span>Une sélection de vins de producteurs pour vos réceptions et cadeaux.</span></li>
+          <li><a class="js-devis options-saison__lien" data-produit="Citrouilles" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20Citrouilles"><span class="options-saison__emoji" aria-hidden="true">🎃</span><strong>Citrouilles</strong><span>Pour décorer vos bureaux à l'automne et fêter Halloween.</span><span class="options-saison__cta">Demander un devis →</span></a></li>
+          <li><a class="js-devis options-saison__lien" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20Sapins%20de%20No%C3%ABl"><span class="options-saison__emoji" aria-hidden="true">🎄</span><strong>Sapins de Noël</strong><span>Livrés en décembre pour habiller l'accueil et les espaces communs.</span><span class="options-saison__cta">Demander un devis →</span></a></li>
+          <li><a class="js-devis options-saison__lien" data-produit="Champagne" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20Champagne"><span class="options-saison__emoji" aria-hidden="true">🥂</span><strong>Champagne</strong><span>Pour vos pots de fin d'année, départs et événements d'entreprise.</span><span class="options-saison__cta">Demander un devis →</span></a></li>
+          <li><a class="js-devis options-saison__lien" data-produit="Vins" href="mailto:contact@copanier.fr?subject=Demande%20de%20devis%20Vins"><span class="options-saison__emoji" aria-hidden="true">🍷</span><strong>Vins</strong><span>Une sélection de vins de producteurs pour vos réceptions et cadeaux.</span><span class="options-saison__cta">Demander un devis →</span></a></li>
         </ul>
         <p class="options-saison__mention">L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</p>
       </div>
@@ -747,6 +752,10 @@
           </div>
 
           <p class="devis__groupe plein">Votre besoin</p>
+          <fieldset class="plein devis__produits"><legend>Produits souhaités <small>(plusieurs choix possibles)</small></legend>
+            <div class="devis__produits-liste"><label><input type="checkbox" name="produits" value="Corbeilles de fruits" checked> <span>🧺 Corbeilles de fruits</span></label><label><input type="checkbox" name="produits" value="Jus de fruits"> <span>🧃 Jus de fruits</span></label><label><input type="checkbox" name="produits" value="Fruits secs"> <span>🥜 Fruits secs</span></label><label><input type="checkbox" name="produits" value="Citrouilles"> <span>🎃 Citrouilles</span></label><label><input type="checkbox" name="produits" value="Sapins de Noël"> <span>🎄 Sapins de Noël</span></label><label><input type="checkbox" name="produits" value="Champagne"> <span>🥂 Champagne</span></label><label><input type="checkbox" name="produits" value="Vins"> <span>🍷 Vins</span></label></div>
+            <small class="devis__produits-aide">Décochez «&nbsp;Corbeilles de fruits&nbsp;» si vous souhaitez uniquement des produits supplémentaires.</small>
+          </fieldset>
           <label for="devis-personnes">Nombre de personnes<input name="personnes" id="devis-personnes" type="number" min="1" inputmode="numeric"></label>
           <label for="devis-formule">Formule
             <select name="formule" id="devis-formule">

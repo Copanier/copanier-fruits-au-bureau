@@ -363,6 +363,10 @@
           </div>
 
           <p class="devis__groupe plein">Votre besoin</p>
+          <fieldset class="plein devis__produits"><legend>Produits souhaités <small>(plusieurs choix possibles)</small></legend>
+            <div class="devis__produits-liste"><label><input type="checkbox" name="produits" value="Corbeilles de fruits" checked> <span>🧺 Corbeilles de fruits</span></label><label><input type="checkbox" name="produits" value="Jus de fruits"> <span>🧃 Jus de fruits</span></label><label><input type="checkbox" name="produits" value="Fruits secs"> <span>🥜 Fruits secs</span></label><label><input type="checkbox" name="produits" value="Citrouilles"> <span>🎃 Citrouilles</span></label><label><input type="checkbox" name="produits" value="Sapins de Noël"> <span>🎄 Sapins de Noël</span></label><label><input type="checkbox" name="produits" value="Champagne"> <span>🥂 Champagne</span></label><label><input type="checkbox" name="produits" value="Vins"> <span>🍷 Vins</span></label></div>
+            <small class="devis__produits-aide">Décochez «&nbsp;Corbeilles de fruits&nbsp;» si vous souhaitez uniquement des produits supplémentaires.</small>
+          </fieldset>
           <label for="devis-personnes">Nombre de personnes<input name="personnes" id="devis-personnes" type="number" min="1" inputmode="numeric"></label>
           <label for="devis-formule">Formule
             <select name="formule" id="devis-formule">

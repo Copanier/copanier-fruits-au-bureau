@@ -92,19 +92,22 @@ var MAX_ADRESSES = 10;
     if (f.identique.checked) return f.adresse_entreprise.value.trim() ? [f.adresse_entreprise.value.trim()] : [];
     return $$(".devis__liste-livraisons input", formulaire).map(function (i) { return i.value.trim(); }).filter(Boolean);
   }
+  function produitsChoisis() {
+    return $$('input[name="produits"]:checked', formulaire).map(function (c) { return c.value; });
+  }
   function valeurs() {
     var f = formulaire.elements;
     return {
       entreprise: f.entreprise.value.trim(), role: f.role.value.trim(), prenom: f.prenom.value.trim(), nom: f.nom.value.trim(), email: f.email.value.trim(),
       telephone: f.telephone.value.trim(), rappel: f.rappel.checked, creneau: f.rappel.checked ? f.creneau.value : "",
       adresse_entreprise: f.adresse_entreprise.value.trim(), adresses_livraison: adressesLivraison(),
-      personnes: f.personnes.value.trim(), formule: f.formule.value, message: f.message.value.trim()
+      personnes: f.personnes.value.trim(), formule: f.formule.value, message: f.message.value.trim(), produits: produitsChoisis()
     };
   }
   /* Texte utilisé si l'envoi automatique échoue (e-mail pré-rempli) */
   function texteDemande() {
     var v = valeurs();
-    var l = ["Bonjour,", "", "Je souhaite recevoir un devis pour la livraison de corbeilles de fruits au bureau.", ""];
+    var l = ["Bonjour,", "", "Je souhaite recevoir un devis pour la livraison au bureau des produits suivants : " + v.produits.join(", ") + ".", ""];
     if (v.rappel) l.push(">> Je souhaite être rappelé(e) au : " + v.telephone + " (" + v.creneau.toLowerCase() + ")", "");
     l.push("Entreprise : " + v.entreprise, "Prénom : " + v.prenom, "Nom : " + v.nom, "Rôle dans l'entreprise : " + v.role, "E-mail : " + v.email, "Téléphone : " + v.telephone);
     l.push("Adresse de l'entreprise : " + v.adresse_entreprise);
@@ -112,7 +115,7 @@ var MAX_ADRESSES = 10;
       l.push("Adresses de livraison :");
       v.adresses_livraison.forEach(function (a, i) { l.push("  " + (i + 1) + ". " + a); });
     } else l.push("Adresse de livraison : " + (v.adresses_livraison[0] || ""));
-    l.push("Nombre de personnes : " + v.personnes, "Formule souhaitée : " + v.formule);
+    l.push("Produits souhaités : " + v.produits.join(", "), "Nombre de personnes : " + v.personnes, "Formule souhaitée : " + v.formule);
     l.push("", "Message : " + v.message, "", "Merci et à bientôt !");
     return l.join("\n");
   }
@@ -134,6 +137,7 @@ var MAX_ADRESSES = 10;
   // Il faut de quoi recontacter le visiteur : un e-mail valide, ou un téléphone s'il demande à être rappelé.
   function verifier() {
     var f = formulaire.elements, email = f.email.value.trim(), tel = f.telephone.value.trim();
+    if (!produitsChoisis().length) return erreur("Cochez au moins un produit : corbeilles de fruits ou produits supplémentaires.", $('input[name="produits"]', formulaire));
     if (f.rappel.checked && !tel) return erreur("Indiquez votre numéro de téléphone pour être rappelé.", f.telephone);
     if (email && !/^[^\s@<>,;]+@[^\s@<>,;]+\.[a-z]{2,}$/i.test(email)) return erreur("Cette adresse e-mail semble incomplète.", f.email);
     if (!email && !tel) return erreur("Indiquez votre e-mail (ou votre téléphone) pour que nous puissions vous répondre.", f.email);
@@ -177,12 +181,14 @@ var MAX_ADRESSES = 10;
     $(".devis__etape-merci", formulaire).hidden = nom !== "merci";
     $(".devis__alternatives", formulaire).hidden = nom !== "secours";
   }
-  function ouvrirDevis(personnes, rappel) {
+  function ouvrirDevis(personnes, rappel, produit) {
     if (!fenetre || typeof fenetre.showModal !== "function") return false;
     if (!$(".devis__etape-merci", formulaire).hidden) { formulaire.reset(); $$(".devis__liste-livraisons li", formulaire).slice(1).forEach(function (li) { li.remove(); }); }
     etat("saisie");
     if (personnes) formulaire.elements.personnes.value = personnes;
     if (rappel) formulaire.elements.rappel.checked = true;
+    // Clic sur un produit en option : il est présélectionné (le client garde ou décoche les corbeilles)
+    if (produit) $$('input[name="produits"]', formulaire).forEach(function (c) { if (c.value === produit) c.checked = true; });
     majRappel(); majIdentique(); majLiensAlternatifs(); erreur("");
     fenetre.showModal();
     setTimeout(function () { (rappel ? formulaire.elements.telephone : formulaire.elements.entreprise).focus(); }, 50);
@@ -195,7 +201,8 @@ var MAX_ADRESSES = 10;
       id: id, entreprise: v.entreprise, role: v.role, prenom: v.prenom, nom: v.nom, email: v.email, telephone: v.telephone,
       rappel: v.rappel, creneau: v.creneau, adresse_entreprise: v.adresse_entreprise,
       adresses_livraison: v.adresses_livraison, personnes: v.personnes ? parseInt(v.personnes, 10) : null,
-      formule: v.formule, message: v.message, page: location.pathname
+      // Les produits choisis ouvrent le message (la fonction de devis les relit pour préparer le brouillon Pennylane)
+      formule: v.formule, message: "Produits souhaités : " + v.produits.join(", ") + (v.message ? "\n\n" + v.message : ""), page: location.pathname
     };
     if (!SUPABASE_URL || !SUPABASE_CLE) return Promise.reject(new Error("Supabase non configuré"));
     var entetes = { apikey: SUPABASE_CLE, "Content-Type": "application/json" };
@@ -216,7 +223,7 @@ var MAX_ADRESSES = 10;
     document.addEventListener("click", function (e) {
       var lien = e.target.closest && e.target.closest("a.js-devis");
       if (!lien) return;
-      if (ouvrirDevis(lien.getAttribute("data-personnes"), lien.hasAttribute("data-rappel"))) e.preventDefault();
+      if (ouvrirDevis(lien.getAttribute("data-personnes"), lien.hasAttribute("data-rappel"), lien.getAttribute("data-produit"))) e.preventDefault();
     });
     formulaire.elements.rappel.addEventListener("change", majRappel);
     formulaire.elements.identique.addEventListener("change", majIdentique);

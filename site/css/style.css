@@ -736,3 +736,27 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .fraise__note-elim { margin: 0; max-width: 520px; font-size: .92rem; color: var(--texte-doux); text-align: center !important; }
 .fraise__note-elim[hidden], .fraise__regle[hidden] { display: none; }
 .fraise__historique-manche { list-style: none; margin: 8px 0 2px -18px; font-weight: 700; color: var(--orange-fonce); }
+/* ===== Devis : produits souhaités ===== */
+.devis__produits { border: 0; padding: 0; margin: 0; min-width: 0; }
+.devis__produits legend { font-size: .88rem; font-weight: 500; color: var(--texte-doux); margin-bottom: 6px; padding: 0; }
+.devis__produits legend small { font-weight: 400; }
+.devis__produits-liste { display: flex; flex-wrap: wrap; gap: 8px; }
+.devis__grille .devis__produits label { flex-direction: row; align-items: center; gap: 6px; padding: 7px 12px; border: 1.5px solid var(--bord); border-radius: 999px; background: #fff; color: var(--texte); font-size: .92rem; cursor: pointer; transition: border-color .2s, background .2s; }
+.devis__grille .devis__produits label:hover { border-color: var(--orange); }
+.devis__grille .devis__produits label:has(input:checked) { border-color: var(--orange); background: var(--orange-clair); font-weight: 600; }
+.devis__grille .devis__produits input { width: 17px; height: 17px; padding: 0; margin: 0; accent-color: var(--orange); flex: none; }
+.devis__produits-aide { display: block; margin-top: 6px; font-size: .8rem; color: var(--texte-doux); }
+/* Produits en option cliquables */
+.options-saison__lien { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; color: inherit; text-decoration: none; }
+.options-saison li { padding: 0; transition: transform .2s var(--ressort), border-color .2s, box-shadow .2s; }
+.options-saison__lien { padding: 18px 16px; }
+.options-saison li:hover, .options-saison li:focus-within { transform: translateY(-3px); border-color: var(--orange); box-shadow: var(--ombre); }
+.options-saison__cta { margin-top: auto; padding-top: 4px; font-weight: 600; font-size: .88rem; color: var(--orange-fonce) !important; }
+.options-photo { position: relative; width: fit-content; max-width: 100%; margin: 10px auto 0; }
+.options-photo img { margin: 0; display: block; }
+.options-photo__zone { position: absolute; top: 0; bottom: 0; width: 33.3%; border-radius: 16px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; text-decoration: none; transition: background .2s; }
+.options-photo__zone span { background: var(--orange); color: #fff; font-weight: 600; font-size: .82rem; padding: 4px 12px; border-radius: 999px; opacity: 0; transform: translateY(6px); transition: opacity .2s, transform .2s; }
+.options-photo__zone:hover, .options-photo__zone:focus-visible { background: rgba(244,102,28,.08); }
+.options-photo__zone:hover span, .options-photo__zone:focus-visible span { opacity: 1; transform: none; }
+@media (hover: none) { .options-photo__zone span { opacity: .92; transform: none; } }
+.options-photo__aide { margin: 6px 0 0; font-size: .85rem; color: var(--texte-doux); text-align: center !important; }
