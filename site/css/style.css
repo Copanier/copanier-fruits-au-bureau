@@ -722,3 +722,11 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .fraise__btn-reglages { background: #fff; color: var(--vert) !important; border-color: var(--bord); box-shadow: none; }
 @media (prefers-reduced-motion: reduce) { .fraise-main *, .fraise-main { animation: none !important; transition: none !important; } .fraise-main.ouverte .fraise-main__fraise { transform: scale(1.15); } }
 .fraise__actions [hidden] { display: none !important; }
+/* ===== Produits de saison en option ===== */
+.options-saison__titre { font-family: var(--titre); color: var(--orange-fonce); font-size: 1.3rem; margin: 28px 0 12px; text-align: center !important; }
+.options-saison { list-style: none; padding: 0 !important; margin: 0 auto; max-width: 900px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.options-saison li { margin: 0; background: #fff; border: 1px solid var(--bord); border-radius: 18px; padding: 18px 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; box-shadow: var(--ombre-douce); }
+.options-saison__emoji { font-size: 2.2rem; line-height: 1; }
+.options-saison li strong { color: var(--vert); font-size: 1.05rem; }
+.options-saison li span:last-child { color: var(--texte-doux); font-size: .92rem; line-height: 1.45; }
+.options-saison__mention { margin: 14px 0 0; font-size: .85rem; color: var(--texte-doux); text-align: center !important; }
