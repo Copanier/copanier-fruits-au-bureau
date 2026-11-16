@@ -782,3 +782,44 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
   .photo-vedette img { height: min(118vw, 620px); }
 }
 .photos-clients figure:nth-child(2) img { object-position: center 72%; }
+/* ===== Sapins de Noël ===== */
+.sapins { max-width: 960px; }
+.sapins__intro { max-width: 720px; margin: 0 auto 26px; text-align: center; }
+.sapins__intro .liste-coches { display: inline-block; text-align: left; }
+.sapins__code { max-width: 560px; margin: 0 auto; background: var(--creme); border: 2px solid var(--orange); border-radius: var(--rayon); padding: 22px; box-shadow: var(--ombre-douce); }
+.sapins__code label { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; color: var(--vert); text-align: center; }
+.sapins__code label span { font-size: .9rem; color: var(--texte-doux); }
+.sapins__saisie { display: flex; gap: 10px; flex-wrap: wrap; }
+.sapins__saisie input { flex: 1 1 220px; font: inherit; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; text-align: center; padding: 12px 14px; border: 2px solid var(--bord); border-radius: 999px; color: var(--texte); background: #fff; }
+.sapins__saisie input:focus { outline: none; border-color: var(--orange); }
+.sapins__saisie .bouton { flex: 1 1 auto; }
+.sapins__message { min-height: 1.3em; margin: 10px 0 0; text-align: center !important; color: var(--orange-fonce); font-weight: 600; }
+.sapins__boutique { margin-top: 34px; scroll-margin-top: 100px; }
+.sapins__entreprise { text-align: center; margin-bottom: 18px; }
+.sapins__entreprise p { margin: 0; text-align: center !important; font-size: 1.1rem; }
+.sapins__entreprise .petit { font-size: .9rem; color: var(--texte-doux); }
+.sapins__dates { border: 0; padding: 0; margin: 0 0 22px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.sapins__dates legend, .sapins__etape { width: 100%; font-family: var(--titre); color: var(--orange-fonce); font-size: 1.25rem; text-align: center; margin: 0 0 10px; }
+.sapins__dates label { display: flex; gap: 10px; align-items: center; background: #fff; border: 2px solid var(--bord); border-radius: 16px; padding: 12px 18px; cursor: pointer; }
+.sapins__dates label:has(input:checked) { border-color: var(--orange); background: var(--orange-clair); }
+.sapins__dates input { accent-color: var(--orange); width: 18px; height: 18px; }
+.sapins__dates span { display: flex; flex-direction: column; }
+.sapins__dates strong { color: var(--vert); display: block; }
+.sapins__dates strong::first-letter { text-transform: uppercase; }
+.sapins__dates small { color: var(--texte-doux); }
+.sapins__liste { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
+.sapin { background: #fff; border: 1px solid var(--bord); border-radius: 18px; padding: 18px 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: var(--ombre-douce); }
+.sapin__dessin { width: auto; margin-bottom: 6px; }
+.sapin p { margin: 0; text-align: center !important; }
+.sapin__taille { font-weight: 700; color: var(--vert); font-size: 1.1rem; }
+.sapin__pour { font-size: .85rem; color: var(--texte-doux); }
+.sapin__prix { font-family: var(--titre); font-size: 1.6rem; color: var(--orange-fonce); margin: 4px 0 8px !important; }
+.sapin__prix small { font-size: .55em; font-family: var(--corps); color: var(--texte-doux); }
+.sapin__bientot { font-size: .85rem; color: var(--texte-doux); font-style: italic; padding: 8px 0; }
+.sapins__note { margin-top: 16px; text-align: center !important; color: var(--texte-doux); }
+.sapins__clos { text-align: center !important; font-weight: 600; color: var(--vert); }
+.sapins__adresse { display: inline-block; margin-top: 8px !important; background: var(--vert-clair); color: var(--vert); padding: 8px 16px; border-radius: 999px; font-size: .98rem !important; }
+.sapins__date.est-close { opacity: .5; cursor: not-allowed; background: #f2f2f2; }
+.sapins__date.est-close strong { text-decoration: line-through; }
+.sapins__rebours { display: block; margin-top: 4px; font-size: .9rem; color: var(--orange-fonce); font-variant-numeric: tabular-nums; }
+.est-close .sapins__rebours { color: var(--texte-doux); font-weight: 600; }

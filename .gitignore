@@ -10,3 +10,6 @@ supabase/.temp/
 
 # Documents de stratégie internes (ne pas publier sur GitHub)
 ANALYSE-*.md
+
+# Vente de sapins : entreprises, codes et exports (privés)
+outils/sapins/*.local.*

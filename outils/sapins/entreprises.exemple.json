@@ -1,0 +1,10 @@
+[
+  {
+    "_lisez_moi": "Copiez ce fichier en entreprises.local.json (jamais publié) et remplissez une ligne par entreprise. Laissez « code » vide : il est créé automatiquement.",
+    "entreprise": "Exemple SAS",
+    "adresse_livraison": "12 rue Exemple, 75008 Paris",
+    "contact": "Prénom Nom <office@exemple.fr>",
+    "vagues": ["V1", "V2"],
+    "code": ""
+  }
+]

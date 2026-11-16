@@ -1,0 +1,27 @@
+{
+  "_lisez_moi": "Réglages de la vente de sapins. Après modification : node outils/page-sapins.mjs, puis envoyer sur GitHub. Les entreprises et leurs codes sont dans entreprises.local.json (jamais publié).",
+  "annee": 2026,
+  "seuil_par_entreprise": 8,
+  "tva": "10 %",
+  "vagues": [
+    {
+      "id": "V1",
+      "fin_commandes": "2026-11-26T23:59:59+01:00",
+      "livraison": "2026-12-03",
+      "libelle_livraison": "jeudi 3 décembre"
+    },
+    {
+      "id": "V2",
+      "fin_commandes": "2026-12-03T23:59:59+01:00",
+      "livraison": "2026-12-09",
+      "libelle_livraison": "mercredi 9 décembre"
+    }
+  ],
+  "sapins": [
+    { "taille": "100/125 cm", "prix": 40, "pour": "Petit appartement, bureau", "lien_paiement": "" },
+    { "taille": "125/150 cm", "prix": 46, "pour": "Le plus polyvalent", "lien_paiement": "" },
+    { "taille": "150/175 cm", "prix": 62, "pour": "Le classique du salon", "lien_paiement": "" },
+    { "taille": "175/200 cm", "prix": 79, "pour": "Grand salon", "lien_paiement": "" },
+    { "taille": "200/250 cm", "prix": 99, "pour": "Hauteur sous plafond", "lien_paiement": "" }
+  ]
+}
