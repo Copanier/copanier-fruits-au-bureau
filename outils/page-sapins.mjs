@@ -136,7 +136,7 @@ const contenu = `    <section class="section">
           <li>Récupérez votre sapin au bureau le jour de la livraison&nbsp;: il porte une étiquette à vos prénom et nom.</li>
         </ol>
         <h2>Vous n'avez pas de code&nbsp;?</h2>
-        <p>Le code de votre entreprise a été communiqué par e-mail à votre responsable<p>La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. nbsp;: demandez-le-lui. La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
+        <p>Le code de votre entreprise a été communiqué par e-mail à votre responsable&nbsp;: demandez-le-lui. La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
 
         <h2 id="alcool">Champagne et boissons alcoolisées</h2>
         <ul>
