@@ -851,3 +851,17 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
   .nav a { padding: 6px 6px; font-size: .84rem; }
   .entete .logo img, .logo img { max-width: 150px; }
 }
+/* ===== Champagne du producteur (boutique sapins) ===== */
+.boissons { margin-top: 44px; padding-top: 30px; border-top: 2px dashed var(--bord); }
+.boissons__intro { max-width: 720px; margin: 0 auto 12px !important; text-align: center !important; color: var(--texte-doux); }
+.boissons__majeur { margin-bottom: 18px; }
+.boissons__categorie { font-weight: 700; color: var(--vert); margin: 22px 0 10px !important; font-size: 1.05rem; border-left: 4px solid var(--orange); padding-left: 10px; text-align: left !important; }
+.boissons__liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.boisson { background: #fff; border: 1px solid var(--bord); border-radius: 18px; padding: 14px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: var(--ombre-douce); }
+.boisson img { height: 190px; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 6px; }
+.boisson p { margin: 0; text-align: center !important; }
+.boisson__nom { font-weight: 700; color: var(--vert); }
+.boisson__detail { font-size: .82rem; color: var(--texte-doux); }
+.boisson__bientot { font-size: .85rem; color: var(--texte-doux); font-style: italic; padding: 6px 0; margin-top: auto !important; }
+.boisson .sapin__prix { margin-top: auto !important; }
+.mention-alcool { margin: 18px 0 0 !important; text-align: center !important; font-size: .9rem; font-weight: 600; color: var(--texte-doux); }

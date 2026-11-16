@@ -45,6 +45,32 @@
     });
   }
 
+  // Champagne et boissons du producteur, livrés avec les sapins
+  function boissonsHtml(b) {
+    if (!b || !b.produits || !b.produits.length) return "";
+    var categories = [];
+    b.produits.forEach(function (p) { if (categories.indexOf(p.categorie) < 0) categories.push(p.categorie); });
+    return '<section class="boissons" aria-labelledby="boissons-titre">' +
+      '<p class="sapins__etape" id="boissons-titre">🥂 Et pour les fêtes&nbsp;: le champagne en direct du producteur</p>' +
+      '<p class="boissons__intro"><strong>' + echapper(b.producteur) + "</strong> – " + echapper(b.presentation) + " Livré avec les sapins, à la même date, dans votre entreprise.</p>" +
+      '<label class="sapins__accord boissons__majeur"><input type="checkbox" data-majeur> <span>Je certifie avoir <strong>18&nbsp;ans révolus</strong>. La vente d\'alcool est interdite aux mineurs.</span></label>' +
+      categories.map(function (c) {
+        return '<p class="boissons__categorie">' + echapper(c) + '</p><div class="boissons__liste">' +
+          b.produits.filter(function (p) { return p.categorie === c; }).map(function (p) {
+            return '<div class="boisson">' +
+              '<img src="' + echapper(p.image) + '" alt="' + echapper(b.producteur + " – " + p.nom) + '" width="' + (p.l || 170) + '" height="' + (p.h || 640) + '" loading="lazy">' +
+              '<p class="boisson__nom">' + echapper(p.nom) + "</p>" +
+              (p.detail ? '<p class="boisson__detail">' + echapper(p.detail) + "</p>" : "") +
+              (p.contenance ? '<p class="boisson__detail">' + echapper(p.contenance) + "</p>" : "") +
+              (p.prix ? '<p class="sapin__prix">' + String(p.prix).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : '<p class="boisson__bientot">Prix bientôt disponible</p>') +
+              (p.prix && p.lien ? '<a class="bouton bouton--petit" data-alcool data-lien="' + echapper(p.lien) + '" href="#">Commander</a>' : "") +
+              "</div>";
+          }).join("") + "</div>";
+      }).join("") +
+      '<p class="mention-alcool">L\'abus d\'alcool est dangereux pour la santé, à consommer avec modération.</p>' +
+      "</section>";
+  }
+
   function afficher(info) {
     var maintenant = Date.now();
     var ouvertes = info.vagues.filter(function (v) { return new Date(v.fin).getTime() > maintenant; });
@@ -78,10 +104,11 @@
                   : '<span class="sapin__bientot">Bientôt disponible</span>') +
           "</div>";
       }).join("") + "</div>" +
+      boissonsHtml(info.boissons) +
       // Récapitulatif de livraison, mis à jour selon la date choisie
       '<div class="sapins__recap" aria-live="polite"></div>' +
-      '<label class="sapins__accord"><input type="checkbox" data-accord> <span>J\'ai bien noté que mon sapin sera <strong>livré dans mon entreprise à la date choisie</strong>, que je le récupère sur place, et j\'accepte les <a href="/conditions-generales-de-vente/" target="_blank">conditions générales de vente</a>.</span></label>' +
-      '<p class="petit sapins__note">En cliquant sur «&nbsp;Commander&nbsp;», vous êtes redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre sapin), votre e-mail, votre téléphone et votre service ou étage.</p>';
+      '<label class="sapins__accord"><input type="checkbox" data-accord> <span>J\'ai bien noté que ma commande sera <strong>livrée dans mon entreprise à la date choisie</strong>, que je la récupère sur place, et j\'accepte les <a href="/conditions-generales-de-vente/" target="_blank">conditions générales de vente</a>.</span></label>' +
+      '<p class="petit sapins__note">En cliquant sur «&nbsp;Commander&nbsp;», vous êtes redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage.</p>';
     boutique.innerHTML = html;
     boutique.hidden = false;
     function majRecap() {
@@ -91,7 +118,7 @@
         "<li>Entreprise&nbsp;: <strong>" + echapper(info.entreprise) + "</strong></li>" +
         (info.adresse ? "<li>Adresse de livraison&nbsp;: <strong>" + echapper(info.adresse) + "</strong></li>" : "") +
         "<li>Date de livraison&nbsp;: <strong>" + (v ? echapper(v.livraison) : "choisissez une date ci-dessus") + "</strong></li>" +
-        "<li>🏷️ <strong>Votre prénom et votre nom figureront sur l'étiquette du sapin</strong> pour que vous le retrouviez facilement le jour de la livraison.</li></ul>";
+        "<li>🏷️ <strong>Votre prénom et votre nom figureront sur l'étiquette de votre commande</strong> pour que vous la retrouviez facilement le jour de la livraison.</li></ul>";
     }
     // Récapitulatif et accord placés entre le choix de la date et le choix du sapin
     var etape = boutique.querySelector(".sapins__etape");
@@ -111,6 +138,13 @@
         if (!accord.checked) {
           accord.closest("label").classList.add("a-cocher");
           accord.closest("label").scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+        // Boissons alcoolisées : déclaration de majorité obligatoire
+        var majeur = boutique.querySelector("[data-majeur]");
+        if (a.hasAttribute("data-alcool") && majeur && !majeur.checked) {
+          majeur.closest("label").classList.add("a-cocher");
+          majeur.closest("label").scrollIntoView({ behavior: "smooth", block: "center" });
           return;
         }
         var vague = v.id;

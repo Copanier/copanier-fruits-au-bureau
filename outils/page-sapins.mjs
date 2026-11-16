@@ -65,6 +65,9 @@ async function chiffrer(code, objet) {
 
 const vagues = config.vagues.map((v) => ({ id: v.id, fin: v.fin_commandes, livraison: v.libelle_livraison }));
 const sapins = config.sapins.map((s) => ({ taille: s.taille, prix: s.prix, pour: s.pour, lien: s.lien_paiement || '' }));
+// Boissons du producteur (champagne…) : seuls les champs utiles à la page, sans les prix d'achat
+const b = config.boissons || { produits: [] };
+const boissons = { producteur: b.producteur || '', presentation: b.presentation || '', produits: b.produits.filter((x) => x.propose !== false).map((x) => ({ nom: x.nom, categorie: x.categorie, detail: x.detail, contenance: x.contenance || '', image: x.image, l: x.largeur, h: x.hauteur, prix: x.prix_ttc || null, lien: x.lien_paiement || '' })) };
 const actives = entreprises.filter((e) => e.entreprise && e.code);
 const coffre = [];
 for (const e of actives) {
@@ -74,6 +77,7 @@ for (const e of actives) {
     reference: normaliser(e.code),
     vagues: vagues.filter((v) => !e.vagues || e.vagues.includes(v.id)),
     sapins,
+    boissons,
   }));
 }
 // mélange : l'ordre ne trahit pas l'ordre du fichier
@@ -102,6 +106,7 @@ const contenu = `    <section class="section">
             <li>5 tailles, de 100 à 250&nbsp;cm, prix TTC (TVA ${config.tva} incluse)</li>
             <li>Paiement sécurisé par carte bancaire avec Stripe</li>
             <li>Livraison au bureau&nbsp;: ${vagues.map((v) => v.livraison).join(' ou ')}</li>
+            <li>Et pour les fêtes&nbsp;: champagne en direct du producteur, livré avec votre sapin</li>
           </ul>
         </div>
 
@@ -131,6 +136,15 @@ const contenu = `    <section class="section">
         </ol>
         <h2>Vous n'avez pas de code&nbsp;?</h2>
         <p>Le code de votre entreprise a été communiqué par e-mail à votre responsable<p>La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. nbsp;: demandez-le-lui. La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
+
+        <h2 id="alcool">Champagne et boissons alcoolisées</h2>
+        <ul>
+          <li><strong>La vente d'alcool est interdite aux mineurs</strong> (article L3342-1 du Code de la santé publique). En commandant, vous certifiez avoir 18&nbsp;ans révolus. Une pièce d'identité peut vous être demandée à la remise de la commande.</li>
+          <li>Les champagnes, vins, ratafias et spiritueux sont produits et mis en bouteille par la ${b.producteur || 'maison partenaire'}, vendus et livrés par COPANIER (COMPTOIR DES FERMIERS).</li>
+          <li>Les boissons sont livrées en même temps que les sapins, dans votre entreprise, à la date choisie. Chaque commande est étiquetée à vos prénom et nom.</li>
+          <li>Pour ces produits, vous disposez d'un droit de rétractation de 14&nbsp;jours à compter de la livraison&nbsp;: les bouteilles doivent être rendues intactes et non ouvertes (voir les <a href="/conditions-generales-de-vente/">conditions générales de vente</a>).</li>
+        </ul>
+        <p class="mention-alcool">L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</p>
 
         <h2 id="conditions">Conditions de vente des sapins</h2>
         <p>En résumé ci-dessous. Les <a href="/conditions-generales-de-vente/">conditions générales de vente complètes</a> s'appliquent à toute commande.</p>

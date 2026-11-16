@@ -18,10 +18,264 @@
     }
   ],
   "sapins": [
-    { "taille": "100/125 cm", "prix": 40, "pour": "Petit appartement, bureau", "lien_paiement": "" },
-    { "taille": "125/150 cm", "prix": 46, "pour": "Le plus polyvalent", "lien_paiement": "" },
-    { "taille": "150/175 cm", "prix": 62, "pour": "Le classique du salon", "lien_paiement": "" },
-    { "taille": "175/200 cm", "prix": 79, "pour": "Grand salon", "lien_paiement": "" },
-    { "taille": "200/250 cm", "prix": 99, "pour": "Hauteur sous plafond", "lien_paiement": "" }
-  ]
+    {
+      "taille": "100/125 cm",
+      "prix": 40,
+      "pour": "Petit appartement, bureau",
+      "lien_paiement": ""
+    },
+    {
+      "taille": "125/150 cm",
+      "prix": 46,
+      "pour": "Le plus polyvalent",
+      "lien_paiement": ""
+    },
+    {
+      "taille": "150/175 cm",
+      "prix": 62,
+      "pour": "Le classique du salon",
+      "lien_paiement": ""
+    },
+    {
+      "taille": "175/200 cm",
+      "prix": 79,
+      "pour": "Grand salon",
+      "lien_paiement": ""
+    },
+    {
+      "taille": "200/250 cm",
+      "prix": 99,
+      "pour": "Hauteur sous plafond",
+      "lien_paiement": ""
+    }
+  ],
+  "boissons": {
+    "_lisez_moi": "Prix de vente TTC à compléter (prix_ttc) et liens de paiement Stripe. Un produit sans prix s affiche « Bientôt disponible ».",
+    "producteur": "Maison Huiban",
+    "presentation": "Maison familiale de vignerons à Jonquery, dans la vallée de la Marne, conduite par Isabelle Huiban et Éric Ammeux. Champagnes Auguste Huiban et Paul Augustin, en direct du producteur.",
+    "site": "https://champagne-maison-huiban.fr/",
+    "produits": [
+      {
+        "nom": "Blanc de noirs",
+        "categorie": "Champagnes",
+        "detail": "Cépage 100% de Pinot Meunier",
+        "contenance": "",
+        "image": "/images/champagne/blanc-de-noirs.webp",
+        "largeur": 170,
+        "hauteur": 640,
+        "prix_public_producteur": 19.3,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Blanc de Noirs Extra Brut",
+        "categorie": "Champagnes",
+        "detail": "Cépage 100% de Pinot Meunier",
+        "contenance": "",
+        "image": "/images/champagne/blanc-de-noirs-extra-brut.webp",
+        "largeur": 168,
+        "hauteur": 640,
+        "prix_public_producteur": 21.3,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Rosé",
+        "categorie": "Champagnes",
+        "detail": "Cépage Pinot Meunier 90% Pinot Noir 10%",
+        "contenance": "",
+        "image": "/images/champagne/rose.webp",
+        "largeur": 171,
+        "hauteur": 640,
+        "prix_public_producteur": 19.8,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Dames Blanches",
+        "categorie": "Champagnes",
+        "detail": "Cépage Pinot Meunier 100%",
+        "contenance": "",
+        "image": "/images/champagne/dames-blanches.webp",
+        "largeur": 172,
+        "hauteur": 640,
+        "prix_public_producteur": 20.1,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Paul Augustin Brut",
+        "categorie": "Champagnes",
+        "detail": "Cépage Chardonnay 50% Pinot Meunier 50%",
+        "contenance": "",
+        "image": "/images/champagne/paul-augustin-brut.webp",
+        "largeur": 169,
+        "hauteur": 640,
+        "prix_public_producteur": 19.3,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Grand Chardonnay",
+        "categorie": "Champagnes",
+        "detail": "Cépage Chardonnay 100%",
+        "contenance": "",
+        "image": "/images/champagne/grand-chardonnay.webp",
+        "largeur": 189,
+        "hauteur": 640,
+        "prix_public_producteur": 24.3,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Grand Chardonnay Extra Brut",
+        "categorie": "Champagnes",
+        "detail": "Cépage Chardonnay 100%",
+        "contenance": "",
+        "image": "/images/champagne/grand-chardonnay-extra-brut.webp",
+        "largeur": 182,
+        "hauteur": 640,
+        "prix_public_producteur": 25.7,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Collection Saint Martin",
+        "categorie": "Champagnes",
+        "detail": "Cépage Chardonnay 60% Pinot Meunier 40%",
+        "contenance": "",
+        "image": "/images/champagne/collection-saint-martin.webp",
+        "largeur": 165,
+        "hauteur": 640,
+        "prix_public_producteur": 35,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Millésime 2012",
+        "categorie": "Champagnes",
+        "detail": "Cépage 1/3 Pinot Meunier 1/3 Pinot Noir 1/3 Chardonnay",
+        "contenance": "",
+        "image": "/images/champagne/millesime-2012.webp",
+        "largeur": 172,
+        "hauteur": 640,
+        "prix_public_producteur": 28.3,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Ratafia Pinot Noir",
+        "categorie": "Vins et ratafias",
+        "detail": "Cépage 100% Pinot Noir",
+        "contenance": "",
+        "image": "/images/champagne/ratafia-pinot-noir.webp",
+        "largeur": 174,
+        "hauteur": 341,
+        "prix_public_producteur": 26,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Ratafia Meunier",
+        "categorie": "Vins et ratafias",
+        "detail": "Cépage 100% Meunier",
+        "contenance": "",
+        "image": "/images/champagne/ratafia-meunier.webp",
+        "largeur": 173,
+        "hauteur": 336,
+        "prix_public_producteur": 25,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Ratafia Chardonnay",
+        "categorie": "Vins et ratafias",
+        "detail": "Cépage 100% Chardonnay",
+        "contenance": "",
+        "image": "/images/champagne/ratafia-chardonnay.webp",
+        "largeur": 174,
+        "hauteur": 335,
+        "prix_public_producteur": 27,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Jonquery Rouge",
+        "categorie": "Vins et ratafias",
+        "detail": "Cépage Pinot Meunier 90% Pinot Noir 10%",
+        "contenance": "",
+        "image": "/images/champagne/jonquery-rouge.webp",
+        "largeur": 176,
+        "hauteur": 640,
+        "prix_public_producteur": 19,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Eau de vie de vin",
+        "categorie": "Spiritueux",
+        "detail": "",
+        "contenance": "",
+        "image": "/images/champagne/eau-de-vie-de-vin.webp",
+        "largeur": 175,
+        "hauteur": 343,
+        "prix_public_producteur": 55,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Sloe Gin",
+        "categorie": "Spiritueux",
+        "detail": "",
+        "contenance": "",
+        "image": "/images/champagne/sloe-gin.webp",
+        "largeur": 179,
+        "hauteur": 351,
+        "prix_public_producteur": 42,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Gin Sauvage",
+        "categorie": "Spiritueux",
+        "detail": "Prix et récompenses",
+        "contenance": "",
+        "image": "/images/champagne/gin-sauvage.webp",
+        "largeur": 297,
+        "hauteur": 259,
+        "prix_public_producteur": 36,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      },
+      {
+        "nom": "Whisky",
+        "categorie": "Spiritueux",
+        "detail": "",
+        "contenance": "",
+        "image": "/images/champagne/whisky.webp",
+        "largeur": 267,
+        "hauteur": 310,
+        "prix_public_producteur": 46,
+        "prix_ttc": null,
+        "lien_paiement": "",
+        "propose": true
+      }
+    ]
+  }
 }
