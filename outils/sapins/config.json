@@ -66,7 +66,17 @@
         "prix_public_producteur": 19.3,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "100 % Pinot Meunier",
+          "caracteristiques": [
+            "Dosage : 6 g/L",
+            "Vieillissement en cave : 3 ans",
+            "Repos après dégorgement : 6 mois"
+          ],
+          "degustation": "Des notes délicates de fruits rouges. Une attaque souple, une bouche fruitée, ample et fraîche, et une finale citronnée.",
+          "accords": "À l'apéritif, avec des poissons ou des viandes, ou en fin de repas avec un dessert au chocolat ou aux fruits."
+        }
       },
       {
         "nom": "Rosé",
@@ -79,7 +89,18 @@
         "prix_public_producteur": 19.8,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "Pinot Meunier 90 %, Pinot Noir 10 %",
+          "caracteristiques": [
+            "Rosé issu à 100 % de raisins noirs",
+            "Dosage : 6 g/L",
+            "Vieillissement en cave : 3 ans",
+            "Repos après dégorgement : 6 mois"
+          ],
+          "degustation": "Des arômes de fruits rouges (fraise des bois, framboise). Un champagne coloré, puissant et équilibré, à la bouche ronde et fraîche.",
+          "accords": ""
+        }
       },
       {
         "nom": "Dames Blanches",
@@ -92,7 +113,18 @@
         "prix_public_producteur": 20.1,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "100 % Pinot Meunier, issu de vieilles vignes",
+          "caracteristiques": [
+            "Assemblage de vins de 5 et 6 ans",
+            "Dosage : 6 g/L",
+            "Vieillissement en cave : 5 à 6 ans",
+            "Repos après dégorgement : 6 mois"
+          ],
+          "degustation": "Des arômes intensément fruités (pêche, melon, fruits confits), prolongés par une bouche à la fois ronde et fraîche.",
+          "accords": ""
+        }
       },
       {
         "nom": "Paul Augustin Brut",
@@ -105,7 +137,17 @@
         "prix_public_producteur": 19.3,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "Chardonnay 50 %, Pinot Meunier 50 %",
+          "caracteristiques": [
+            "Dosage : 6 g/L",
+            "Vieillissement en cave : 4 ans",
+            "Repos après dégorgement : 6 mois"
+          ],
+          "degustation": "Des parfums de fleurs blanches nuancés de fruits jaunes et de miel. Une attaque franche, des arômes floraux et exotiques, une matière ronde et fraîche et une finale longue et fine.",
+          "accords": ""
+        }
       },
       {
         "nom": "Millésime 2012",
@@ -118,7 +160,17 @@
         "prix_public_producteur": 28.3,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "⅓ Pinot Meunier, ⅓ Pinot Noir, ⅓ Chardonnay",
+          "caracteristiques": [
+            "Issu des seuls raisins de l'année 2012",
+            "Dosage : 6 g/L",
+            "Repos après dégorgement : 6 mois"
+          ],
+          "degustation": "Beaucoup de rondeur et de souplesse, avec une très grande fraîcheur en bouche.",
+          "accords": "À l'apéritif avec du foie gras ou des petits fours chauds ; à table avec des viandes blanches ou des plats cuisinés."
+        }
       },
       {
         "nom": "Ratafia Pinot Noir",
@@ -131,7 +183,18 @@
         "prix_public_producteur": 26,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "100 % Pinot Noir",
+          "caracteristiques": [
+            "Ratafia IG Champenois",
+            "Titre alcoométrique : 17 % vol.",
+            "Élevé au moins 9 mois en fûts de chêne de Champagne",
+            "Alcool de mutage distillé par la maison (Distillerie des Dames Blanches)"
+          ],
+          "degustation": "Une grande complexité aromatique : notes de fruits secs et de noix, finale fine aux arômes de vanille et de fleurs blanches.",
+          "accords": ""
+        }
       },
       {
         "nom": "Ratafia Chardonnay",
@@ -144,7 +207,18 @@
         "prix_public_producteur": 27,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "100 % Chardonnay",
+          "caracteristiques": [
+            "Ratafia IG Champenois",
+            "Titre alcoométrique : 17 % vol.",
+            "Élevé au moins 9 mois en fûts de chêne de Champagne",
+            "Alcool de mutage distillé par la maison (Distillerie des Dames Blanches)"
+          ],
+          "degustation": "Une grande complexité aromatique : notes de fruits secs et de noix, finale fine aux arômes de vanille et de fleurs blanches.",
+          "accords": ""
+        }
       },
       {
         "nom": "Eau de vie de vin",
@@ -157,7 +231,17 @@
         "prix_public_producteur": 55,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "",
+          "caracteristiques": [
+            "Distillée par la Distillerie des Dames Blanches, à partir de jus des vendanges de la maison",
+            "Alambic charentais à double passe",
+            "Long vieillissement en fût de chêne de Champagne-Ardenne"
+          ],
+          "degustation": "Des notes à la fois épicées et florales, et une finale aux accents de caramel.",
+          "accords": "En apéritif ou en digestif, ou avec un dessert au chocolat."
+        }
       },
       {
         "nom": "Sloe Gin",
@@ -170,7 +254,16 @@
         "prix_public_producteur": 42,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "",
+          "caracteristiques": [
+            "Spiritueux de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban"
+          ],
+          "degustation": "",
+          "accords": "",
+          "a_completer": true
+        }
       },
       {
         "nom": "Gin Sauvage",
@@ -183,7 +276,16 @@
         "prix_public_producteur": 36,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "",
+          "caracteristiques": [
+            "Spiritueux de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban"
+          ],
+          "degustation": "",
+          "accords": "",
+          "a_completer": true
+        }
       },
       {
         "nom": "Whisky",
@@ -196,7 +298,16 @@
         "prix_public_producteur": 46,
         "prix_ttc": null,
         "lien_paiement": "",
-        "propose": true
+        "propose": true,
+        "fiche": {
+          "cepage": "",
+          "caracteristiques": [
+            "Spiritueux de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban"
+          ],
+          "degustation": "",
+          "accords": "",
+          "a_completer": true
+        }
       }
     ]
   }

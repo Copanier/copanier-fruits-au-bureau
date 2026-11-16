@@ -865,3 +865,16 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .boisson__bientot { font-size: .85rem; color: var(--texte-doux); font-style: italic; padding: 6px 0; margin-top: auto !important; }
 .boisson .sapin__prix { margin-top: auto !important; }
 .mention-alcool { margin: 18px 0 0 !important; text-align: center !important; font-size: .9rem; font-weight: 600; color: var(--texte-doux); }
+.boisson__plus { margin: 4px 0 6px; background: none; border: 1.5px solid var(--vert); color: var(--vert); border-radius: 999px; padding: 5px 12px; font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; }
+.boisson__plus:hover { background: var(--vert); color: #fff; }
+.fiche-boisson { border: 0; border-radius: var(--rayon); padding: 0; width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 40px); box-shadow: var(--ombre); }
+.fiche-boisson::backdrop { background: rgba(20, 35, 28, .6); }
+.fiche-boisson__fermer { position: absolute; top: 8px; right: 12px; border: 0; background: none; font-size: 2rem; line-height: 1; color: var(--vert); cursor: pointer; }
+.fiche-boisson__corps { display: grid; grid-template-columns: 130px 1fr; gap: 22px; padding: 28px 26px 22px; align-items: start; }
+.fiche-boisson__corps img { width: 100%; height: auto; max-height: 360px; object-fit: contain; }
+.fiche-boisson__corps p, .fiche-boisson__corps li { font-size: .95rem; text-align: left !important; }
+.fiche-boisson__corps ul { margin: 8px 0 10px; padding-left: 18px; }
+.fiche-boisson__maison { margin: 0 !important; color: var(--orange-fonce); font-weight: 600; font-size: .85rem !important; text-transform: uppercase; letter-spacing: 1px; }
+.fiche-boisson__nom { margin: 2px 0 10px; font-family: var(--titre); color: var(--vert); font-size: 1.6rem; }
+.fiche-boisson .mention-alcool { text-align: left !important; }
+@media (max-width: 560px) { .fiche-boisson__corps { grid-template-columns: 1fr; } .fiche-boisson__corps img { max-height: 220px; } }

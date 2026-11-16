@@ -62,6 +62,7 @@
               '<p class="boisson__nom">' + echapper(p.nom) + "</p>" +
               (p.detail ? '<p class="boisson__detail">' + echapper(p.detail) + "</p>" : "") +
               (p.contenance ? '<p class="boisson__detail">' + echapper(p.contenance) + "</p>" : "") +
+              (p.fiche ? '<button type="button" class="boisson__plus" data-fiche="' + b.produits.indexOf(p) + '">En savoir plus</button>' : "") +
               (p.prix ? '<p class="sapin__prix">' + String(p.prix).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : '<p class="boisson__bientot">Prix bientôt disponible</p>') +
               (p.prix && p.lien ? '<a class="bouton bouton--petit" data-alcool data-lien="' + echapper(p.lien) + '" href="#">Commander</a>' : "") +
               "</div>";
@@ -69,6 +70,34 @@
       }).join("") +
       '<p class="mention-alcool">L\'abus d\'alcool est dangereux pour la santé, à consommer avec modération.</p>' +
       "</section>";
+  }
+
+  // Fenêtre « En savoir plus » d'une boisson
+  function ouvrirFiche(b, p) {
+    var f = p.fiche || {};
+    var d = document.getElementById("fiche-boisson");
+    if (!d) {
+      d = document.createElement("dialog");
+      d.id = "fiche-boisson";
+      d.className = "fiche-boisson";
+      document.body.appendChild(d);
+      d.addEventListener("click", function (e) { if (e.target === d || e.target.closest("[data-fermer-fiche]")) d.close(); });
+    }
+    d.innerHTML = '<button type="button" class="fiche-boisson__fermer" data-fermer-fiche aria-label="Fermer">&times;</button>' +
+      '<div class="fiche-boisson__corps">' +
+      '<img src="' + echapper(p.image) + '" alt="" width="' + (p.l || 170) + '" height="' + (p.h || 640) + '">' +
+      "<div>" +
+      '<p class="fiche-boisson__maison">' + echapper(b.producteur) + " · " + echapper(p.categorie) + "</p>" +
+      '<h3 class="fiche-boisson__nom">' + echapper(p.nom) + "</h3>" +
+      (f.cepage ? "<p><strong>Cépage</strong>&nbsp;: " + echapper(f.cepage) + "</p>" : "") +
+      (f.caracteristiques && f.caracteristiques.length ? "<ul>" + f.caracteristiques.map(function (c) { return "<li>" + echapper(c) + "</li>"; }).join("") + "</ul>" : "") +
+      (f.degustation ? "<p><strong>Dégustation</strong>&nbsp;: " + echapper(f.degustation) + "</p>" : "") +
+      (f.accords ? "<p><strong>Accords</strong>&nbsp;: " + echapper(f.accords) + "</p>" : "") +
+      (f.a_completer ? '<p class="petit">Fiche détaillée bientôt disponible. Une question&nbsp;? <a href="mailto:contact@copanier.fr">contact@copanier.fr</a></p>' : "") +
+      (p.prix ? '<p class="sapin__prix">' + String(p.prix).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : "") +
+      '<p class="mention-alcool">L\'abus d\'alcool est dangereux pour la santé, à consommer avec modération.</p>' +
+      "</div></div>";
+    d.showModal();
   }
 
   function afficher(info) {
@@ -123,11 +152,14 @@
     // Récapitulatif et accord placés entre le choix de la date et le choix du sapin
     var etape = boutique.querySelector(".sapins__etape");
     etape.parentNode.insertBefore(boutique.querySelector(".sapins__recap"), etape);
-    etape.parentNode.insertBefore(boutique.querySelector(".sapins__accord"), etape);
+    etape.parentNode.insertBefore(boutique.querySelector("[data-accord]").closest("label"), etape);
     boutique.querySelectorAll('input[name="vague"]').forEach(function (r) { r.addEventListener("change", majRecap); });
     boutique.majRecap = majRecap;
     majRecap();
     demarrerRebours();
+    boutique.querySelectorAll("[data-fiche]").forEach(function (bt) {
+      bt.addEventListener("click", function () { ouvrirFiche(info.boissons, info.boissons.produits[Number(bt.getAttribute("data-fiche"))]); });
+    });
     boutique.querySelectorAll("[data-lien]").forEach(function (a) {
       a.addEventListener("click", function (e) {
         e.preventDefault();
