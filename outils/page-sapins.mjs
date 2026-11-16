@@ -106,9 +106,9 @@ const contenu = `    <section class="section">
         </div>
 
         <form class="sapins__code" data-sapins-code>
-          <label for="sapins-code"><strong>Votre code entreprise</strong><span>Il vous a été communiqué par votre entreprise.</span></label>
+          <label for="sapins-code"><strong>Votre code entreprise</strong><span>Il a été communiqué par e-mail à votre responsable.</span></label>
           <div class="sapins__saisie">
-            <input id="sapins-code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="Ex.&nbsp;: SYM4821" required>
+            <input id="sapins-code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" required>
             <button type="submit" class="bouton">Accéder aux sapins</button>
           </div>
           <p class="sapins__message" role="status" aria-live="polite"></p>
@@ -130,7 +130,7 @@ const contenu = `    <section class="section">
           <li>Récupérez votre sapin au bureau le jour de la livraison&nbsp;: il porte une étiquette à vos prénom et nom.</li>
         </ol>
         <h2>Vous n'avez pas de code&nbsp;?</h2>
-        <p>La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
+        <p>Le code de votre entreprise a été communiqué par e-mail à votre responsable<p>La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. nbsp;: demandez-le-lui. La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
 
         <h2 id="conditions">Conditions de vente des sapins</h2>
         <p>En résumé ci-dessous. Les <a href="/conditions-generales-de-vente/">conditions générales de vente complètes</a> s'appliquent à toute commande.</p>

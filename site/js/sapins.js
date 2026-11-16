@@ -38,7 +38,7 @@
     }).then(function (res) {
       var info = res.filter(Boolean)[0];
       bouton.disabled = false;
-      if (!info) { message.textContent = "Ce code n'est pas reconnu. Vérifiez-le ou demandez-le à votre entreprise."; return; }
+      if (!info) { message.textContent = "Ce code n'est pas reconnu. Vérifiez-le auprès de votre responsable, qui l'a reçu par e-mail."; return; }
       message.textContent = "";
       try { sessionStorage.setItem("copanier-code-sapins", code); } catch (e) {}
       afficher(info);
