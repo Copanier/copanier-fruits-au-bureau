@@ -97,7 +97,7 @@ const contenu = `    <section class="section">
         <div class="sapins__intro">
           <p class="surtitre">Noël ${config.annee} au bureau</p>
           <h2>Votre sapin de Noël livré au bureau</h2>
-          <p>Des <strong>sapins Nordmann</strong> fraîchement coupés, livrés directement dans votre entreprise. Vous le commandez en ligne, vous le payez par carte, et vous le récupérez au bureau le jour de la livraison&nbsp;: plus besoin de le transporter depuis une jardinerie.</p>
+          <p>Des <strong>sapins Nordmann</strong> fraîchement coupés, livrés directement dans votre entreprise. Vous le commandez en ligne, vous le payez par carte, et vous le récupérez au bureau le jour de la livraison.</p>
           <ul class="liste-coches">
             <li>5 tailles, de 100 à 250&nbsp;cm, prix TTC (TVA ${config.tva} incluse)</li>
             <li>Paiement sécurisé par carte bancaire avec Stripe</li>
