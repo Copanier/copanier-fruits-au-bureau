@@ -134,7 +134,7 @@
         "image": "/images/champagne/ratafia-pinot-noir.webp",
         "largeur": 174,
         "hauteur": 341,
-        "prix_ttc": 21.26,
+        "prix_ttc": 28,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -149,7 +149,7 @@
           "accords": ""
         },
         "prix_reference": 21,
-        "source_prix": "Les vins de Benoit"
+        "source_prix": "Prix fixé par Pierre"
       },
       {
         "nom": "Ratafia Chardonnay",
@@ -159,7 +159,7 @@
         "image": "/images/champagne/ratafia-chardonnay.webp",
         "largeur": 174,
         "hauteur": 335,
-        "prix_ttc": 22.48,
+        "prix_ttc": 28,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -174,7 +174,7 @@
           "accords": ""
         },
         "prix_reference": 22.2,
-        "source_prix": "Les vins de Benoit"
+        "source_prix": "Prix fixé par Pierre"
       },
       {
         "nom": "Gin Sauvage",
