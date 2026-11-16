@@ -138,18 +138,11 @@ const contenu = `    <section class="section">
         <h2>Vous n'avez pas de code&nbsp;?</h2>
         <p>Le code de votre entreprise a été communiqué par e-mail à votre responsable&nbsp;: demandez-le-lui. La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
 
-        <h2 id="alcool">Champagne et boissons alcoolisées</h2>
-        <ul>
-          <li><strong>La vente d'alcool est interdite aux mineurs</strong> (article L3342-1 du Code de la santé publique). En commandant, vous certifiez avoir 18&nbsp;ans révolus. Une pièce d'identité peut vous être demandée à la remise de la commande.</li>
-          <li>Les champagnes, vins, ratafias et spiritueux sont produits et mis en bouteille par la ${b.producteur || 'maison partenaire'}, vendus et livrés par COPANIER (COMPTOIR DES FERMIERS).</li>
-          <li>Les boissons sont livrées en même temps que les sapins, dans votre entreprise, à la date choisie. Chaque commande est étiquetée à vos prénom et nom.</li>
-          <li>Pour ces produits, vous disposez d'un droit de rétractation de 14&nbsp;jours à compter de la livraison&nbsp;: les bouteilles doivent être rendues intactes et non ouvertes (voir les <a href="/conditions-generales-de-vente/">conditions générales de vente</a>).</li>
-        </ul>
-        <p class="mention-alcool">L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</p>
-
-        <h2 id="conditions">Conditions de vente des sapins</h2>
-        <p>En résumé ci-dessous. Les <a href="/conditions-generales-de-vente/">conditions générales de vente complètes</a> s'appliquent à toute commande.</p>
-        <ul>
+        <h2>Conditions de vente</h2>
+        <p>Les <a href="/conditions-generales-de-vente/">conditions générales de vente</a> s'appliquent à toute commande. L'essentiel&nbsp;:</p>
+        <details class="pliable" id="conditions">
+          <summary>Sapins&nbsp;: commande, livraison, annulation <span class="pliable__plus">En savoir plus</span></summary>
+          <ul>
           <li><strong>Vendeur</strong>&nbsp;: COMPTOIR DES FERMIERS (COPANIER), SASU au capital de 1&nbsp;000&nbsp;€, 3 route de Forfry, 77178 Oissery, RCS Meaux 904 666 724. Contact&nbsp;: <a href="mailto:contact@copanier.fr">contact@copanier.fr</a>.</li>
           <li><strong>Prix</strong>&nbsp;: indiqués en euros TTC, TVA à ${config.tva} incluse. Livraison au bureau incluse.</li>
           <li><strong>Paiement</strong>&nbsp;: par carte bancaire, à la commande, sur la page sécurisée de Stripe. COPANIER n'a jamais accès à vos données bancaires.</li>
@@ -158,8 +151,19 @@ const contenu = `    <section class="section">
           <li><strong>Produit</strong>&nbsp;: sapin naturel coupé, livré avec son pied (bûche en bois) — ou sans pied, avec ${config.sans_pied ? config.sans_pied.remise : 2}&nbsp;€ de remise, en cochant la case correspondante — dont l'aspect peut varier légèrement d'un arbre à l'autre. Les tailles sont données à titre indicatif.</li>
           <li><strong>Annulation</strong>&nbsp;: le sapin étant un produit naturel coupé, susceptible de se détériorer rapidement, le droit de rétractation ne s'applique pas (article L221-28 du Code de la consommation). Vous pouvez toutefois annuler gratuitement par e-mail jusqu'à la date limite de commande de votre livraison&nbsp;: nous vous remboursons sur votre carte.</li>
           <li><strong>Réclamation</strong>&nbsp;: un sapin abîmé à la livraison est remplacé ou remboursé. Signalez-le-nous sous 48&nbsp;h à <a href="mailto:contact@copanier.fr">contact@copanier.fr</a>.</li>
-        </ul>
-        <p>Les données de commande (nom, e-mail, téléphone, service) servent uniquement à préparer et livrer votre sapin. Voir notre <a href="/politique-de-confidentialite/">politique de confidentialité</a>.</p>
+          </ul>
+        </details>
+        <details class="pliable" id="alcool">
+          <summary>Champagne et boissons alcoolisées <span class="pliable__plus">En savoir plus</span></summary>
+          <ul>
+            <li><strong>La vente d'alcool est interdite aux mineurs</strong> (article L3342-1 du Code de la santé publique). En commandant, vous certifiez avoir 18&nbsp;ans révolus. Une pièce d'identité peut vous être demandée à la remise de la commande.</li>
+            <li>Les champagnes, vins, ratafias et spiritueux sont produits et mis en bouteille par la ${b.producteur || 'maison partenaire'}, vendus et livrés par COPANIER (COMPTOIR DES FERMIERS).</li>
+            <li>Les boissons sont livrées en même temps que les sapins, dans votre entreprise, à la date choisie. Chaque commande est étiquetée à vos prénom et nom.</li>
+            <li>Pour ces produits, vous disposez d'un droit de rétractation de 14&nbsp;jours à compter de la livraison&nbsp;: les bouteilles doivent être rendues intactes et non ouvertes (voir les <a href="/conditions-generales-de-vente/">conditions générales de vente</a>).</li>
+          </ul>
+        </details>
+        <p class="mention-alcool">L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</p>
+        <p class="petit">Les données de commande (nom, e-mail, téléphone, service) servent uniquement à préparer et livrer votre commande. Voir notre <a href="/politique-de-confidentialite/">politique de confidentialité</a>.</p>
       </article>
     </section>
     <script type="application/json" id="sapins-donnees">${JSON.stringify({ iterations: ITERATIONS, sel: b64(SEL), coffre })}</script>

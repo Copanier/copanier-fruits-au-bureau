@@ -66,7 +66,7 @@
               (p.contenance ? '<p class="boisson__detail">' + echapper(p.contenance) + "</p>" : "") +
               (p.fiche ? '<button type="button" class="boisson__plus" data-fiche="' + b.produits.indexOf(p) + '">En savoir plus</button>' : "") +
               (p.prix ? '<p class="sapin__prix">' + Number(p.prix).toFixed(2).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : '<p class="boisson__bientot">Prix bientôt disponible</p>') +
-              (p.prix && p.lien ? '<a class="bouton bouton--petit" data-alcool data-lien="' + echapper(p.lien) + '" href="#">Commander</a>' : "") +
+              (p.prix ? '<a class="bouton bouton--petit" data-alcool data-lien="' + echapper(p.lien || "") + '" href="#">Commander</a>' : "") +
               "</div>";
           }).join("") + "</div>";
       }).join("") +
@@ -135,8 +135,7 @@
           '<p class="sapin__pied">🪵 Pied bûche inclus</p>' +
           '<p class="sapin__prix" data-prix="' + s.prix + '">' + s.prix + "&nbsp;€ <small>TTC</small></p>" +
           (info.sans_pied ? '<label class="sapin__sanspied"><input type="checkbox" data-sans-pied> Je ne souhaite pas de pied (−' + info.sans_pied.remise + "&nbsp;€)</label>" : "") +
-          (s.lien ? '<a class="bouton bouton--petit" data-lien="' + echapper(s.lien) + '" href="#">Commander</a>'
-                  : '<span class="sapin__bientot">Bientôt disponible</span>') +
+          '<a class="bouton bouton--petit" data-lien="' + echapper(s.lien || "") + '" href="#">Commander</a>' +
           "</div>";
       }).join("") + "</div>" +
       boissonsHtml(info.boissons) +
@@ -187,18 +186,11 @@
         var v = choix && info.vagues.filter(function (x) { return x.id === choix.value; })[0];
         if (!v || new Date(v.fin).getTime() <= Date.now()) { alert("Choisissez une date de livraison encore ouverte."); return; }
         var accord = boutique.querySelector("[data-accord]");
-        if (!accord.checked) {
-          accord.closest("label").classList.add("a-cocher");
-          accord.closest("label").scrollIntoView({ behavior: "smooth", block: "center" });
-          return;
-        }
+        if (!accord.checked) { exiger(accord, "Pour commander, cochez d'abord cette case : elle confirme que votre commande sera livrée dans votre entreprise à la date choisie."); return; }
         // Boissons alcoolisées : déclaration de majorité obligatoire
         var majeur = boutique.querySelector("[data-majeur]");
-        if (a.hasAttribute("data-alcool") && majeur && !majeur.checked) {
-          majeur.closest("label").classList.add("a-cocher");
-          majeur.closest("label").scrollIntoView({ behavior: "smooth", block: "center" });
-          return;
-        }
+        if (a.hasAttribute("data-alcool") && majeur && !majeur.checked) { exiger(majeur, "Pour commander une bouteille, cochez d'abord cette case : la vente d'alcool est réservée aux personnes majeures."); return; }
+        if (!a.getAttribute("data-lien")) { alerteBouton(a, "Le paiement en ligne ouvre très bientôt. Merci de votre patience !"); return; }
         var vague = v.id;
         // Référence transmise à Stripe : code entreprise + livraison choisie (ex. ENTRE7K2Q-V1)
         // Sapin sans pied : la référence le signale (…-SP) et le code promo Stripe déduit la remise
@@ -209,7 +201,46 @@
           (sansPied && info.sans_pied.code_promo ? "&prefilled_promo_code=" + encodeURIComponent(info.sans_pied.code_promo) : "");
       });
     });
+    // Boutons grisés tant que les cases nécessaires ne sont pas cochées (ils restent cliquables pour expliquer quoi faire)
+    function majBoutons() {
+      var ok = boutique.querySelector("[data-accord]").checked;
+      var majeur = boutique.querySelector("[data-majeur]");
+      boutique.querySelectorAll("[data-lien]").forEach(function (a) {
+        var bloque = !ok || (a.hasAttribute("data-alcool") && majeur && !majeur.checked);
+        a.classList.toggle("est-bloque", bloque);
+        a.setAttribute("aria-disabled", bloque ? "true" : "false");
+      });
+    }
+    boutique.querySelectorAll("[data-accord], [data-majeur]").forEach(function (c) {
+      c.addEventListener("change", function () {
+        if (c.checked) { var l = c.closest("label"); l.classList.remove("a-cocher"); var m = l.nextElementSibling; if (m && m.classList.contains("sapins__alerte")) m.remove(); }
+        majBoutons();
+      });
+    });
+    majBoutons();
     boutique.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Met en évidence une case à cocher obligatoire, avec un message, et fait défiler la page jusqu'à elle
+  function exiger(caseACocher, texte) {
+    var label = caseACocher.closest("label");
+    label.classList.remove("a-cocher"); void label.offsetWidth; label.classList.add("a-cocher");
+    var m = label.nextElementSibling;
+    if (!m || !m.classList.contains("sapins__alerte")) {
+      m = document.createElement("p");
+      m.className = "sapins__alerte";
+      m.setAttribute("role", "alert");
+      label.parentNode.insertBefore(m, label.nextSibling);
+    }
+    m.textContent = "☝️ " + texte;
+    label.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(function () { caseACocher.focus({ preventScroll: true }); }, 400);
+  }
+  function alerteBouton(a, texte) {
+    var carte = a.closest(".sapin, .boisson");
+    var m = carte.querySelector(".sapins__alerte");
+    if (!m) { m = document.createElement("p"); m.className = "sapins__alerte sapins__alerte--petite"; m.setAttribute("role", "status"); carte.appendChild(m); }
+    m.textContent = texte;
   }
 
   // Compte à rebours de chaque date limite, mis à jour chaque seconde. À zéro, la date devient impossible à choisir.
