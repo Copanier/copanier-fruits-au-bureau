@@ -207,7 +207,7 @@
         "image": "/images/champagne/whisky.webp",
         "largeur": 267,
         "hauteur": 310,
-        "prix_ttc": 40.1,
+        "prix_ttc": 48,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -220,7 +220,7 @@
           "a_completer": true
         },
         "prix_reference": 39.6,
-        "source_prix": "Les vins de Benoit"
+        "source_prix": "Prix fixé par Pierre"
       }
     ],
     "tva": "20 %",
