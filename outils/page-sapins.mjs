@@ -128,6 +128,7 @@ const contenu = `    <section class="section">
         <p>La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
 
         <h2 id="conditions">Conditions de vente des sapins</h2>
+        <p>En résumé ci-dessous. Les <a href="/conditions-generales-de-vente/">conditions générales de vente complètes</a> s'appliquent à toute commande.</p>
         <ul>
           <li><strong>Vendeur</strong>&nbsp;: COMPTOIR DES FERMIERS (COPANIER), SASU au capital de 1&nbsp;000&nbsp;€, 3 route de Forfry, 77178 Oissery, RCS Meaux 904 666 724. Contact&nbsp;: <a href="mailto:contact@copanier.fr">contact@copanier.fr</a>.</li>
           <li><strong>Prix</strong>&nbsp;: indiqués en euros TTC, TVA à ${config.tva} incluse. Livraison au bureau incluse.</li>
