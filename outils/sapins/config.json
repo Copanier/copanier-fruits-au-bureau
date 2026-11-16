@@ -184,7 +184,7 @@
         "image": "/images/champagne/gin-sauvage.webp",
         "largeur": 297,
         "hauteur": 259,
-        "prix_ttc": 25.31,
+        "prix_ttc": 39,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -197,7 +197,7 @@
           "a_completer": true
         },
         "prix_reference": 25,
-        "source_prix": "Les vins de Benoit"
+        "source_prix": "Prix fixé par Pierre"
       },
       {
         "nom": "Whisky",
