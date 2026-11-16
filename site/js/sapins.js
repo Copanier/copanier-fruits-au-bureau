@@ -125,13 +125,14 @@
           "<small>Commandes jusqu'au " + fin + " à minuit</small>" +
           '<span class="sapins__rebours" data-fin="' + echapper(v.fin) + '">' + (close ? "Commandes closes" : "") + "</span></span></label>";
       }).join("") + "</fieldset>" +
-      '<p class="sapins__etape">2. Votre sapin Nordmann</p><div class="sapins__liste">' +
+      '<p class="sapins__etape">2. Votre sapin Nordmann, livré avec son pied</p><div class="sapins__liste">' +
       info.sapins.map(function (s, i) {
         var h = 70 + i * 14;
         return '<div class="sapin">' +
           '<svg class="sapin__dessin" viewBox="0 0 60 100" style="height:' + h + 'px" aria-hidden="true"><path d="M30 4 L52 40 H40 L56 66 H42 L58 88 H2 L18 66 H4 L20 40 H8 Z" fill="#2f6b4a"/><rect x="26" y="88" width="8" height="10" fill="#8a5a3c"/><circle cx="30" cy="5" r="3" fill="#f4661c"/></svg>' +
           '<p class="sapin__taille">' + echapper(s.taille) + "</p>" +
           '<p class="sapin__pour">' + echapper(s.pour || "") + "</p>" +
+          '<p class="sapin__pied">🪵 Pied bûche inclus</p>' +
           '<p class="sapin__prix">' + s.prix + "&nbsp;€ <small>TTC</small></p>" +
           (s.lien ? '<a class="bouton bouton--petit" data-lien="' + echapper(s.lien) + '" href="#">Commander</a>'
                   : '<span class="sapin__bientot">Bientôt disponible</span>') +

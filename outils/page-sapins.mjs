@@ -103,7 +103,7 @@ const contenu = `    <section class="section">
           <h2>Votre sapin de Noël livré au bureau</h2>
           <p>Des <strong>sapins Nordmann</strong> fraîchement coupés, livrés directement dans votre entreprise. Vous le commandez en ligne, vous le payez par carte, et vous le récupérez au bureau le jour de la livraison.</p>
           <ul class="liste-coches">
-            <li>5 tailles, de 100 à 250&nbsp;cm, prix TTC (TVA ${config.tva} incluse)</li>
+            <li>5 tailles, de 100 à 250&nbsp;cm, <strong>livrés avec leur pied</strong> (bûche en bois), prix TTC (TVA ${config.tva} incluse)</li>
             <li>Paiement sécurisé par carte bancaire avec Stripe</li>
             <li>Livraison au bureau&nbsp;: ${vagues.map((v) => v.livraison).join(' ou ')}</li>
             <li>Et pour les fêtes&nbsp;: champagne en direct du producteur, livré avec votre sapin</li>
@@ -154,7 +154,7 @@ const contenu = `    <section class="section">
           <li><strong>Paiement</strong>&nbsp;: par carte bancaire, à la commande, sur la page sécurisée de Stripe. COPANIER n'a jamais accès à vos données bancaires.</li>
           <li><strong>Commandes</strong>&nbsp;: jusqu'au ${dateLongue(premiere.fin)} pour une livraison le ${premiere.livraison}${vagues.length > 1 ? `, et jusqu'au ${dateLongue(derniere.fin)} pour une livraison le ${derniere.livraison}` : ''}. Passé ces dates, la livraison correspondante n'est plus proposée.</li>
           <li><strong>Livraison</strong>&nbsp;: à l'adresse de votre entreprise, à la date choisie. Elle est organisée à partir de ${config.seuil_par_entreprise}&nbsp;sapins commandés dans l'entreprise. En dessous, nous vous proposons un point de retrait proche ou le remboursement intégral.</li>
-          <li><strong>Produit</strong>&nbsp;: sapin naturel coupé, dont l'aspect peut varier légèrement d'un arbre à l'autre. Les tailles sont données à titre indicatif.</li>
+          <li><strong>Produit</strong>&nbsp;: sapin naturel coupé, livré avec son pied (bûche en bois), dont l'aspect peut varier légèrement d'un arbre à l'autre. Les tailles sont données à titre indicatif.</li>
           <li><strong>Annulation</strong>&nbsp;: le sapin étant un produit naturel coupé, susceptible de se détériorer rapidement, le droit de rétractation ne s'applique pas (article L221-28 du Code de la consommation). Vous pouvez toutefois annuler gratuitement par e-mail jusqu'à la date limite de commande de votre livraison&nbsp;: nous vous remboursons sur votre carte.</li>
           <li><strong>Réclamation</strong>&nbsp;: un sapin abîmé à la livraison est remplacé ou remboursé. Signalez-le-nous sous 48&nbsp;h à <a href="mailto:contact@copanier.fr">contact@copanier.fr</a>.</li>
         </ul>

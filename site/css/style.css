@@ -885,3 +885,4 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .boissons__liste { padding-top: 12px; }
 .fiche-boisson__coeur { display: inline-block; margin: 0 0 8px !important; background: var(--orange-clair); color: var(--orange-fonce); font-weight: 700; padding: 4px 12px; border-radius: 999px; font-size: .85rem !important; }
 .sapins__changer { margin-left: 8px; background: none; border: 0; padding: 0; font: inherit; font-size: .85rem; color: var(--orange-fonce); text-decoration: underline; cursor: pointer; }
+.sapin__pied { font-size: .8rem; color: var(--vert); font-weight: 600; }
