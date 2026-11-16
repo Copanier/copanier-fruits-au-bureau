@@ -79,56 +79,6 @@
         "source_prix": "Les vins de Benoit"
       },
       {
-        "nom": "Rosé",
-        "categorie": "Champagnes",
-        "detail": "Cépage Pinot Meunier 90% Pinot Noir 10%",
-        "contenance": "Bouteille 75 cl",
-        "image": "/images/champagne/rose.webp",
-        "largeur": 171,
-        "hauteur": 640,
-        "prix_ttc": null,
-        "lien_paiement": "",
-        "propose": true,
-        "fiche": {
-          "cepage": "Pinot Meunier 90 %, Pinot Noir 10 %",
-          "caracteristiques": [
-            "Rosé issu à 100 % de raisins noirs",
-            "Dosage : 6 g/L",
-            "Vieillissement en cave : 3 ans",
-            "Repos après dégorgement : 6 mois"
-          ],
-          "degustation": "Des arômes de fruits rouges (fraise des bois, framboise). Un champagne coloré, puissant et équilibré, à la bouche ronde et fraîche.",
-          "accords": ""
-        },
-        "prix_reference": null,
-        "source_prix": "absent chez Les vins de Benoit"
-      },
-      {
-        "nom": "Dames Blanches",
-        "categorie": "Champagnes",
-        "detail": "Cépage Pinot Meunier 100%",
-        "contenance": "Bouteille 75 cl",
-        "image": "/images/champagne/dames-blanches.webp",
-        "largeur": 172,
-        "hauteur": 640,
-        "prix_ttc": null,
-        "lien_paiement": "",
-        "propose": true,
-        "fiche": {
-          "cepage": "100 % Pinot Meunier, issu de vieilles vignes",
-          "caracteristiques": [
-            "Assemblage de vins de 5 et 6 ans",
-            "Dosage : 6 g/L",
-            "Vieillissement en cave : 5 à 6 ans",
-            "Repos après dégorgement : 6 mois"
-          ],
-          "degustation": "Des arômes intensément fruités (pêche, melon, fruits confits), prolongés par une bouche à la fois ronde et fraîche.",
-          "accords": ""
-        },
-        "prix_reference": null,
-        "source_prix": "absent chez Les vins de Benoit"
-      },
-      {
         "nom": "Paul Augustin Brut",
         "categorie": "Champagnes",
         "detail": "Cépage Chardonnay 50% Pinot Meunier 50%",
@@ -225,53 +175,6 @@
         },
         "prix_reference": 22.2,
         "source_prix": "Les vins de Benoit"
-      },
-      {
-        "nom": "Eau de vie de vin",
-        "categorie": "Spiritueux",
-        "detail": "",
-        "contenance": "",
-        "image": "/images/champagne/eau-de-vie-de-vin.webp",
-        "largeur": 175,
-        "hauteur": 343,
-        "prix_ttc": null,
-        "lien_paiement": "",
-        "propose": true,
-        "fiche": {
-          "cepage": "",
-          "caracteristiques": [
-            "Distillée par la Distillerie des Dames Blanches, à partir de jus des vendanges de la maison",
-            "Alambic charentais à double passe",
-            "Long vieillissement en fût de chêne de Champagne-Ardenne"
-          ],
-          "degustation": "Des notes à la fois épicées et florales, et une finale aux accents de caramel.",
-          "accords": "En apéritif ou en digestif, ou avec un dessert au chocolat."
-        },
-        "prix_reference": null,
-        "source_prix": "absent chez Les vins de Benoit"
-      },
-      {
-        "nom": "Sloe Gin",
-        "categorie": "Spiritueux",
-        "detail": "",
-        "contenance": "",
-        "image": "/images/champagne/sloe-gin.webp",
-        "largeur": 179,
-        "hauteur": 351,
-        "prix_ttc": null,
-        "lien_paiement": "",
-        "propose": true,
-        "fiche": {
-          "cepage": "",
-          "caracteristiques": [
-            "Spiritueux de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban"
-          ],
-          "degustation": "",
-          "accords": "",
-          "a_completer": true
-        },
-        "prix_reference": null,
-        "source_prix": "absent chez Les vins de Benoit"
       },
       {
         "nom": "Gin Sauvage",
