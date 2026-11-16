@@ -40,7 +40,7 @@
       bouton.disabled = false;
       if (!info) { message.textContent = "Ce code n'est pas reconnu. Vérifiez-le auprès de votre responsable, qui l'a reçu par e-mail."; return; }
       message.textContent = "";
-      try { sessionStorage.setItem("copanier-code-sapins", code); } catch (e) {}
+      try { localStorage.setItem("copanier-code-sapins", code); } catch (e) {}
       afficher(info);
     });
   }
@@ -106,7 +106,8 @@
   function afficher(info) {
     var maintenant = Date.now();
     var ouvertes = info.vagues.filter(function (v) { return new Date(v.fin).getTime() > maintenant; });
-    var html = '<div class="sapins__entreprise"><p>Bienvenue aux collaborateurs de <strong>' + echapper(info.entreprise) + "</strong>&nbsp;!</p>" +
+    var html = '<div class="sapins__entreprise"><p>Bienvenue aux collaborateurs de <strong>' + echapper(info.entreprise) + "</strong>&nbsp;! " +
+      '<button type="button" class="sapins__changer" data-changer-code>Changer d\'entreprise</button></p>' +
       (info.adresse ? '<p class="sapins__adresse">🚚 Livré dans votre entreprise&nbsp;: <strong>' + echapper(info.adresse) + "</strong></p>" : "") + "</div>";
     if (!ouvertes.length) {
       boutique.innerHTML = html + '<p class="sapins__clos">Les commandes de sapins sont closes pour cette année. Merci et à l\'année prochaine&nbsp;!</p>';
@@ -160,6 +161,13 @@
     boutique.majRecap = majRecap;
     majRecap();
     demarrerRebours();
+    // Code mémorisé sur cet appareil : ce bouton l'efface pour en saisir un autre
+    boutique.querySelector("[data-changer-code]").addEventListener("click", function () {
+      try { localStorage.removeItem("copanier-code-sapins"); } catch (e) {}
+      boutique.hidden = true; boutique.innerHTML = ""; champ.value = ""; message.textContent = "";
+      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+      champ.focus();
+    });
     boutique.querySelectorAll("[data-fiche]").forEach(function (bt) {
       bt.addEventListener("click", function () { ouvrirFiche(info.boissons, info.boissons.produits[Number(bt.getAttribute("data-fiche"))]); });
     });
@@ -230,6 +238,6 @@
   // Lien direct envoyé aux entreprises : /sapins-de-noel/#code=XXXX (le code ne quitte jamais votre navigateur)
   var m = location.hash.match(/code=([0-9A-Za-z-]+)/);
   var memo = null;
-  try { memo = sessionStorage.getItem("copanier-code-sapins"); } catch (e) {}
+  try { memo = localStorage.getItem("copanier-code-sapins"); } catch (e) {}
   if (m || memo) { champ.value = m ? m[1].toUpperCase() : memo; ouvrir(champ.value); }
 })();
