@@ -24,15 +24,17 @@ const config = JSON.parse(fs.readFileSync(path.join(DOSSIER, 'config.json'), 'ut
 const fichierEntreprises = path.join(DOSSIER, 'entreprises.local.json');
 const entreprises = fs.existsSync(fichierEntreprises) ? JSON.parse(fs.readFileSync(fichierEntreprises, 'utf8')) : [];
 
-// --- Codes : préfixe lisible (nom de l'entreprise) + 4 caractères aléatoires sans ambiguïté
-const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+// --- Codes : 4 chiffres tirés au hasard, uniques, sans suites évidentes (1234, 1111, 2026…)
 const normaliser = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+function codeEvident(c) {
+  const d = c.split('').map(Number);
+  const suite = (pas) => d.every((x, i) => i === 0 || x === d[i - 1] + pas);
+  return new Set(d).size <= 2 || suite(1) || suite(-1) || /^(19|20)\d\d$/.test(c);
+}
 function nouveauCode(nom, existants) {
-  const prefixe = normaliser(nom.normalize('NFD').replace(/[̀-ͯ]/g, '')).slice(0, 5) || 'CODE';
   for (;;) {
-    const alea = Array.from(crypto.getRandomValues(new Uint8Array(4)), (o) => ALPHABET[o % ALPHABET.length]).join('');
-    const code = `${prefixe}-${alea}`;
-    if (!existants.has(normaliser(code))) return code;
+    const code = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, '0');
+    if (!existants.has(code) && !codeEvident(code)) return code;
   }
 }
 const existants = new Set(entreprises.map((e) => normaliser(e.code)).filter(Boolean));
@@ -46,13 +48,14 @@ if (codesCrees) fs.writeFileSync(fichierEntreprises, JSON.stringify(entreprises,
 // --- Chiffrement (identique au déchiffrement de site/js/sapins.js)
 const ITERATIONS = 150000;
 const b64 = (u8) => Buffer.from(u8).toString('base64');
+// Un « sel » commun, renouvelé à chaque génération : le navigateur ne calcule la clé qu'une fois par code saisi
+const SEL = crypto.getRandomValues(new Uint8Array(16));
 async function chiffrer(code, objet) {
-  const sel = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(normaliser(code)), 'PBKDF2', false, ['deriveKey']);
-  const cle = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: sel, iterations: ITERATIONS, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+  const cle = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: SEL, iterations: ITERATIONS, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
   const donnees = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cle, new TextEncoder().encode(JSON.stringify(objet))));
-  return { s: b64(sel), i: b64(iv), d: b64(donnees) };
+  return { i: b64(iv), d: b64(donnees) };
 }
 
 const vagues = config.vagues.map((v) => ({ id: v.id, fin: v.fin_commandes, livraison: v.libelle_livraison }));
@@ -100,7 +103,7 @@ const contenu = `    <section class="section">
         <form class="sapins__code" data-sapins-code>
           <label for="sapins-code"><strong>Votre code entreprise</strong><span>Il vous a été communiqué par votre entreprise.</span></label>
           <div class="sapins__saisie">
-            <input id="sapins-code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Ex.&nbsp;: ENTRE-7K2Q" required>
+            <input id="sapins-code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="numeric" maxlength="4" placeholder="Ex.&nbsp;: 4821" required>
             <button type="submit" class="bouton">Accéder aux sapins</button>
           </div>
           <p class="sapins__message" role="status" aria-live="polite"></p>
@@ -138,7 +141,7 @@ const contenu = `    <section class="section">
         <p>Les données de commande (nom, e-mail, téléphone, service) servent uniquement à préparer et livrer votre sapin. Voir notre <a href="/politique-de-confidentialite/">politique de confidentialité</a>.</p>
       </article>
     </section>
-    <script type="application/json" id="sapins-donnees">${JSON.stringify({ iterations: ITERATIONS, coffre })}</script>
+    <script type="application/json" id="sapins-donnees">${JSON.stringify({ iterations: ITERATIONS, sel: b64(SEL), coffre })}</script>
     <script src="/js/sapins.js" defer></script>`;
 
 function dateLongue(iso) {

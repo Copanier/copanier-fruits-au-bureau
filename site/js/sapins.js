@@ -15,14 +15,16 @@
   function echapper(t) { return String(t).replace(/[&<>"]/g, function (x) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[x]; }); }
   function octets(b64) { var s = atob(b64), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
 
-  function essayer(code, boite) {
-    var enc = new TextEncoder();
-    return crypto.subtle.importKey("raw", enc.encode(code), "PBKDF2", false, ["deriveKey"]).then(function (base) {
-      return crypto.subtle.deriveKey({ name: "PBKDF2", salt: octets(boite.s), iterations: donnees.iterations, hash: "SHA-256" },
+  // La clé est calculée une seule fois à partir du code, puis essayée sur chaque entreprise
+  function cleDuCode(code) {
+    return crypto.subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveKey"]).then(function (base) {
+      return crypto.subtle.deriveKey({ name: "PBKDF2", salt: octets(donnees.sel), iterations: donnees.iterations, hash: "SHA-256" },
         base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
-    }).then(function (cle) {
-      return crypto.subtle.decrypt({ name: "AES-GCM", iv: octets(boite.i) }, cle, octets(boite.d));
-    }).then(function (clair) { return JSON.parse(new TextDecoder().decode(clair)); }, function () { return null; });
+    });
+  }
+  function essayer(cle, boite) {
+    return crypto.subtle.decrypt({ name: "AES-GCM", iv: octets(boite.i) }, cle, octets(boite.d))
+      .then(function (clair) { return JSON.parse(new TextDecoder().decode(clair)); }, function () { return null; });
   }
 
   function ouvrir(code) {
@@ -31,8 +33,9 @@
     if (!window.crypto || !crypto.subtle) { message.textContent = "Votre navigateur est trop ancien pour commander. Essayez avec un navigateur à jour."; return; }
     bouton.disabled = true;
     message.textContent = "Vérification du code…";
-    var essais = donnees.coffre.map(function (b) { return essayer(code, b); });
-    Promise.all(essais).then(function (res) {
+    cleDuCode(code).then(function (cle) {
+      return Promise.all(donnees.coffre.map(function (b) { return essayer(cle, b); }));
+    }).then(function (res) {
       var info = res.filter(Boolean)[0];
       bouton.disabled = false;
       if (!info) { message.textContent = "Ce code n'est pas reconnu. Vérifiez-le ou demandez-le à votre entreprise."; return; }
@@ -130,7 +133,7 @@
   form.addEventListener("submit", function (e) { e.preventDefault(); ouvrir(champ.value); });
 
   // Lien direct envoyé aux entreprises : /sapins-de-noel/#code=XXXX (le code ne quitte jamais votre navigateur)
-  var m = location.hash.match(/code=([A-Za-z0-9-]+)/);
+  var m = location.hash.match(/code=([0-9A-Za-z-]+)/);
   var memo = null;
   try { memo = sessionStorage.getItem("copanier-code-sapins"); } catch (e) {}
   if (m || memo) { champ.value = m ? m[1].toUpperCase() : memo; ouvrir(champ.value); }
