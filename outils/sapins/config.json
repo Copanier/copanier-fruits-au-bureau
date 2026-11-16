@@ -233,5 +233,10 @@
     "tva": "20 %",
     "_regle_prix": "Prix de Les vins de Benoit (lesvinsdebenoit.fr) + 1,25 % (commission Stripe), arrondi au centime.",
     "_lisez_moi": "Prix de vente TTC (prix_ttc) et liens de paiement Stripe. Un produit sans prix s affiche « Prix bientôt disponible »."
+  },
+  "sans_pied": {
+    "remise": 2,
+    "code_promo": "SANSPIED",
+    "_note": "Code promo Stripe à créer : 2 € de remise, limité aux 5 produits sapins."
   }
 }

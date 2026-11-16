@@ -77,6 +77,7 @@ for (const e of actives) {
     reference: normaliser(e.code),
     vagues: vagues.filter((v) => !e.vagues || e.vagues.includes(v.id)),
     sapins,
+    sans_pied: config.sans_pied || null,
     boissons,
   }));
 }
@@ -154,7 +155,7 @@ const contenu = `    <section class="section">
           <li><strong>Paiement</strong>&nbsp;: par carte bancaire, à la commande, sur la page sécurisée de Stripe. COPANIER n'a jamais accès à vos données bancaires.</li>
           <li><strong>Commandes</strong>&nbsp;: jusqu'au ${dateLongue(premiere.fin)} pour une livraison le ${premiere.livraison}${vagues.length > 1 ? `, et jusqu'au ${dateLongue(derniere.fin)} pour une livraison le ${derniere.livraison}` : ''}. Passé ces dates, la livraison correspondante n'est plus proposée.</li>
           <li><strong>Livraison</strong>&nbsp;: à l'adresse de votre entreprise, à la date choisie. Elle est organisée à partir de ${config.seuil_par_entreprise}&nbsp;sapins commandés dans l'entreprise. En dessous, nous vous proposons un point de retrait proche ou le remboursement intégral.</li>
-          <li><strong>Produit</strong>&nbsp;: sapin naturel coupé, livré avec son pied (bûche en bois), dont l'aspect peut varier légèrement d'un arbre à l'autre. Les tailles sont données à titre indicatif.</li>
+          <li><strong>Produit</strong>&nbsp;: sapin naturel coupé, livré avec son pied (bûche en bois) — ou sans pied, avec ${config.sans_pied ? config.sans_pied.remise : 2}&nbsp;€ de remise, en cochant la case correspondante — dont l'aspect peut varier légèrement d'un arbre à l'autre. Les tailles sont données à titre indicatif.</li>
           <li><strong>Annulation</strong>&nbsp;: le sapin étant un produit naturel coupé, susceptible de se détériorer rapidement, le droit de rétractation ne s'applique pas (article L221-28 du Code de la consommation). Vous pouvez toutefois annuler gratuitement par e-mail jusqu'à la date limite de commande de votre livraison&nbsp;: nous vous remboursons sur votre carte.</li>
           <li><strong>Réclamation</strong>&nbsp;: un sapin abîmé à la livraison est remplacé ou remboursé. Signalez-le-nous sous 48&nbsp;h à <a href="mailto:contact@copanier.fr">contact@copanier.fr</a>.</li>
         </ul>

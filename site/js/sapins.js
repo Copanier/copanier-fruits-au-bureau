@@ -133,7 +133,8 @@
           '<p class="sapin__taille">' + echapper(s.taille) + "</p>" +
           '<p class="sapin__pour">' + echapper(s.pour || "") + "</p>" +
           '<p class="sapin__pied">🪵 Pied bûche inclus</p>' +
-          '<p class="sapin__prix">' + s.prix + "&nbsp;€ <small>TTC</small></p>" +
+          '<p class="sapin__prix" data-prix="' + s.prix + '">' + s.prix + "&nbsp;€ <small>TTC</small></p>" +
+          (info.sans_pied ? '<label class="sapin__sanspied"><input type="checkbox" data-sans-pied> Je ne souhaite pas de pied (−' + info.sans_pied.remise + "&nbsp;€)</label>" : "") +
           (s.lien ? '<a class="bouton bouton--petit" data-lien="' + echapper(s.lien) + '" href="#">Commander</a>'
                   : '<span class="sapin__bientot">Bientôt disponible</span>') +
           "</div>";
@@ -169,6 +170,13 @@
       if (location.hash) history.replaceState(null, "", location.pathname + location.search);
       champ.focus();
     });
+    boutique.querySelectorAll("[data-sans-pied]").forEach(function (c) {
+      c.addEventListener("change", function () {
+        var prix = c.closest(".sapin").querySelector(".sapin__prix");
+        var base = Number(prix.getAttribute("data-prix")), remise = info.sans_pied.remise;
+        prix.innerHTML = c.checked ? '<s>' + base + "&nbsp;€</s> " + (base - remise) + "&nbsp;€ <small>TTC</small>" : base + "&nbsp;€ <small>TTC</small>";
+      });
+    });
     boutique.querySelectorAll("[data-fiche]").forEach(function (bt) {
       bt.addEventListener("click", function () { ouvrirFiche(info.boissons, info.boissons.produits[Number(bt.getAttribute("data-fiche"))]); });
     });
@@ -193,9 +201,12 @@
         }
         var vague = v.id;
         // Référence transmise à Stripe : code entreprise + livraison choisie (ex. ENTRE7K2Q-V1)
-        var ref = (info.reference + "-" + vague).replace(/[^A-Za-z0-9_-]/g, "");
+        // Sapin sans pied : la référence le signale (…-SP) et le code promo Stripe déduit la remise
+        var sansPied = a.closest(".sapin") && a.closest(".sapin").querySelector("[data-sans-pied]:checked");
+        var ref = (info.reference + "-" + vague + (sansPied ? "-SP" : "")).replace(/[^A-Za-z0-9_-]/g, "");
         var url = a.getAttribute("data-lien");
-        location.href = url + (url.indexOf("?") < 0 ? "?" : "&") + "client_reference_id=" + encodeURIComponent(ref);
+        location.href = url + (url.indexOf("?") < 0 ? "?" : "&") + "client_reference_id=" + encodeURIComponent(ref) +
+          (sansPied && info.sans_pied.code_promo ? "&prefilled_promo_code=" + encodeURIComponent(info.sans_pied.code_promo) : "");
       });
     });
     boutique.scrollIntoView({ behavior: "smooth", block: "start" });
