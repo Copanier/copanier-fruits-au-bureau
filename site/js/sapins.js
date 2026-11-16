@@ -64,7 +64,7 @@
               (p.detail ? '<p class="boisson__detail">' + echapper(p.detail) + "</p>" : "") +
               (p.contenance ? '<p class="boisson__detail">' + echapper(p.contenance) + "</p>" : "") +
               (p.fiche ? '<button type="button" class="boisson__plus" data-fiche="' + b.produits.indexOf(p) + '">En savoir plus</button>' : "") +
-              (p.prix ? '<p class="sapin__prix">' + String(p.prix).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : '<p class="boisson__bientot">Prix bientôt disponible</p>') +
+              (p.prix ? '<p class="sapin__prix">' + Number(p.prix).toFixed(2).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : '<p class="boisson__bientot">Prix bientôt disponible</p>') +
               (p.prix && p.lien ? '<a class="bouton bouton--petit" data-alcool data-lien="' + echapper(p.lien) + '" href="#">Commander</a>' : "") +
               "</div>";
           }).join("") + "</div>";
@@ -95,7 +95,7 @@
       (f.degustation ? "<p><strong>Dégustation</strong>&nbsp;: " + echapper(f.degustation) + "</p>" : "") +
       (f.accords ? "<p><strong>Accords</strong>&nbsp;: " + echapper(f.accords) + "</p>" : "") +
       (f.a_completer ? '<p class="petit">Fiche détaillée bientôt disponible. Une question&nbsp;? <a href="mailto:contact@copanier.fr">contact@copanier.fr</a></p>' : "") +
-      (p.prix ? '<p class="sapin__prix">' + String(p.prix).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : "") +
+      (p.prix ? '<p class="sapin__prix">' + Number(p.prix).toFixed(2).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : "") +
       '<p class="mention-alcool">L\'abus d\'alcool est dangereux pour la santé, à consommer avec modération.</p>' +
       "</div></div>";
     d.showModal();
