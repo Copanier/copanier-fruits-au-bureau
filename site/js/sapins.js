@@ -78,9 +78,28 @@
                   : '<span class="sapin__bientot">Bientôt disponible</span>') +
           "</div>";
       }).join("") + "</div>" +
-      '<p class="petit sapins__note">Vous serez redirigé vers la page de paiement sécurisée de Stripe. Votre nom, votre e-mail, votre téléphone et votre service ou étage vous y seront demandés pour la livraison.</p>';
+      // Récapitulatif de livraison, mis à jour selon la date choisie
+      '<div class="sapins__recap" aria-live="polite"></div>' +
+      '<label class="sapins__accord"><input type="checkbox" data-accord> <span>J\'ai bien noté que mon sapin sera <strong>livré dans mon entreprise à la date choisie</strong>, que je le récupère sur place, et j\'accepte les <a href="/conditions-generales-de-vente/" target="_blank">conditions générales de vente</a>.</span></label>' +
+      '<p class="petit sapins__note">En cliquant sur «&nbsp;Commander&nbsp;», vous êtes redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre sapin), votre e-mail, votre téléphone et votre service ou étage.</p>';
     boutique.innerHTML = html;
     boutique.hidden = false;
+    function majRecap() {
+      var choix = boutique.querySelector('input[name="vague"]:checked:not(:disabled)');
+      var v = choix && info.vagues.filter(function (x) { return x.id === choix.value; })[0];
+      boutique.querySelector(".sapins__recap").innerHTML = '<p class="sapins__recap-titre">📦 Votre livraison</p><ul>' +
+        "<li>Entreprise&nbsp;: <strong>" + echapper(info.entreprise) + "</strong></li>" +
+        (info.adresse ? "<li>Adresse de livraison&nbsp;: <strong>" + echapper(info.adresse) + "</strong></li>" : "") +
+        "<li>Date de livraison&nbsp;: <strong>" + (v ? echapper(v.livraison) : "choisissez une date ci-dessus") + "</strong></li>" +
+        "<li>🏷️ <strong>Votre prénom et votre nom figureront sur l'étiquette du sapin</strong> pour que vous le retrouviez facilement le jour de la livraison.</li></ul>";
+    }
+    // Récapitulatif et accord placés entre le choix de la date et le choix du sapin
+    var etape = boutique.querySelector(".sapins__etape");
+    etape.parentNode.insertBefore(boutique.querySelector(".sapins__recap"), etape);
+    etape.parentNode.insertBefore(boutique.querySelector(".sapins__accord"), etape);
+    boutique.querySelectorAll('input[name="vague"]').forEach(function (r) { r.addEventListener("change", majRecap); });
+    boutique.majRecap = majRecap;
+    majRecap();
     demarrerRebours();
     boutique.querySelectorAll("[data-lien]").forEach(function (a) {
       a.addEventListener("click", function (e) {
@@ -88,6 +107,12 @@
         var choix = boutique.querySelector('input[name="vague"]:checked:not(:disabled)');
         var v = choix && info.vagues.filter(function (x) { return x.id === choix.value; })[0];
         if (!v || new Date(v.fin).getTime() <= Date.now()) { alert("Choisissez une date de livraison encore ouverte."); return; }
+        var accord = boutique.querySelector("[data-accord]");
+        if (!accord.checked) {
+          accord.closest("label").classList.add("a-cocher");
+          accord.closest("label").scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
         var vague = v.id;
         // Référence transmise à Stripe : code entreprise + livraison choisie (ex. ENTRE7K2Q-V1)
         var ref = (info.reference + "-" + vague).replace(/[^A-Za-z0-9_-]/g, "");
@@ -113,6 +138,7 @@
             radio.disabled = true; radio.checked = false; label.classList.add("est-close");
             var autre = boutique.querySelector('input[name="vague"]:not(:disabled)');
             if (autre && !boutique.querySelector('input[name="vague"]:checked')) autre.checked = true;
+            if (boutique.majRecap) boutique.majRecap();
           }
           el.textContent = "Commandes closes";
           return;

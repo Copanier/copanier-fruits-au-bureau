@@ -831,3 +831,10 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .bandeau-saison > span:first-child { font-size: 1.4rem; }
 .bandeau-saison strong { color: #fff; }
 .bandeau-saison__cta { background: var(--orange); color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
+.sapins__recap { max-width: 640px; margin: 26px auto 0; background: var(--vert-clair); border: 2px solid var(--vert); border-radius: var(--rayon); padding: 16px 20px; }
+.sapins__recap-titre { margin: 0 0 6px !important; font-family: var(--titre); color: var(--vert); font-size: 1.2rem; text-align: left !important; }
+.sapins__recap ul { margin: 0; padding-left: 18px; }
+.sapins__recap li { margin: 4px 0; }
+.sapins__accord { max-width: 640px; margin: 14px auto 0; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 2px solid var(--bord); border-radius: 14px; background: #fff; cursor: pointer; }
+.sapins__accord input { width: 20px; height: 20px; flex: none; margin-top: 2px; accent-color: var(--orange); }
+.sapins__accord.a-cocher { border-color: var(--orange); background: var(--orange-clair); animation: secoue .35s; }

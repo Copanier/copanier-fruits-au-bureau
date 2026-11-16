@@ -31,16 +31,21 @@ function codeEvident(c) {
   const suite = (pas) => d.every((x, i) => i === 0 || x === d[i - 1] + pas);
   return new Set(d).size <= 2 || suite(1) || suite(-1) || /^(19|20)\d\d$/.test(c);
 }
+// Code = 3 premières lettres du nom de l'entreprise + 4 chiffres (ex. SYM4379) ; majuscules ou minuscules acceptées
+const prefixe = (nom) => (nom.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z]/g, '') + 'XXX').slice(0, 3);
 function nouveauCode(nom, existants) {
+  const chiffresPris = new Set([...existants].map((c) => c.slice(-4)));
   for (;;) {
-    const code = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, '0');
-    if (!existants.has(code) && !codeEvident(code)) return code;
+    const chiffres = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, '0');
+    if (!chiffresPris.has(chiffres) && !codeEvident(chiffres)) return prefixe(nom) + chiffres;
   }
 }
 const existants = new Set(entreprises.map((e) => normaliser(e.code)).filter(Boolean));
 let codesCrees = 0;
 for (const e of entreprises) {
   if (!e.entreprise) continue;
+  // anciens codes à 4 chiffres : on garde les chiffres et on ajoute les 3 lettres
+  if (/^[0-9]{4}$/.test(e.code || '')) { e.code = prefixe(e.entreprise) + e.code; codesCrees++; }
   if (!e.code) { e.code = nouveauCode(e.entreprise, existants); existants.add(normaliser(e.code)); codesCrees++; }
 }
 if (codesCrees) fs.writeFileSync(fichierEntreprises, JSON.stringify(entreprises, null, 2) + '\n');
@@ -103,7 +108,7 @@ const contenu = `    <section class="section">
         <form class="sapins__code" data-sapins-code>
           <label for="sapins-code"><strong>Votre code entreprise</strong><span>Il vous a été communiqué par votre entreprise.</span></label>
           <div class="sapins__saisie">
-            <input id="sapins-code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="numeric" maxlength="4" placeholder="Ex.&nbsp;: 4821" required>
+            <input id="sapins-code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="Ex.&nbsp;: SYM4821" required>
             <button type="submit" class="bouton">Accéder aux sapins</button>
           </div>
           <p class="sapins__message" role="status" aria-live="polite"></p>
@@ -122,7 +127,7 @@ const contenu = `    <section class="section">
           <li>Saisissez le <strong>code de votre entreprise</strong>.</li>
           <li>Choisissez votre <strong>date de livraison</strong> et votre <strong>taille de sapin</strong>.</li>
           <li>Payez par carte sur la page sécurisée de Stripe. Vous recevez aussitôt votre reçu par e-mail.</li>
-          <li>Récupérez votre sapin au bureau le jour de la livraison.</li>
+          <li>Récupérez votre sapin au bureau le jour de la livraison&nbsp;: il porte une étiquette à vos prénom et nom.</li>
         </ol>
         <h2>Vous n'avez pas de code&nbsp;?</h2>
         <p>La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
