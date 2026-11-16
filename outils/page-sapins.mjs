@@ -67,7 +67,7 @@ const vagues = config.vagues.map((v) => ({ id: v.id, fin: v.fin_commandes, livra
 const sapins = config.sapins.map((s) => ({ taille: s.taille, prix: s.prix, pour: s.pour, lien: s.lien_paiement || '' }));
 // Boissons du producteur (champagne…) : seuls les champs utiles à la page, sans les prix d'achat
 const b = config.boissons || { produits: [] };
-const boissons = { producteur: b.producteur || '', presentation: b.presentation || '', tva: b.tva || '20 %', produits: b.produits.filter((x) => x.propose !== false).map((x) => ({ nom: x.nom, categorie: x.categorie, detail: x.detail, fiche: x.fiche || null, contenance: x.contenance || '', image: x.image, l: x.largeur, h: x.hauteur, prix: x.prix_ttc || null, lien: x.lien_paiement || '' })) };
+const boissons = { producteur: b.producteur || '', presentation: b.presentation || '', tva: b.tva || '20 %', produits: b.produits.filter((x) => x.propose !== false).map((x) => ({ nom: x.nom, categorie: x.categorie, detail: x.detail, fiche: x.fiche || null, coeur: !!x.coup_de_coeur, contenance: x.contenance || '', image: x.image, l: x.largeur, h: x.hauteur, prix: x.prix_ttc || null, lien: x.lien_paiement || '' })) };
 const actives = entreprises.filter((e) => e.entreprise && e.code);
 const coffre = [];
 for (const e of actives) {

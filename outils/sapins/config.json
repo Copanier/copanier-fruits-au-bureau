@@ -62,7 +62,7 @@
         "image": "/images/champagne/blanc-de-noirs.webp",
         "largeur": 170,
         "hauteur": 640,
-        "prix_ttc": 21.77,
+        "prix_ttc": 22,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -76,7 +76,8 @@
           "accords": "À l'apéritif, avec des poissons ou des viandes, ou en fin de repas avec un dessert au chocolat ou aux fruits."
         },
         "prix_reference": 21.5,
-        "source_prix": "Les vins de Benoit"
+        "source_prix": "Prix fixé par Pierre",
+        "coup_de_coeur": true
       },
       {
         "nom": "Paul Augustin Brut",
@@ -86,7 +87,7 @@
         "image": "/images/champagne/paul-augustin-brut.webp",
         "largeur": 169,
         "hauteur": 640,
-        "prix_ttc": 21.16,
+        "prix_ttc": 22,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -100,7 +101,8 @@
           "accords": ""
         },
         "prix_reference": 20.9,
-        "source_prix": "Les vins de Benoit"
+        "source_prix": "Prix fixé par Pierre",
+        "coup_de_coeur": false
       },
       {
         "nom": "Millésime 2012",
@@ -110,7 +112,7 @@
         "image": "/images/champagne/millesime-2012.webp",
         "largeur": 172,
         "hauteur": 640,
-        "prix_ttc": 24.81,
+        "prix_ttc": 25,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -124,7 +126,8 @@
           "accords": "À l'apéritif avec du foie gras ou des petits fours chauds ; à table avec des viandes blanches ou des plats cuisinés."
         },
         "prix_reference": 24.5,
-        "source_prix": "Les vins de Benoit"
+        "source_prix": "Prix fixé par Pierre",
+        "coup_de_coeur": false
       },
       {
         "nom": "Ratafia Pinot Noir",
@@ -149,7 +152,8 @@
           "accords": ""
         },
         "prix_reference": 21,
-        "source_prix": "Prix fixé par Pierre"
+        "source_prix": "Prix fixé par Pierre",
+        "coup_de_coeur": false
       },
       {
         "nom": "Ratafia Chardonnay",
@@ -174,7 +178,8 @@
           "accords": ""
         },
         "prix_reference": 22.2,
-        "source_prix": "Prix fixé par Pierre"
+        "source_prix": "Prix fixé par Pierre",
+        "coup_de_coeur": true
       },
       {
         "nom": "Gin Sauvage",
@@ -197,7 +202,8 @@
           "a_completer": true
         },
         "prix_reference": 25,
-        "source_prix": "Prix fixé par Pierre"
+        "source_prix": "Prix fixé par Pierre",
+        "coup_de_coeur": true
       },
       {
         "nom": "Whisky",
@@ -220,7 +226,8 @@
           "a_completer": true
         },
         "prix_reference": 39.6,
-        "source_prix": "Prix fixé par Pierre"
+        "source_prix": "Prix fixé par Pierre",
+        "coup_de_coeur": false
       }
     ],
     "tva": "20 %",
