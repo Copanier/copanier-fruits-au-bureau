@@ -823,3 +823,11 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .sapins__date.est-close strong { text-decoration: line-through; }
 .sapins__rebours { display: block; margin-top: 4px; font-size: .9rem; color: var(--orange-fonce); font-variant-numeric: tabular-nums; }
 .est-close .sapins__rebours { color: var(--texte-doux); font-weight: 600; }
+/* ===== Sapins : lien du menu et bandeau saisonnier ===== */
+.nav .nav__sapins { color: #ffd2b8 !important; font-weight: 700; }
+.nav .nav__sapins:hover { color: #fff !important; }
+.bandeau-saison { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 12px; padding: 12px 16px; background: #2f6b4a; color: #fff; text-align: center; text-decoration: none; font-size: .98rem; line-height: 1.4; }
+.bandeau-saison:hover { background: #24563b; }
+.bandeau-saison > span:first-child { font-size: 1.4rem; }
+.bandeau-saison strong { color: #fff; }
+.bandeau-saison__cta { background: var(--orange); color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }

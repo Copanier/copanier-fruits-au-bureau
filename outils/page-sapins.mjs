@@ -150,7 +150,7 @@ function dateLongue(iso) {
 }
 
 ecrirePage({
-  chemin: '/sapins-de-noel/', menu: '/tarifs-corbeilles-de-fruits-entreprise/',
+  chemin: '/sapins-de-noel/', menu: '/sapins-de-noel/',
   titre: `Sapin de Noël livré au bureau ${config.annee} | CoPanier`,
   description: 'Commandez votre sapin Nordmann en ligne et récupérez-le au bureau : 5 tailles de 100 à 250 cm, paiement par carte, livraison dans votre entreprise.',
   ariane: [['Sapins de Noël']],
