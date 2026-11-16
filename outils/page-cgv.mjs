@@ -33,7 +33,7 @@ const contenu = `    <section class="section">
         <p>Les sapins proposés sont des sapins Nordmann naturels coupés, vendus dans les tailles suivantes&nbsp;: ${tailles}. Les tailles sont indicatives&nbsp;: s'agissant de produits naturels, la forme, la densité et la hauteur exacte peuvent varier légèrement d'un arbre à l'autre. Les photographies et illustrations ne sont pas contractuelles.</p>
 
         <h2>5. Prix</h2>
-        <p>Les prix sont indiqués en euros, toutes taxes comprises (TVA à ${config.tva}). Ils incluent la livraison sur le lieu de travail du Client. COPANIER peut modifier ses prix à tout moment&nbsp;; le prix applicable est celui affiché au moment de la validation de la commande.</p>
+        <p>Les prix sont indiqués en euros, toutes taxes comprises&nbsp;: TVA à ${config.tva} pour les sapins et à ${(config.boissons && config.boissons.tva) || '20 %'} pour les boissons alcoolisées. Ils incluent la livraison sur le lieu de travail du Client. COPANIER peut modifier ses prix à tout moment&nbsp;; le prix applicable est celui affiché au moment de la validation de la commande.</p>
 
         <h2>6. Commande</h2>
         <p>Le Client saisit son code entreprise, choisit une date de livraison et la taille de son sapin, puis est dirigé vers la page de paiement sécurisée de notre prestataire Stripe, où il renseigne ses coordonnées (nom, adresse e-mail, téléphone, service ou étage) et règle sa commande. La commande est ferme dès la validation du paiement. Une confirmation et un reçu sont envoyés par e-mail.</p>

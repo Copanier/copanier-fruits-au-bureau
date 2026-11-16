@@ -53,6 +53,7 @@
     return '<section class="boissons" aria-labelledby="boissons-titre">' +
       '<p class="sapins__etape" id="boissons-titre">🥂 Et pour les fêtes&nbsp;: le champagne en direct du producteur</p>' +
       '<p class="boissons__intro"><strong>' + echapper(b.producteur) + "</strong> – " + echapper(b.presentation) + " Livré avec les sapins, à la même date, dans votre entreprise.</p>" +
+      '<p class="boissons__tva">Prix TTC, TVA à ' + echapper(b.tva || "20 %") + ' incluse. Livraison au bureau incluse.</p>' +
       '<label class="sapins__accord boissons__majeur"><input type="checkbox" data-majeur> <span>Je certifie avoir <strong>18&nbsp;ans révolus</strong>. La vente d\'alcool est interdite aux mineurs.</span></label>' +
       categories.map(function (c) {
         return '<p class="boissons__categorie">' + echapper(c) + '</p><div class="boissons__liste">' +

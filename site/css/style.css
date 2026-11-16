@@ -878,3 +878,4 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .fiche-boisson__nom { margin: 2px 0 10px; font-family: var(--titre); color: var(--vert); font-size: 1.6rem; }
 .fiche-boisson .mention-alcool { text-align: left !important; }
 @media (max-width: 560px) { .fiche-boisson__corps { grid-template-columns: 1fr; } .fiche-boisson__corps img { max-height: 220px; } }
+.boissons__tva { text-align: center !important; font-size: .85rem; color: var(--texte-doux); margin: -6px 0 12px !important; }
