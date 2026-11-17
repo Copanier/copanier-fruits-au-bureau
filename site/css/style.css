@@ -905,3 +905,6 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .sapins__alerte--petite { margin: 8px 0 0 !important; padding: 6px 8px; font-size: .78rem; text-align: center !important; }
 .bouton.est-bloque { opacity: .55; filter: grayscale(.4); }
 .bouton.est-bloque:hover { transform: none; }
+/* Listes à coches : le texte (même avec des passages en gras) s'écrit d'un seul tenant, la coche reste à gauche */
+.liste-coches li { display: block; position: relative; padding-left: 30px; }
+.liste-coches li::before { position: absolute; left: 0; top: 2px; margin-top: 0; }
