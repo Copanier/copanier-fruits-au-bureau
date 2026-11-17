@@ -988,3 +988,17 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
   .logo__nom, .entete.defile .logo__nom { font-size: 1.3rem; }
   .logo__slogan { font-size: .66rem; }
 }
+
+/* Petits téléphones (≤ 380 px) : logo et bouton Menu tiennent sur une ligne */
+@media (max-width: 380px) {
+  .entete__logo { gap: 6px; }
+  .entete__logo .logo__picto, .entete.defile .entete__logo .logo__picto { height: 36px; }
+  .logo__nom, .entete.defile .logo__nom { font-size: 1.05rem; }
+  .logo__slogan { font-size: .58rem; }
+  .menu-bouton { padding: 6px 10px; }
+}
+@media (max-width: 380px) {
+  .grille--2, .grille--3, .heros__grille { grid-template-columns: minmax(0, 1fr); }
+  .souligne { white-space: normal; }
+  .carte { padding-left: 18px; padding-right: 18px; }
+}
