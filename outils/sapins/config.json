@@ -62,7 +62,7 @@
         "image": "/images/champagne/blanc-de-noirs.webp",
         "largeur": 170,
         "hauteur": 640,
-        "prix_ttc": 22,
+        "prix_ttc": 25,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -81,7 +81,7 @@
           ]
         },
         "prix_reference": 21.5,
-        "source_prix": "Prix fixé par Pierre",
+        "source_prix": "Prix fixé par Pierre (17/11/2026)",
         "coup_de_coeur": true
       },
       {
@@ -92,7 +92,7 @@
         "image": "/images/champagne/paul-augustin-brut.webp",
         "largeur": 169,
         "hauteur": 640,
-        "prix_ttc": 22,
+        "prix_ttc": 25,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -112,7 +112,7 @@
           ]
         },
         "prix_reference": 20.9,
-        "source_prix": "Prix fixé par Pierre",
+        "source_prix": "Prix fixé par Pierre (17/11/2026)",
         "coup_de_coeur": false
       },
       {
@@ -123,7 +123,7 @@
         "image": "/images/champagne/millesime-2012.webp",
         "largeur": 172,
         "hauteur": 640,
-        "prix_ttc": 25,
+        "prix_ttc": 29,
         "lien_paiement": "",
         "propose": true,
         "fiche": {
@@ -140,7 +140,7 @@
           ]
         },
         "prix_reference": 24.5,
-        "source_prix": "Prix fixé par Pierre",
+        "source_prix": "Prix fixé par Pierre (17/11/2026)",
         "coup_de_coeur": false
       },
       {

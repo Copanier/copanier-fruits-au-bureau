@@ -76,19 +76,19 @@ const CATALOGUE = {
     {
       "id": "boisson-blanc-de-noirs",
       "nom": "Blanc de noirs (Bouteille 75 cl)",
-      "prix": 22,
+      "prix": 25,
       "type": "boisson"
     },
     {
       "id": "boisson-paul-augustin-brut",
       "nom": "Paul Augustin Brut (Bouteille 75 cl)",
-      "prix": 22,
+      "prix": 25,
       "type": "boisson"
     },
     {
       "id": "boisson-millesime-2012",
       "nom": "Millésime 2012 (Bouteille 75 cl)",
-      "prix": 25,
+      "prix": 29,
       "type": "boisson"
     },
     {
