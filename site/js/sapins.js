@@ -54,7 +54,8 @@
     b.produits.forEach(function (p) { if (categories.indexOf(p.categorie) < 0) categories.push(p.categorie); });
     return '<section class="boissons" aria-labelledby="boissons-titre">' +
       '<p class="sapins__etape" id="boissons-titre">🥂 Et pour les fêtes&nbsp;: le champagne en direct du producteur</p>' +
-      '<p class="boissons__intro"><strong>' + echapper(b.producteur) + "</strong> – " + echapper(b.presentation) + " Livré avec les sapins, à la même date, dans votre entreprise.</p>" +
+      '<p class="boissons__intro"><strong>' + echapper(b.producteur) + "</strong> – " + echapper(b.presentation) + "</p>" +
+      '<p class="boissons__date" data-date-boissons></p>' +
       '<p class="boissons__tva">Prix TTC, TVA à ' + echapper(b.tva || "20 %") + ' incluse. Livraison au bureau incluse.</p>' +
       '<label class="sapins__accord boissons__majeur"><input type="checkbox" data-majeur> <span>Je certifie avoir <strong>18&nbsp;ans révolus</strong>. La vente d\'alcool est interdite aux mineurs.</span></label>' +
       categories.map(function (c) {
@@ -118,7 +119,7 @@
     }
     // Toutes les dates sont affichées ; celles dont la date limite est passée sont grisées et non sélectionnables
     var premiere = info.vagues.indexOf(ouvertes[0]);
-    html += '<fieldset class="sapins__dates"><legend>1. Votre date de livraison au bureau</legend>' +
+    html += '<fieldset class="sapins__dates"><legend>1. Votre date de livraison au bureau <small>(sapins et champagne livrés ensemble)</small></legend>' +
       info.vagues.map(function (v, i) {
         var fin = new Date(v.fin).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
         var close = new Date(v.fin).getTime() <= maintenant;
@@ -146,6 +147,7 @@
       '<label class="sapins__accord"><input type="checkbox" data-accord> <span>J\'ai bien noté que ma commande sera <strong>livrée dans mon entreprise à la date choisie</strong>, que je la récupère sur place, et j\'accepte les <a href="/conditions-generales-de-vente/" target="_blank">conditions générales de vente</a>.</span></label>' +
       '<section class="panier" data-panier aria-labelledby="panier-titre">' +
         '<p class="sapins__etape" id="panier-titre">🧺 Votre commande</p>' +
+        '<p class="panier__date" data-panier-date></p>' +
         '<div class="panier__contenu" aria-live="polite"></div>' +
         '<button type="button" class="bouton bouton--grand panier__payer" data-payer>Valider et payer</button>' +
         '<p class="petit sapins__note">Vous serez redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage.</p>' +
@@ -159,8 +161,14 @@
       boutique.querySelector(".sapins__recap").innerHTML = '<p class="sapins__recap-titre">📦 Votre livraison</p><ul>' +
         "<li>Entreprise&nbsp;: <strong>" + echapper(info.entreprise) + "</strong></li>" +
         (info.adresse ? "<li>Adresse de livraison&nbsp;: <strong>" + echapper(info.adresse) + "</strong></li>" : "") +
-        "<li>Date de livraison&nbsp;: <strong>" + (v ? echapper(v.livraison) : "choisissez une date ci-dessus") + "</strong></li>" +
+        "<li>Date de livraison&nbsp;: <strong>" + (v ? echapper(v.livraison) : "choisissez une date ci-dessus") + "</strong> – sapins et bouteilles sont livrés ensemble, le même jour</li>" +
         "<li>🏷️ <strong>Votre prénom et votre nom figureront sur l'étiquette de votre commande</strong> pour que vous la retrouviez facilement le jour de la livraison.</li></ul>";
+      // La date choisie s'applique à toute la commande : on la rappelle au champagne et dans le panier
+      var dateTxt = v ? "<strong>" + echapper(v.livraison) + "</strong>" : "<strong>la date choisie en haut de page</strong>";
+      var db = boutique.querySelector("[data-date-boissons]");
+      if (db) db.innerHTML = "📅 Livré <strong>en même temps que votre sapin</strong>, le " + dateTxt + ", dans votre entreprise. <a href=\"#\" data-vers-dates>Changer la date</a>";
+      var dp = boutique.querySelector("[data-panier-date]");
+      if (dp) dp.innerHTML = "📅 Livraison de toute la commande (sapins et bouteilles) le " + dateTxt;
     }
     // Récapitulatif et accord placés entre le choix de la date et le choix du sapin
     var etape = boutique.querySelector(".sapins__etape");
@@ -168,6 +176,11 @@
     etape.parentNode.insertBefore(boutique.querySelector("[data-accord]").closest("label"), etape);
     boutique.querySelectorAll('input[name="vague"]').forEach(function (r) { r.addEventListener("change", majRecap); });
     boutique.majRecap = majRecap;
+    boutique.addEventListener("click", function (e) {
+      if (!e.target.closest("[data-vers-dates]")) return;
+      e.preventDefault();
+      boutique.querySelector(".sapins__dates").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
     majRecap();
     demarrerRebours();
     // Code mémorisé sur cet appareil : ce bouton l'efface pour en saisir un autre

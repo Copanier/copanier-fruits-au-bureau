@@ -1002,3 +1002,8 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
   .souligne { white-space: normal; }
   .carte { padding-left: 18px; padding-right: 18px; }
 }
+
+/* Date de livraison rappelée au champagne et dans le panier */
+.sapins__dates legend small { font-weight: 400; font-size: .85em; color: var(--texte-doux, #5b6b62); }
+.boissons__date, .panier__date { background: var(--orange-clair, #fff1e8); border-left: 4px solid var(--orange); padding: 10px 14px; border-radius: 8px; margin: 10px 0 16px; }
+.boissons__date a { color: var(--orange-fonce); font-weight: 600; white-space: nowrap; }
