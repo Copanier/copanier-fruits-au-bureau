@@ -95,6 +95,7 @@
       '<p class="fiche-boisson__maison">' + echapper(b.producteur) + " · " + echapper(p.categorie) + "</p>" +
       '<h3 class="fiche-boisson__nom">' + echapper(p.nom) + "</h3>" +
       (p.coeur ? '<p class="fiche-boisson__coeur">❤️ Coup de cœur CoPanier</p>' : "") +
+      (f.description ? "<p>" + echapper(f.description) + "</p>" : "") +
       (f.cepage ? "<p><strong>Cépage</strong>&nbsp;: " + echapper(f.cepage) + "</p>" : "") +
       (f.caracteristiques && f.caracteristiques.length ? "<ul>" + f.caracteristiques.map(function (c) { return "<li>" + echapper(c) + "</li>"; }).join("") + "</ul>" : "") +
       (f.degustation ? "<p><strong>Dégustation</strong>&nbsp;: " + echapper(f.degustation) + "</p>" : "") +

@@ -194,12 +194,13 @@
         "propose": true,
         "fiche": {
           "cepage": "",
+          "description": "Le gin de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban, installée dans l'ancien couvent de la reine Blanche de Castille à Jonquery, où les spiritueux de la maison sont distillés en alambic charentais.",
           "caracteristiques": [
-            "Spiritueux de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban"
+            "Distillé à la Distillerie des Dames Blanches (Jonquery, Marne)",
+            "Récompensé par le guide Gilbert & Gaillard : Double Or, 90 points"
           ],
           "degustation": "",
-          "accords": "",
-          "a_completer": true
+          "accords": ""
         },
         "prix_reference": 25,
         "source_prix": "Prix fixé par Pierre",
@@ -218,12 +219,16 @@
         "propose": true,
         "fiche": {
           "cepage": "",
+          "description": "Un whisky single malt 100 % Champagne-Ardenne, fruit d'au moins 3 ans de travail. Les orges viennent de la ferme céréalière de la maison et de brasseries partenaires ; brassage, distillation et vieillissement sont entièrement réalisés à la Distillerie des Dames Blanches, installée dans l'ancien couvent de la reine Blanche de Castille.",
           "caracteristiques": [
-            "Spiritueux de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban"
+            "Single malt, 100 % orges de Champagne-Ardenne",
+            "Âge : 3 ans",
+            "Distillation en alambic charentais à double passe",
+            "Vieillissement en fûts de Champagne (structure), puis de Meursault (notes de fleurs blanches), finition en fûts de ratafia champenois de la maison",
+            "Élaboré dans le respect du cahier des charges des whiskies de France"
           ],
           "degustation": "",
-          "accords": "",
-          "a_completer": true
+          "accords": ""
         },
         "prix_reference": 39.6,
         "source_prix": "Prix fixé par Pierre",
