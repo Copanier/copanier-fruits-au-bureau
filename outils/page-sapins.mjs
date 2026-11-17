@@ -64,10 +64,12 @@ async function chiffrer(code, objet) {
 }
 
 const vagues = config.vagues.map((v) => ({ id: v.id, fin: v.fin_commandes, livraison: v.libelle_livraison }));
-const sapins = config.sapins.map((s) => ({ taille: s.taille, prix: s.prix, pour: s.pour, lien: s.lien_paiement || '' }));
+// Identifiants stables des articles (le panier et la fonction de paiement s'appuient dessus)
+const ident = (prefixe, t) => prefixe + '-' + t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const sapins = config.sapins.map((s) => ({ id: ident('sapin', s.taille), taille: s.taille, prix: s.prix, pour: s.pour }));
 // Boissons du producteur (champagne…) : seuls les champs utiles à la page, sans les prix d'achat
 const b = config.boissons || { produits: [] };
-const boissons = { producteur: b.producteur || '', presentation: b.presentation || '', tva: b.tva || '20 %', produits: b.produits.filter((x) => x.propose !== false).map((x) => ({ nom: x.nom, categorie: x.categorie, detail: x.detail, fiche: x.fiche || null, coeur: !!x.coup_de_coeur, contenance: x.contenance || '', image: x.image, l: x.largeur, h: x.hauteur, prix: x.prix_ttc || null, lien: x.lien_paiement || '' })) };
+const boissons = { producteur: b.producteur || '', presentation: b.presentation || '', tva: b.tva || '20 %', produits: b.produits.filter((x) => x.propose !== false).map((x) => ({ id: ident('boisson', x.nom), nom: x.nom, categorie: x.categorie, detail: x.detail, fiche: x.fiche || null, coeur: !!x.coup_de_coeur, contenance: x.contenance || '', image: x.image, l: x.largeur, h: x.hauteur, prix: x.prix_ttc || null, lien: x.lien_paiement || '' })) };
 const actives = entreprises.filter((e) => e.entreprise && e.code);
 const coffre = [];
 for (const e of actives) {
@@ -166,12 +168,30 @@ const contenu = `    <section class="section">
         <p class="petit">Les données de commande (nom, e-mail, téléphone, service) servent uniquement à préparer et livrer votre commande. Voir notre <a href="/politique-de-confidentialite/">politique de confidentialité</a>.</p>
       </article>
     </section>
-    <script type="application/json" id="sapins-donnees">${JSON.stringify({ iterations: ITERATIONS, sel: b64(SEL), coffre })}</script>
+    <script type="application/json" id="sapins-donnees">${JSON.stringify({ iterations: ITERATIONS, sel: b64(SEL), paiement: 'https://eykdcoqdhllbigxujgsl.supabase.co/functions/v1/copanier-boutique', cle_publique: 'sb_publishable_BHTeFJEowRdZC278ZO9RDQ_q08_-91A', coffre })}</script>
     <script src="/js/sapins.js" defer></script>`;
 
 function dateLongue(iso) {
   return new Date(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Paris' });
 }
+
+const catalogue = {
+  _note: 'Généré par outils/page-sapins.mjs — ne pas modifier à la main. Prix TTC en euros.',
+  annee: config.annee,
+  vagues: config.vagues.map((v) => ({ id: v.id, fin: v.fin_commandes, livraison: v.libelle_livraison })),
+  sans_pied: config.sans_pied ? { remise: config.sans_pied.remise } : null,
+  tva: { sapins: config.tva, boissons: b.tva || '20 %' },
+  articles: sapins.map((x) => ({ id: x.id, nom: 'Sapin Nordmann ' + x.taille, prix: x.prix, type: 'sapin' }))
+    .concat(boissons.produits.filter((x) => x.prix).map((x) => ({ id: x.id, nom: x.nom + (x.contenance ? ' (' + x.contenance + ')' : ''), prix: x.prix, type: 'boisson' }))),
+};
+const dossierFonction = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'supabase', 'functions', 'copanier-boutique');
+fs.mkdirSync(dossierFonction, { recursive: true });
+// Le catalogue est recopié dans la fonction (un seul fichier à déployer)
+const fichierFonction = path.join(dossierFonction, 'index.ts');
+const codeFonction = fs.readFileSync(fichierFonction, 'utf8');
+const fonctionAJour = codeFonction.replace(/\/\/ CATALOGUE-DEBUT[\s\S]*?\/\/ CATALOGUE-FIN/,
+  () => '// CATALOGUE-DEBUT (généré par outils/page-sapins.mjs — ne pas modifier à la main)\nconst CATALOGUE = ' + JSON.stringify(catalogue, null, 2) + ';\n// CATALOGUE-FIN');
+if (fonctionAJour !== codeFonction) fs.writeFileSync(fichierFonction, fonctionAJour);
 
 ecrirePage({
   chemin: '/sapins-de-noel/', menu: '/sapins-de-noel/',
@@ -183,5 +203,5 @@ ecrirePage({
   contenu,
 });
 ajouterAuPlan('/sapins-de-noel/');
-console.log(`Page /sapins-de-noel/ générée : ${actives.length} entreprise(s)${codesCrees ? `, ${codesCrees} code(s) créé(s)` : ''}, ${sapins.filter((s) => s.lien).length}/${sapins.length} lien(s) de paiement.`);
+console.log(`Page /sapins-de-noel/ générée : ${actives.length} entreprise(s)${codesCrees ? `, ${codesCrees} code(s) créé(s)` : ''}, catalogue de paiement à jour.`);
 console.log(`Codes à envoyer : outils/sapins/codes-a-envoyer.local.csv`);

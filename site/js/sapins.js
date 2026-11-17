@@ -1,5 +1,7 @@
 /* Vente de sapins : le code entreprise déchiffre les informations de l'entreprise
-   (nom, dates, tailles, prix, liens de paiement Stripe). Sans le bon code, rien n'est lisible. */
+   (nom, adresse, dates, articles, prix). Sans le bon code, rien n'est lisible.
+   Le panier est payé en une fois : la fonction « copanier-boutique » vérifie le code et les prix
+   côté serveur puis crée la page de paiement Stripe. */
 (function () {
   "use strict";
   var form = document.querySelector("[data-sapins-code]");
@@ -66,7 +68,7 @@
               (p.contenance ? '<p class="boisson__detail">' + echapper(p.contenance) + "</p>" : "") +
               (p.fiche ? '<button type="button" class="boisson__plus" data-fiche="' + b.produits.indexOf(p) + '">En savoir plus</button>' : "") +
               (p.prix ? '<p class="sapin__prix">' + Number(p.prix).toFixed(2).replace(".", ",") + "&nbsp;€ <small>TTC</small></p>" : '<p class="boisson__bientot">Prix bientôt disponible</p>') +
-              (p.prix ? '<a class="bouton bouton--petit" data-alcool data-lien="' + echapper(p.lien || "") + '" href="#">Commander</a>' : "") +
+              (p.prix ? quantiteHtml(p.id, "boisson") : "") +
               "</div>";
           }).join("") + "</div>";
       }).join("") +
@@ -129,20 +131,26 @@
       info.sapins.map(function (s, i) {
         var h = 70 + i * 14;
         return '<div class="sapin">' +
-          '<svg class="sapin__dessin" viewBox="0 0 60 100" style="height:' + h + 'px" aria-hidden="true"><path d="M30 4 L52 40 H40 L56 66 H42 L58 88 H2 L18 66 H4 L20 40 H8 Z" fill="#2f6b4a"/><rect x="26" y="88" width="8" height="10" fill="#8a5a3c"/><circle cx="30" cy="5" r="3" fill="#f4661c"/></svg>' +
+          '<svg class="sapin__dessin" viewBox="0 0 60 100" style="height:' + h + 'px;margin-top:' + (126 - h) + 'px" aria-hidden="true"><path d="M30 4 L52 40 H40 L56 66 H42 L58 88 H2 L18 66 H4 L20 40 H8 Z" fill="#2f6b4a"/><rect x="26" y="88" width="8" height="10" fill="#8a5a3c"/><circle cx="30" cy="5" r="3" fill="#f4661c"/></svg>' +
           '<p class="sapin__taille">' + echapper(s.taille) + "</p>" +
           '<p class="sapin__pour">' + echapper(s.pour || "") + "</p>" +
           '<p class="sapin__pied">🪵 Pied bûche inclus</p>' +
           '<p class="sapin__prix" data-prix="' + s.prix + '">' + s.prix + "&nbsp;€ <small>TTC</small></p>" +
           (info.sans_pied ? '<label class="sapin__sanspied"><input type="checkbox" data-sans-pied> Je ne souhaite pas de pied (−' + info.sans_pied.remise + "&nbsp;€)</label>" : "") +
-          '<a class="bouton bouton--petit" data-lien="' + echapper(s.lien || "") + '" href="#">Commander</a>' +
+          quantiteHtml(s.id, "sapin") +
           "</div>";
       }).join("") + "</div>" +
       boissonsHtml(info.boissons) +
       // Récapitulatif de livraison, mis à jour selon la date choisie
       '<div class="sapins__recap" aria-live="polite"></div>' +
       '<label class="sapins__accord"><input type="checkbox" data-accord> <span>J\'ai bien noté que ma commande sera <strong>livrée dans mon entreprise à la date choisie</strong>, que je la récupère sur place, et j\'accepte les <a href="/conditions-generales-de-vente/" target="_blank">conditions générales de vente</a>.</span></label>' +
-      '<p class="petit sapins__note">En cliquant sur «&nbsp;Commander&nbsp;», vous êtes redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage.</p>';
+      '<section class="panier" data-panier aria-labelledby="panier-titre">' +
+        '<p class="sapins__etape" id="panier-titre">🧺 Votre commande</p>' +
+        '<div class="panier__contenu" aria-live="polite"></div>' +
+        '<button type="button" class="bouton bouton--grand panier__payer" data-payer>Valider et payer</button>' +
+        '<p class="petit sapins__note">Vous serez redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage.</p>' +
+      "</section>" +
+      '<div class="panier-barre" data-panier-barre hidden><span class="panier-barre__total"></span><button type="button" class="bouton bouton--petit" data-voir-panier>Voir ma commande</button></div>';
     boutique.innerHTML = html;
     boutique.hidden = false;
     function majRecap() {
@@ -179,46 +187,120 @@
     boutique.querySelectorAll("[data-fiche]").forEach(function (bt) {
       bt.addEventListener("click", function () { ouvrirFiche(info.boissons, info.boissons.produits[Number(bt.getAttribute("data-fiche"))]); });
     });
-    boutique.querySelectorAll("[data-lien]").forEach(function (a) {
-      a.addEventListener("click", function (e) {
-        e.preventDefault();
-        var choix = boutique.querySelector('input[name="vague"]:checked:not(:disabled)');
-        var v = choix && info.vagues.filter(function (x) { return x.id === choix.value; })[0];
-        if (!v || new Date(v.fin).getTime() <= Date.now()) { alert("Choisissez une date de livraison encore ouverte."); return; }
-        var accord = boutique.querySelector("[data-accord]");
-        if (!accord.checked) { exiger(accord, "Pour commander, cochez d'abord cette case : elle confirme que votre commande sera livrée dans votre entreprise à la date choisie."); return; }
-        // Boissons alcoolisées : déclaration de majorité obligatoire
-        var majeur = boutique.querySelector("[data-majeur]");
-        if (a.hasAttribute("data-alcool") && majeur && !majeur.checked) { exiger(majeur, "Pour commander une bouteille, cochez d'abord cette case : la vente d'alcool est réservée aux personnes majeures."); return; }
-        if (!a.getAttribute("data-lien")) { alerteBouton(a, "Le paiement en ligne ouvre très bientôt. Merci de votre patience !"); return; }
-        var vague = v.id;
-        // Référence transmise à Stripe : code entreprise + livraison choisie (ex. ENTRE7K2Q-V1)
-        // Sapin sans pied : la référence le signale (…-SP) et le code promo Stripe déduit la remise
-        var sansPied = a.closest(".sapin") && a.closest(".sapin").querySelector("[data-sans-pied]:checked");
-        var ref = (info.reference + "-" + vague + (sansPied ? "-SP" : "")).replace(/[^A-Za-z0-9_-]/g, "");
-        var url = a.getAttribute("data-lien");
-        location.href = url + (url.indexOf("?") < 0 ? "?" : "&") + "client_reference_id=" + encodeURIComponent(ref) +
-          (sansPied && info.sans_pied.code_promo ? "&prefilled_promo_code=" + encodeURIComponent(info.sans_pied.code_promo) : "");
+    // ===== Panier =====
+    var panier = {}; // id -> { quantite, sansPied }
+    var articles = {};
+    info.sapins.forEach(function (x) { articles[x.id] = { nom: "Sapin Nordmann " + x.taille, prix: x.prix, type: "sapin" }; });
+    ((info.boissons && info.boissons.produits) || []).forEach(function (x) { if (x.prix) articles[x.id] = { nom: x.nom, prix: x.prix, type: "boisson" }; });
+    function prixUnitaire(id) {
+      var a = articles[id], l = panier[id];
+      return a.prix - (a.type === "sapin" && l && l.sansPied && info.sans_pied ? info.sans_pied.remise : 0);
+    }
+    function euros(n) { return n.toFixed(2).replace(".", ",") + "&nbsp;€"; }
+    function majPanier() {
+      var lignes = Object.keys(panier).filter(function (id) { return panier[id].quantite > 0; });
+      var total = 0, nb = 0;
+      var html = lignes.map(function (id) {
+        var l = panier[id], a = articles[id], pu = prixUnitaire(id);
+        total += pu * l.quantite; nb += l.quantite;
+        return "<li><span>" + l.quantite + " × " + echapper(a.nom) + (a.type === "sapin" ? (l.sansPied ? " <small>(sans pied)</small>" : " <small>(avec pied)</small>") : "") +
+          "</span><strong>" + euros(pu * l.quantite) + "</strong></li>";
+      }).join("");
+      boutique.querySelector(".panier__contenu").innerHTML = lignes.length
+        ? '<ul class="panier__lignes">' + html + '</ul><p class="panier__total">Total TTC <strong>' + euros(total) + "</strong></p>"
+        : '<p class="panier__vide">Votre commande est vide&nbsp;: ajoutez un sapin ou une bouteille avec le bouton «&nbsp;+&nbsp;».</p>';
+      boutique.querySelectorAll(".quantite").forEach(function (q) {
+        var n = (panier[q.getAttribute("data-article")] || {}).quantite || 0;
+        q.querySelector("output").textContent = n;
+        q.querySelector("[data-moins]").disabled = n === 0;
+        q.closest(".sapin, .boisson").classList.toggle("est-choisi", n > 0);
+      });
+      var barre = boutique.querySelector("[data-panier-barre]");
+      barre.hidden = !nb;
+      barre.querySelector(".panier-barre__total").innerHTML = "🧺 " + nb + " article" + (nb > 1 ? "s" : "") + " · <strong>" + euros(total) + "</strong>";
+      boutique.querySelector("[data-payer]").classList.toggle("est-bloque", !nb || !boutique.querySelector("[data-accord]").checked);
+    }
+    function verifierCases(type) {
+      var accord = boutique.querySelector("[data-accord]");
+      if (!accord.checked) { exiger(accord, "Pour commander, cochez d'abord cette case : elle confirme que votre commande sera livrée dans votre entreprise à la date choisie."); return false; }
+      var majeur = boutique.querySelector("[data-majeur]");
+      if (type === "boisson" && majeur && !majeur.checked) { exiger(majeur, "Pour ajouter une bouteille, cochez d'abord cette case : la vente d'alcool est réservée aux personnes majeures."); return false; }
+      return true;
+    }
+    boutique.querySelectorAll(".quantite").forEach(function (q) {
+      var id = q.getAttribute("data-article"), type = q.getAttribute("data-type");
+      q.querySelector("[data-plus]").addEventListener("click", function () {
+        if (!verifierCases(type)) return;
+        var l = panier[id] || (panier[id] = { quantite: 0, sansPied: false });
+        if (l.quantite >= 20) return;
+        l.quantite++;
+        var sp = q.closest(".sapin") && q.closest(".sapin").querySelector("[data-sans-pied]");
+        if (sp) l.sansPied = sp.checked;
+        majPanier();
+      });
+      q.querySelector("[data-moins]").addEventListener("click", function () {
+        var l = panier[id]; if (!l || !l.quantite) return;
+        l.quantite--; majPanier();
       });
     });
-    // Boutons grisés tant que les cases nécessaires ne sont pas cochées (ils restent cliquables pour expliquer quoi faire)
-    function majBoutons() {
-      var ok = boutique.querySelector("[data-accord]").checked;
-      var majeur = boutique.querySelector("[data-majeur]");
-      boutique.querySelectorAll("[data-lien]").forEach(function (a) {
-        var bloque = !ok || (a.hasAttribute("data-alcool") && majeur && !majeur.checked);
-        a.classList.toggle("est-bloque", bloque);
-        a.setAttribute("aria-disabled", bloque ? "true" : "false");
+    boutique.querySelectorAll("[data-sans-pied]").forEach(function (c) {
+      c.addEventListener("change", function () {
+        var id = c.closest(".sapin").querySelector(".quantite").getAttribute("data-article");
+        if (panier[id]) panier[id].sansPied = c.checked;
+        majPanier();
       });
+    });
+    boutique.querySelector("[data-voir-panier]").addEventListener("click", function () {
+      boutique.querySelector("[data-panier]").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    var payer = boutique.querySelector("[data-payer]");
+    payer.addEventListener("click", function () {
+      var choix = boutique.querySelector('input[name="vague"]:checked:not(:disabled)');
+      var v = choix && info.vagues.filter(function (x) { return x.id === choix.value; })[0];
+      if (!v || new Date(v.fin).getTime() <= Date.now()) { alertePanier("Choisissez une date de livraison encore ouverte, tout en haut."); return; }
+      var lignes = Object.keys(panier).filter(function (id) { return panier[id].quantite > 0; });
+      if (!lignes.length) { alertePanier("Ajoutez d'abord un sapin ou une bouteille avec le bouton « + »."); return; }
+      if (!verifierCases(lignes.some(function (id) { return articles[id].type === "boisson"; }) ? "boisson" : "sapin")) return;
+      payer.disabled = true; payer.textContent = "Préparation du paiement…";
+      fetch(donnees.paiement, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: donnees.cle_publique },
+        body: JSON.stringify({ action: "paiement", reference: info.reference, vague: v.id,
+          articles: lignes.map(function (id) { return { id: id, quantite: panier[id].quantite, sans_pied: !!panier[id].sansPied }; }),
+          retour: location.origin + location.pathname })
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.url) throw new Error(j.erreur || "indisponible"); return j; });
+      }).then(function (j) { location.href = j.url; })
+        .catch(function (e) {
+          payer.disabled = false; payer.textContent = "Valider et payer";
+          alertePanier(/indisponible|Failed|NetworkError|non configur/i.test(e.message) ? "Le paiement en ligne ouvre très bientôt. Merci de votre patience !" : e.message);
+        });
+    });
+    function alertePanier(texte) {
+      var zone = boutique.querySelector("[data-panier]"), m = zone.querySelector(".sapins__alerte");
+      if (!m) { m = document.createElement("p"); m.className = "sapins__alerte"; m.setAttribute("role", "alert"); payer.parentNode.insertBefore(m, payer); }
+      m.textContent = texte;
+      zone.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     boutique.querySelectorAll("[data-accord], [data-majeur]").forEach(function (c) {
       c.addEventListener("change", function () {
         if (c.checked) { var l = c.closest("label"); l.classList.remove("a-cocher"); var m = l.nextElementSibling; if (m && m.classList.contains("sapins__alerte")) m.remove(); }
-        majBoutons();
+        majPanier();
       });
     });
-    majBoutons();
+    majPanier();
+    // Retour de Stripe : paiement réussi ou abandonné
+    if (/paiement=ok/.test(location.search)) alertePanier("✅ Merci ! Votre paiement est confirmé. Vous allez recevoir votre reçu par e-mail.");
+    else if (/paiement=annule/.test(location.search)) alertePanier("Paiement annulé : votre commande n'a pas été enregistrée. Vous pouvez la refaire ci-dessous.");
     boutique.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Sélecteur de quantité − 0 +
+  function quantiteHtml(id, type) {
+    return '<div class="quantite" data-article="' + echapper(id) + '" data-type="' + type + '">' +
+      '<button type="button" data-moins aria-label="Retirer un article">−</button>' +
+      '<output aria-live="polite">0</output>' +
+      '<button type="button" data-plus aria-label="Ajouter un article">+</button></div>';
   }
 
   // Met en évidence une case à cocher obligatoire, avec un message, et fait défiler la page jusqu'à elle
@@ -235,12 +317,6 @@
     m.textContent = "☝️ " + texte;
     label.scrollIntoView({ behavior: "smooth", block: "center" });
     setTimeout(function () { caseACocher.focus({ preventScroll: true }); }, 400);
-  }
-  function alerteBouton(a, texte) {
-    var carte = a.closest(".sapin, .boisson");
-    var m = carte.querySelector(".sapins__alerte");
-    if (!m) { m = document.createElement("p"); m.className = "sapins__alerte sapins__alerte--petite"; m.setAttribute("role", "status"); carte.appendChild(m); }
-    m.textContent = texte;
   }
 
   // Compte à rebours de chaque date limite, mis à jour chaque seconde. À zéro, la date devient impossible à choisir.
@@ -269,7 +345,7 @@
       });
       if (!ouvertes) {
         clearInterval(minuterie);
-        boutique.querySelectorAll("[data-lien]").forEach(function (a) { a.replaceWith(Object.assign(document.createElement("span"), { className: "sapin__bientot", textContent: "Commandes closes" })); });
+        boutique.querySelectorAll(".quantite, [data-payer]").forEach(function (a) { a.replaceWith(Object.assign(document.createElement("span"), { className: "sapin__bientot", textContent: "Commandes closes" })); });
       }
     }
     maj();

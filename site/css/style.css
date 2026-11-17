@@ -908,3 +908,31 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 /* Listes à coches : le texte (même avec des passages en gras) s'écrit d'un seul tenant, la coche reste à gauche */
 .liste-coches li { display: block; position: relative; padding-left: 30px; }
 .liste-coches li::before { position: absolute; left: 0; top: 2px; margin-top: 0; }
+/* Cartes alignées : dessins posés sur une même ligne, textes de hauteur égale, quantité en bas */
+.sapins__liste, .boissons__liste { align-items: stretch; }
+.sapin, .boisson { height: 100%; }
+.sapin__pour { min-height: 2.6em; display: flex; align-items: center; justify-content: center; }
+.sapin .sapin__prix { margin-top: auto !important; }
+.boisson__nom { min-height: 2.6em; display: flex; align-items: center; justify-content: center; }
+.boisson .sapin__prix { margin-top: auto !important; }
+.sapin__sanspied { min-height: 2.4em; }
+/* Sélecteur de quantité − 0 + */
+.quantite { display: inline-flex; align-items: center; border: 2px solid var(--vert); border-radius: 999px; overflow: hidden; background: #fff; margin-top: 4px; }
+.quantite button { width: 40px; height: 38px; border: 0; background: var(--vert); color: #fff; font-size: 1.3rem; font-weight: 700; cursor: pointer; line-height: 1; }
+.quantite button:hover:not(:disabled) { background: var(--vert-fonce); }
+.quantite button:disabled { background: #dfe8e2; color: #9db0a5; cursor: default; }
+.quantite output { min-width: 38px; text-align: center; font-weight: 700; font-size: 1.1rem; color: var(--vert); }
+.est-choisi { border-color: var(--vert) !important; box-shadow: 0 0 0 3px rgba(63,102,83,.18); }
+.boisson--coeur.est-choisi { border-color: var(--orange) !important; }
+/* Panier */
+.panier { max-width: 640px; margin: 40px auto 0; padding: 20px 22px; border: 2px solid var(--vert); border-radius: var(--rayon); background: #fff; box-shadow: var(--ombre-douce); text-align: center; scroll-margin-top: 100px; }
+.panier__lignes { list-style: none; padding: 0 !important; margin: 0 0 10px; text-align: left; }
+.panier__lignes li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--bord); margin: 0; }
+.panier__lignes small { color: var(--texte-doux); }
+.panier__total { display: flex; justify-content: space-between; font-size: 1.15rem; margin: 6px 0 16px !important; text-align: left !important; color: var(--vert); }
+.panier__total strong { font-family: var(--titre); font-size: 1.5rem; color: var(--orange-fonce); }
+.panier__vide { color: var(--texte-doux); margin: 0 0 16px !important; text-align: center !important; }
+.panier__payer { width: 100%; justify-content: center; }
+.panier-barre { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 10px; max-width: 640px; margin: 0 auto; padding: 10px 12px 10px 18px; background: var(--vert-nuit); color: #fff; border-radius: 999px; box-shadow: var(--ombre); }
+.panier-barre[hidden] { display: none; }
+.panier-barre strong { color: #fff; }
