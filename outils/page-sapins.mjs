@@ -139,6 +139,8 @@ const contenu = `    <section class="section">
         </ol>
         <h2>Vous n'avez pas de code&nbsp;?</h2>
         <p>Le code de votre entreprise a été communiqué par e-mail à votre responsable&nbsp;: demandez-le-lui. La vente est réservée aux collaborateurs des entreprises partenaires de COPANIER. Vous souhaitez la proposer dans votre entreprise&nbsp;? <a class="js-devis" data-produit="Sapins de Noël" href="mailto:contact@copanier.fr?subject=Sapins%20de%20No%C3%ABl%20dans%20mon%20entreprise">Contactez-nous</a>.</p>
+        <p class="sapins__contact">Pour toute question sur les sapins, le champagne ou votre commande&nbsp;: <a href="mailto:contact@copanier.fr">contact@copanier.fr</a></p>
+        <p class="sapins__site">🔒 La boutique de Noël se trouve uniquement ici, sur <strong>copanierdefruits.copanier.fr</strong> (et non sur copanier.fr).</p>
 
         <h2>Conditions de vente</h2>
         <p>Les <a href="/conditions-generales-de-vente/">conditions générales de vente</a> s'appliquent à toute commande. L'essentiel&nbsp;:</p>

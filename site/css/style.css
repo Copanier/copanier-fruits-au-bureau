@@ -1007,3 +1007,6 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .sapins__dates legend small { font-weight: 400; font-size: .85em; color: var(--texte-doux, #5b6b62); }
 .boissons__date, .panier__date { background: var(--orange-clair, #fff1e8); border-left: 4px solid var(--orange); padding: 10px 14px; border-radius: 8px; margin: 10px 0 16px; }
 .boissons__date a { color: var(--orange-fonce); font-weight: 600; white-space: nowrap; }
+.sapins__contact { margin: 14px 0 0; font-weight: 600; color: var(--vert); }
+.sapins__contact a { color: var(--orange-fonce); }
+.sapins__site { margin: 6px 0 0; font-size: .92rem; color: var(--texte-doux); }

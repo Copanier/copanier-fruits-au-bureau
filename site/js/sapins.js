@@ -151,7 +151,8 @@
         '<p class="panier__date" data-panier-date></p>' +
         '<div class="panier__contenu" aria-live="polite"></div>' +
         '<button type="button" class="bouton bouton--grand panier__payer" data-payer>Valider et payer</button>' +
-        '<p class="petit sapins__note">Vous serez redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage.</p>' +
+        '<p class="petit sapins__note">Vous serez redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage. Après le paiement, vous revenez automatiquement sur cette page et recevez votre reçu par e-mail.</p>' +
+        '<p class="sapins__contact">Une question sur votre commande&nbsp;? Écrivez-nous à <a href="mailto:contact@copanier.fr">contact@copanier.fr</a></p>' +
       "</section>" +
       '<div class="panier-barre" data-panier-barre hidden><span class="panier-barre__total"></span><button type="button" class="bouton bouton--petit" data-voir-panier>Voir ma commande</button></div>';
     boutique.innerHTML = html;
@@ -304,7 +305,7 @@
     });
     majPanier();
     // Retour de Stripe : paiement réussi ou abandonné
-    if (/paiement=ok/.test(location.search)) alertePanier("✅ Merci ! Votre paiement est confirmé. Vous allez recevoir votre reçu par e-mail.");
+    if (/paiement=ok/.test(location.search)) alertePanier("✅ Merci ! Votre paiement est confirmé et votre commande est enregistrée. Vous allez recevoir votre reçu par e-mail (envoyé par Stripe, notre service de paiement sécurisé). Votre commande sera livrée dans votre entreprise à la date choisie, avec votre prénom et votre nom sur l'étiquette. Pour toute question : contact@copanier.fr (boutique : copanierdefruits.copanier.fr).");
     else if (/paiement=annule/.test(location.search)) alertePanier("Paiement annulé : votre commande n'a pas été enregistrée. Vous pouvez la refaire ci-dessous.");
     boutique.scrollIntoView({ behavior: "smooth", block: "start" });
   }
