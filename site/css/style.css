@@ -1010,3 +1010,7 @@ table.calendrier--saisons thead th { font-size: .9rem; white-space: nowrap; }
 .sapins__contact { margin: 14px 0 0; font-weight: 600; color: var(--vert); }
 .sapins__contact a { color: var(--orange-fonce); }
 .sapins__site { margin: 6px 0 0; font-size: .92rem; color: var(--texte-doux); }
+.fiche-boisson__recompenses { background: #fbf6e6; border: 1px solid #ecd98f; border-radius: 10px; padding: 10px 14px; margin: 12px 0; }
+.fiche-boisson__recompenses p { margin: 0 0 4px; }
+.fiche-boisson__recompenses ul { margin: 4px 0 6px; padding-left: 18px; }
+.fiche-boisson__recompenses .petit { color: var(--texte-doux); margin: 0; }

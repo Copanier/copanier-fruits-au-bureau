@@ -98,6 +98,7 @@
       (f.description ? "<p>" + echapper(f.description) + "</p>" : "") +
       (f.cepage ? "<p><strong>Cépage</strong>&nbsp;: " + echapper(f.cepage) + "</p>" : "") +
       (f.caracteristiques && f.caracteristiques.length ? "<ul>" + f.caracteristiques.map(function (c) { return "<li>" + echapper(c) + "</li>"; }).join("") + "</ul>" : "") +
+      (f.recompenses && f.recompenses.length ? '<div class="fiche-boisson__recompenses"><p><strong>🏅 Récompenses</strong></p><ul>' + f.recompenses.map(function (r) { return "<li>" + echapper(r) + "</li>"; }).join("") + '</ul><p class="petit">Distinctions communiquées par la Maison Huiban.</p></div>' : "") +
       (f.degustation ? "<p><strong>Dégustation</strong>&nbsp;: " + echapper(f.degustation) + "</p>" : "") +
       (f.accords ? "<p><strong>Accords</strong>&nbsp;: " + echapper(f.accords) + "</p>" : "") +
       (f.a_completer ? '<p class="petit">Fiche détaillée bientôt disponible. Une question&nbsp;? <a href="mailto:contact@copanier.fr">contact@copanier.fr</a></p>' : "") +

@@ -73,7 +73,12 @@
             "Repos après dégorgement : 6 mois"
           ],
           "degustation": "Des notes délicates de fruits rouges. Une attaque souple, une bouche fruitée, ample et fraîche, et une finale citronnée.",
-          "accords": "À l'apéritif, avec des poissons ou des viandes, ou en fin de repas avec un dessert au chocolat ou aux fruits."
+          "accords": "À l'apéritif, avec des poissons ou des viandes, ou en fin de repas avec un dessert au chocolat ou aux fruits.",
+          "recompenses": [
+            "Guide Hachette des vins : 1 étoile (éditions 2016, 2021 et 2026)",
+            "Bettane + Desseauve, Prix Plaisir : médaille de bronze 2023",
+            "Concours mondial des Féminalise : médaille d'argent 2016"
+          ]
         },
         "prix_reference": 21.5,
         "source_prix": "Prix fixé par Pierre",
@@ -98,7 +103,13 @@
             "Repos après dégorgement : 6 mois"
           ],
           "degustation": "Des parfums de fleurs blanches nuancés de fruits jaunes et de miel. Une attaque franche, des arômes floraux et exotiques, une matière ronde et fraîche et une finale longue et fine.",
-          "accords": ""
+          "accords": "",
+          "recompenses": [
+            "Guide Hachette des vins : 2 étoiles (édition 2024) et 1 étoile (édition 2022)",
+            "Bettane + Desseauve, Prix Plaisir : médaille d'or 2021",
+            "Concours mondial des Féminalise : médaille d'or 2018",
+            "Concours Général Agricole de Paris : médaille d'argent 2019"
+          ]
         },
         "prix_reference": 20.9,
         "source_prix": "Prix fixé par Pierre",
@@ -123,7 +134,10 @@
             "Repos après dégorgement : 6 mois"
           ],
           "degustation": "Beaucoup de rondeur et de souplesse, avec une très grande fraîcheur en bouche.",
-          "accords": "À l'apéritif avec du foie gras ou des petits fours chauds ; à table avec des viandes blanches ou des plats cuisinés."
+          "accords": "À l'apéritif avec du foie gras ou des petits fours chauds ; à table avec des viandes blanches ou des plats cuisinés.",
+          "recompenses": [
+            "Guide Hachette des vins : 2 étoiles (édition 2020)"
+          ]
         },
         "prix_reference": 24.5,
         "source_prix": "Prix fixé par Pierre",
@@ -196,11 +210,13 @@
           "cepage": "",
           "description": "Le gin de la Distillerie des Dames Blanches, la distillerie de la Maison Huiban, installée dans l'ancien couvent de la reine Blanche de Castille à Jonquery, où les spiritueux de la maison sont distillés en alambic charentais.",
           "caracteristiques": [
-            "Distillé à la Distillerie des Dames Blanches (Jonquery, Marne)",
-            "Récompensé par le guide Gilbert & Gaillard : Double Or, 90 points"
+            "Distillé à la Distillerie des Dames Blanches (Jonquery, Marne)"
           ],
           "degustation": "",
-          "accords": ""
+          "accords": "",
+          "recompenses": [
+            "International Challenge Gilbert & Gaillard 2023 : médaille Double Or, 90 points"
+          ]
         },
         "prix_reference": 25,
         "source_prix": "Prix fixé par Pierre",
