@@ -127,7 +127,7 @@
         var close = new Date(v.fin).getTime() <= maintenant;
         return '<label class="sapins__date' + (close ? " est-close" : "") + '"><input type="radio" name="vague" value="' + echapper(v.id) + '"' +
           (i === premiere ? " checked" : "") + (close ? " disabled" : "") + "> <span><strong>Livraison le " + echapper(v.livraison) + "</strong>" +
-          "<small>Commandes jusqu'au " + fin + " à minuit</small>" +
+          "<small>Commandes jusqu'au " + fin + " à 23 h 59</small>" +
           '<span class="sapins__rebours" data-fin="' + echapper(v.fin) + '">' + (close ? "Commandes closes" : "") + "</span></span></label>";
       }).join("") + "</fieldset>" +
       '<p class="sapins__etape">2. Votre sapin Nordmann, livré avec son pied</p><div class="sapins__liste">' +

@@ -26,7 +26,7 @@ const CATALOGUE = {
   "vagues": [
     {
       "id": "V1",
-      "fin": "2026-11-26T23:59:59+01:00",
+      "fin": "2026-11-29T23:59:59+01:00",
       "livraison": "jeudi 3 décembre"
     },
     {

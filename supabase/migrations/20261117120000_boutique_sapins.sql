@@ -42,10 +42,10 @@ alter table public.commandes_boutique enable row level security;
 revoke all on public.commandes_boutique from anon, authenticated;
 grant select, insert, update on public.commandes_boutique to service_role;
 
--- Récapitulatif des commandes envoyé sur contact@copanier.fr le vendredi à 8 h (heure de Paris),
--- avant la commande fournisseur de midi : vague 1 le 27 novembre, vague 2 le 4 décembre.
+-- Récapitulatif des commandes envoyé sur contact@copanier.fr à 8 h (heure de Paris),
+-- après la clôture des commandes : vague 1 le lundi 30 novembre (clôture dimanche 29 à 23 h 59), vague 2 le vendredi 4 décembre.
 select cron.unschedule(jobname) from cron.job where jobname in ('copanier-recap-sapins-v1', 'copanier-recap-sapins-v2');
-select cron.schedule('copanier-recap-sapins-v1', '0 7 27 11 *', $$
+select cron.schedule('copanier-recap-sapins-v1', '0 7 30 11 *', $$
   select net.http_post(url := 'https://eykdcoqdhllbigxujgsl.supabase.co/functions/v1/copanier-boutique',
     headers := '{"Content-Type": "application/json"}'::jsonb, body := '{"action": "recap", "vague": "V1"}'::jsonb);
 $$);

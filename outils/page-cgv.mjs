@@ -7,7 +7,7 @@ import { ecrirePage, ajouterAuPlan } from './gabarit.mjs';
 
 const config = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'sapins', 'config.json'), 'utf8'));
 const dateLongue = (iso) => new Date(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' });
-const vagues = config.vagues.map((v) => `<li>commandes jusqu'au ${dateLongue(v.fin_commandes)} à minuit&nbsp;: livraison le ${v.libelle_livraison} ${config.annee}&nbsp;;</li>`).join('\n          ');
+const vagues = config.vagues.map((v) => `<li>commandes jusqu'au ${dateLongue(v.fin_commandes)} à 23 h 59&nbsp;: livraison le ${v.libelle_livraison} ${config.annee}&nbsp;;</li>`).join('\n          ');
 const tailles = config.sapins.map((s) => `${s.taille} (${s.prix}&nbsp;€ TTC)`).join(', ');
 
 const contenu = `    <section class="section">
