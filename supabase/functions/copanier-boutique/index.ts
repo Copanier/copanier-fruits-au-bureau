@@ -160,6 +160,10 @@ async function stripe(chemin, corps) {
   if (!r.ok) throw new Error("Stripe : " + (j.error?.message || r.status));
   return j;
 }
+async function stripeLire(chemin) {
+  const r = await fetch("https://api.stripe.com/v1/" + chemin, { headers: { Authorization: "Bearer " + Deno.env.get("STRIPE_SECRET_KEY") } });
+  return r.ok ? await r.json() : null;
+}
 async function signatureValide(corpsBrut, entete) {
   const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   if (!secret || !entete) return false;
@@ -213,7 +217,7 @@ async function creerPaiement(d) {
   const session = await stripe("checkout/sessions", {
     mode: "payment",
     locale: "fr",
-    success_url: retour + "?paiement=ok",
+    success_url: retour + "?paiement=ok&session={CHECKOUT_SESSION_ID}",
     cancel_url: retour + "?paiement=annule",
     client_reference_id: `${reference}-${vague.id}${sansPied ? "-SP" : ""}`,
     phone_number_collection: { enabled: true },
@@ -258,7 +262,7 @@ async function notificationStripe(req) {
     const c = r.ok ? (await r.json())[0] : null;
     if (c) {
       const lignes = (c.articles || []).map((l) => `<li>${l.quantite} × ${esc(l.nom)} — ${euros(l.prix_unitaire * l.quantite)}</li>`).join("");
-      await envoyerMail(`🎄 Nouvelle commande — ${c.entreprise} — ${euros(c.total_ttc)} (livraison ${c.livraison})`,
+      await envoyerMail(`🎄 Nouvelle commande ${numeroCommande(c.id)} — ${c.entreprise} — ${euros(c.total_ttc)} (livraison ${c.livraison})`,
         `<p><b>${esc(maj.client_prenom)} ${esc(maj.client_nom)}</b>${maj.service ? " — " + esc(maj.service) : ""}<br>${esc(c.entreprise)}, ${esc(c.adresse)}<br>Livraison : <b>${esc(c.livraison)}</b> (${esc(c.vague)})</p><ul>${lignes}</ul><p>Total TTC : <b>${euros(c.total_ttc)}</b><br>${esc(maj.client_email)} · ${esc(maj.client_tel)}</p>`);
     }
   } else if (ev.type === "checkout.session.expired") {
@@ -267,6 +271,32 @@ async function notificationStripe(req) {
     await sb(`commandes_boutique?payment_intent=eq.${o.payment_intent}`, { method: "PATCH", body: JSON.stringify({ statut: "remboursee" }) });
   }
   return json({ recu: true });
+}
+
+// ---------- 2 bis. Page de confirmation après paiement ----------
+// L'identifiant de session Stripe (long et aléatoire) n'est connu que de l'acheteur : il sert de clé de lecture.
+const numeroCommande = (id) => "CP-" + String(id).padStart(5, "0");
+async function confirmation(d) {
+  const id = String(d.session || "");
+  if (!/^cs_(live|test)_[A-Za-z0-9]{10,250}$/.test(id)) return json({ erreur: "Commande introuvable." }, 400);
+  const r = await sb(`commandes_boutique?session_id=eq.${id}&select=id,statut,entreprise,adresse,livraison,articles,total_ttc,client_prenom,client_email`);
+  const c = r.ok ? (await r.json())[0] : null;
+  if (!c) return json({ erreur: "Commande introuvable." }, 404);
+  let statut = c.statut, prenom = c.client_prenom, email = c.client_email;
+  // La notification Stripe peut arriver quelques secondes après le retour du client : on vérifie directement chez Stripe
+  if (statut === "en_attente") {
+    const ses = await stripeLire("checkout/sessions/" + id);
+    if (ses?.payment_status === "paid") {
+      statut = "payee";
+      prenom = prenom || (ses.custom_fields || []).find((f) => f.key === "prenom")?.text?.value || null;
+      email = email || ses.customer_details?.email || null;
+    } else if (ses?.status === "expired") statut = "expiree";
+  }
+  return json({
+    numero: numeroCommande(c.id), statut, prenom, email,
+    entreprise: c.entreprise, adresse: c.adresse, livraison: c.livraison, total_ttc: c.total_ttc,
+    articles: (c.articles || []).map((l) => ({ nom: l.nom, quantite: l.quantite, prix_unitaire: l.prix_unitaire })),
+  });
 }
 
 // ---------- 3. Récapitulatif d'une livraison (commande fournisseur et préparation) ----------
@@ -295,6 +325,7 @@ serve(async (req) => {
     const d = await req.json().catch(() => ({}));
     if (d.action === "paiement") return await creerPaiement(d);
     if (d.action === "recap") return await recapitulatif(d.vague);
+    if (d.action === "confirmation") return await confirmation(d);
     return json({ erreur: "action inconnue" }, 400);
   } catch (e) {
     console.error("copanier-boutique", e);

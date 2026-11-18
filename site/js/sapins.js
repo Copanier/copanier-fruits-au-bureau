@@ -306,10 +306,93 @@
     });
     majPanier();
     // Retour de Stripe : paiement réussi ou abandonné
-    if (/paiement=ok/.test(location.search)) alertePanier("✅ Merci ! Votre paiement est confirmé et votre commande est enregistrée. Vous allez recevoir votre reçu par e-mail (envoyé par Stripe, notre service de paiement sécurisé). Votre commande sera livrée dans votre entreprise à la date choisie, avec votre prénom et votre nom sur l'étiquette. Pour toute question : contact@copanier.fr (boutique : copanierdefruits.copanier.fr).");
-    else if (/paiement=annule/.test(location.search)) alertePanier("Paiement annulé : votre commande n'a pas été enregistrée. Vous pouvez la refaire ci-dessous.");
-    boutique.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Commandes déjà payées depuis cet appareil : rappel pour ne pas payer deux fois
+    var dejaPayees = commandesMemorisees();
+    if (dejaPayees.length) {
+      var rappel = document.createElement("div");
+      rappel.className = "commandes-payees";
+      rappel.innerHTML = "<p><strong>✅ Vous avez déjà " + (dejaPayees.length > 1 ? dejaPayees.length + " commandes payées" : "une commande payée") + " depuis cet appareil</strong></p><ul>" +
+        dejaPayees.map(function (c) { return "<li>Commande <strong>" + echapper(c.numero) + "</strong> – livraison le " + echapper(c.livraison) + " – " + euros(c.total) + " payés</li>"; }).join("") +
+        '</ul><p class="petit">Inutile de la payer à nouveau : votre reçu Stripe vous a été envoyé par e-mail. Vous pouvez passer une commande supplémentaire ci-dessous.</p>';
+      boutique.insertBefore(rappel, boutique.firstChild.nextSibling);
+    }
+    if (!/paiement=/.test(location.search)) boutique.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  // ===== Retour de Stripe : écran « Commande validée » en haut de page =====
+  function euros(n) { return Number(n).toFixed(2).replace(".", ",") + "&nbsp;€"; }
+  function commandesMemorisees() {
+    try { return JSON.parse(localStorage.getItem("copanier-commandes-payees") || "[]"); } catch (e) { return []; }
+  }
+  function memoriserCommande(c) {
+    try {
+      var liste = commandesMemorisees().filter(function (x) { return x.numero !== c.numero; });
+      liste.push({ numero: c.numero, livraison: c.livraison, total: c.total_ttc });
+      localStorage.setItem("copanier-commandes-payees", JSON.stringify(liste.slice(-10)));
+    } catch (e) {}
+  }
+  function ecranRetour() {
+    var p = new URLSearchParams(location.search), etat = p.get("paiement");
+    if (!etat) return;
+    var zone = document.createElement("section");
+    zone.className = "commande-retour";
+    zone.setAttribute("aria-live", "polite");
+    zone.tabIndex = -1;
+    var conteneur = form.closest(".conteneur") || form.parentNode;
+    conteneur.insertBefore(zone, conteneur.firstChild);
+    function montrer() { zone.scrollIntoView({ behavior: "auto", block: "start" }); zone.focus({ preventScroll: true }); }
+    var contact = '<p class="commande-retour__contact">Une question ? <a href="mailto:contact@copanier.fr">contact@copanier.fr</a></p>';
+    if (etat === "annule") {
+      zone.classList.add("est-annulee");
+      zone.innerHTML = '<p class="commande-retour__icone">↩️</p><h2>Paiement annulé</h2><p><strong>Aucun montant n’a été débité</strong> et votre commande n’a pas été enregistrée. Vous pouvez la refaire ci-dessous quand vous le souhaitez.</p>' + contact;
+      montrer(); return;
+    }
+    var session = p.get("session") || "";
+    if (etat !== "ok" || !/^cs_(live|test)_[A-Za-z0-9]+$/.test(session)) {
+      zone.innerHTML = '<p class="commande-retour__icone">✅</p><h2>Merci pour votre commande !</h2><p>Votre reçu de paiement vous est envoyé par e-mail par Stripe, notre service de paiement sécurisé. <strong>Ne refaites pas la commande.</strong></p>' + contact;
+      montrer(); return;
+    }
+    zone.innerHTML = '<p class="commande-retour__icone">⏳</p><h2>Vérification de votre paiement…</h2><p>Merci de patienter quelques secondes, ne refaites pas votre commande.</p>';
+    montrer();
+    var essais = 0;
+    function erreurFinale() {
+      zone.innerHTML = '<p class="commande-retour__icone">✅</p><h2>Merci pour votre commande !</h2><p>Nous n’arrivons pas à afficher le détail pour le moment. Si votre paiement est passé, vous avez reçu le reçu Stripe par e-mail : <strong>ne refaites pas la commande</strong>.</p>' + contact;
+    }
+    (function verifier() {
+      fetch(donnees.paiement, { method: "POST", headers: { "Content-Type": "application/json", apikey: donnees.cle_publique }, body: JSON.stringify({ action: "confirmation", session: session }) })
+        .then(function (r) { return r.json(); })
+        .then(function (c) {
+          if (c.statut === "payee") {
+            memoriserCommande(c);
+            zone.classList.add("est-validee");
+            zone.innerHTML = '<p class="commande-retour__icone">✅</p>' +
+              "<h2>Commande validée" + (c.prenom ? ", merci " + echapper(c.prenom) : "") + " !</h2>" +
+              '<p class="commande-retour__paye">Votre paiement de <strong>' + euros(c.total_ttc) + "</strong> est bien confirmé. <strong>Inutile de commander à nouveau.</strong></p>" +
+              '<dl class="commande-retour__infos"><dt>N° de commande</dt><dd>' + echapper(c.numero) + "</dd>" +
+              "<dt>Livraison</dt><dd>" + echapper(c.livraison) + ", dans votre entreprise</dd>" +
+              "<dt>Entreprise</dt><dd>" + echapper(c.entreprise) + (c.adresse ? "<br><small>" + echapper(c.adresse) + "</small>" : "") + "</dd></dl>" +
+              '<ul class="commande-retour__articles">' + c.articles.map(function (l) { return "<li><span>" + l.quantite + " × " + echapper(l.nom) + "</span><strong>" + euros(l.prix_unitaire * l.quantite) + "</strong></li>"; }).join("") +
+              '<li class="commande-retour__total"><span>Total payé TTC</span><strong>' + euros(c.total_ttc) + "</strong></li></ul>" +
+              "<p>📧 Votre reçu vous a été envoyé par e-mail" + (c.email ? " à <strong>" + echapper(c.email) + "</strong>" : "") + " par Stripe, notre service de paiement sécurisé.</p>" +
+              "<p>🏷️ Votre prénom et votre nom figureront sur l’étiquette de votre commande, à récupérer dans votre entreprise le jour de la livraison.</p>" +
+              '<p class="commande-retour__actions"><button type="button" class="bouton" data-imprimer>🖨️ Imprimer ou enregistrer</button> <button type="button" class="bouton bouton--contour-vert" data-nouvelle>Passer une autre commande</button></p>' + contact;
+            zone.querySelector("[data-imprimer]").addEventListener("click", function () { window.print(); });
+            zone.querySelector("[data-nouvelle]").addEventListener("click", function () { form.scrollIntoView({ behavior: "smooth", block: "center" }); });
+          } else if (c.statut === "en_attente" && ++essais < 10) {
+            setTimeout(verifier, 2000);
+          } else if (c.statut === "remboursee") {
+            zone.innerHTML = '<p class="commande-retour__icone">↩️</p><h2>Commande ' + echapper(c.numero || "") + " remboursée</h2><p>Cette commande a été remboursée.</p>" + contact;
+          } else if (c.erreur) {
+            erreurFinale();
+          } else {
+            zone.classList.add("est-annulee");
+            zone.innerHTML = '<p class="commande-retour__icone">⚠️</p><h2>Paiement non confirmé</h2><p>Nous n’avons pas la confirmation de votre paiement. <strong>Avant de recommander</strong>, vérifiez si vous avez reçu le reçu Stripe par e-mail, ou écrivez-nous : nous vérifions pour vous.</p>' + contact;
+          }
+        })
+        .catch(function () { if (++essais < 10) setTimeout(verifier, 2000); else erreurFinale(); });
+    })();
+  }
+  ecranRetour();
 
   // Sélecteur de quantité − 0 +
   function quantiteHtml(id, type) {
