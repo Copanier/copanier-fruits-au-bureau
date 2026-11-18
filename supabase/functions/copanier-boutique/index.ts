@@ -227,7 +227,7 @@ async function creerPaiement(d) {
       { key: "nom", label: { type: "custom", custom: "Nom (étiquette de la commande)" }, type: "text" },
       { key: "service", label: { type: "custom", custom: "Service ou étage" }, type: "text", optional: true },
     ],
-    custom_text: { submit: { message: `Livraison dans votre entreprise (${ent.entreprise}) le ${vague.livraison}. Votre prénom et votre nom figureront sur l'étiquette de votre commande.` } },
+    custom_text: { submit: { message: `Livraison dans votre entreprise (${ent.entreprise}) le ${vague.livraison}. Votre prénom et votre nom figureront sur l'étiquette de votre commande. Un récépissé de paiement vous sera envoyé par e-mail.` } },
     metadata: { reference, entreprise: ent.entreprise, vague: vague.id, livraison: vague.livraison },
     payment_intent_data: { description: `Commande sapins/boissons – ${ent.entreprise} – livraison ${vague.livraison}`, metadata: { reference, vague: vague.id } },
     line_items: lignes.map((l) => ({

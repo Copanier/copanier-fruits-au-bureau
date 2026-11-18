@@ -107,7 +107,7 @@ const contenu = `    <section class="section">
           <p>Des <strong>sapins Nordmann</strong> fraîchement coupés, livrés directement dans votre entreprise. Vous le commandez en ligne, vous le payez par carte, et vous le récupérez au bureau le jour de la livraison.</p>
           <ul class="liste-coches">
             <li>5 tailles, de 100 à 250&nbsp;cm, <strong>livrés avec leur pied</strong> (bûche en bois), prix TTC (TVA ${config.tva} incluse)</li>
-            <li>Paiement sécurisé par carte bancaire avec Stripe</li>
+            <li>Paiement sécurisé par carte bancaire avec Stripe, <strong>récépissé de paiement envoyé par e-mail</strong></li>
             <li>Livraison au bureau&nbsp;: ${vagues.map((v) => v.livraison).join(' ou ')}</li>
             <li>Et pour les fêtes&nbsp;: champagne en direct du producteur, livré avec votre sapin</li>
           </ul>

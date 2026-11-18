@@ -152,7 +152,7 @@
         '<p class="panier__date" data-panier-date></p>' +
         '<div class="panier__contenu" aria-live="polite"></div>' +
         '<button type="button" class="bouton bouton--grand panier__payer" data-payer>Valider et payer</button>' +
-        '<p class="petit sapins__note">Vous serez redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage. Après le paiement, vous revenez automatiquement sur cette page et recevez votre reçu par e-mail.</p>' +
+        '<p class="petit sapins__note">Vous serez redirigé vers la page de paiement sécurisée de Stripe, où vous indiquerez <strong>votre prénom et votre nom</strong> (inscrits sur l\'étiquette de votre commande), votre e-mail, votre téléphone et votre service ou étage. Après le paiement, vous revenez automatiquement sur cette page, qui confirme votre commande, et <strong>un récépissé de paiement vous est envoyé par e-mail</strong>.</p>' +
         '<p class="sapins__contact">Une question sur votre commande&nbsp;? Écrivez-nous à <a href="mailto:contact@copanier.fr">contact@copanier.fr</a></p>' +
       "</section>" +
       '<div class="panier-barre" data-panier-barre hidden><span class="panier-barre__total"></span><button type="button" class="bouton bouton--petit" data-voir-panier>Voir ma commande</button></div>';
@@ -373,7 +373,7 @@
               "<dt>Entreprise</dt><dd>" + echapper(c.entreprise) + (c.adresse ? "<br><small>" + echapper(c.adresse) + "</small>" : "") + "</dd></dl>" +
               '<ul class="commande-retour__articles">' + c.articles.map(function (l) { return "<li><span>" + l.quantite + " × " + echapper(l.nom) + "</span><strong>" + euros(l.prix_unitaire * l.quantite) + "</strong></li>"; }).join("") +
               '<li class="commande-retour__total"><span>Total payé TTC</span><strong>' + euros(c.total_ttc) + "</strong></li></ul>" +
-              "<p>📧 Votre reçu vous a été envoyé par e-mail" + (c.email ? " à <strong>" + echapper(c.email) + "</strong>" : "") + " par Stripe, notre service de paiement sécurisé.</p>" +
+              "<p>📧 Votre récépissé de paiement vous a été envoyé par e-mail" + (c.email ? " à <strong>" + echapper(c.email) + "</strong>" : "") + " par Stripe, notre service de paiement sécurisé.</p>" +
               "<p>🏷️ Votre prénom et votre nom figureront sur l’étiquette de votre commande, à récupérer dans votre entreprise le jour de la livraison.</p>" +
               '<p class="commande-retour__actions"><button type="button" class="bouton" data-imprimer>🖨️ Imprimer ou enregistrer</button> <button type="button" class="bouton bouton--contour-vert" data-nouvelle>Passer une autre commande</button></p>' + contact;
             zone.querySelector("[data-imprimer]").addEventListener("click", function () { window.print(); });
