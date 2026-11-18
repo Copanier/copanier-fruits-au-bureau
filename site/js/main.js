@@ -134,11 +134,12 @@ var MAX_ADRESSES = 10;
     if (champ) { champ.classList.add("invalide"); champ.focus(); }
     return !message;
   }
-  // Il faut de quoi recontacter le visiteur : un e-mail valide, ou un téléphone s'il demande à être rappelé.
+  // Il faut de quoi recontacter le visiteur : un téléphone (obligatoire) et, si indiqué, un e-mail valide.
   function verifier() {
     var f = formulaire.elements, email = f.email.value.trim(), tel = f.telephone.value.trim();
     if (!produitsChoisis().length) return erreur("Cochez au moins un produit : corbeilles de fruits ou produits supplémentaires.", $('input[name="produits"]', formulaire));
-    if (f.rappel.checked && !tel) return erreur("Indiquez votre numéro de téléphone pour être rappelé.", f.telephone);
+    if (!tel) return erreur("Indiquez votre numéro de téléphone : il est obligatoire pour traiter votre demande.", f.telephone);
+    if (tel.replace(/\D/g, "").length < 9) return erreur("Ce numéro de téléphone semble incomplet.", f.telephone);
     if (email && !/^[^\s@<>,;]+@[^\s@<>,;]+\.[a-z]{2,}$/i.test(email)) return erreur("Cette adresse e-mail semble incomplète.", f.email);
     if (!email && !tel) return erreur("Indiquez votre e-mail (ou votre téléphone) pour que nous puissions vous répondre.", f.email);
     return erreur("");
